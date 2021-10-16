@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/normal.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="allbody">
+        <div class="top">
+            <label>登录名<input type="text" /></label>
+            <label>手机号码<input type="text" /></label>
+            <label>账户状态<select><option>--请选择--</option></select></label>
+            <div class="btns"><a onclick="ceshi();">查询</a><a href="editpage24.html" target="_self">新增</a>
+            </div>
+        </div>
+        <div class="body">
+            <table id="listtable">
+                <tr>
+                    <th>ID</th>
+                    <th>车次</th>
+                    <th>出发站</th>
+                    <th>出发时间</th>
+                    <th>到达站</th>
+                    <th>到达时间</th>
+                    <th>是否经停</th>
+                    <th>经停时间</th>
+                    <th style="width:300px;">操作</th>
+                </tr>
+            </table><div id="listtag" class="tbl_footer"></div>
+            <script>
+                GetTable("traffic_train", "1=1 order by endtime");
+                function addList(nowTable) {
+                    var tblcnt = nowTable[0].cnt;
+                    $("#listtable tr:not(:first)").remove();
+                    if (nowTable != null) {
+                        $(nowTable).each(function (i, n) {
+                            var tr = $("<tr></tr>")
+                            $("#listtable").append(tr);
+                            tr.append("<td>" + n.id + "</td>");
+                            tr.append("<td>" + n.code + "</td>");
+                            tr.append("<td>" + n.startstation + "</td>");
+                            tr.append("<td>" + n.starttimestr + "</td>");
+                            tr.append("<td>" + n.endstation + "</td>");
+                            tr.append("<td>" + n.endtimestr + "</td>");
+                            tr.append("<td>" + (n.isstop == 0 ? "否" : "是") + "</td>");
+                            tr.append("<td>" + n.stoptime + "</td>");
+                            tr.append("<td><a href=\"editpage24.html?eid=" + n.id+"\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('traffic_train'," + n.id + ")\" class=\"btn4\">删除</a></td>");
+                        });
+                    }
+                    AddTableFoot(tblcnt);
+                }
+                
+            </script>
+        </div>
+    </div>
+</body>
+</html>

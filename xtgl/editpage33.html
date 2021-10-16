@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/edit.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="editpage">
+        <table id="edittbl">
+            <tr>
+                <td>滞留地区</td>
+                <td><select id="type_id"></select></td>
+            </tr>
+            <tr>
+                <td>滞留地址</td>
+                <td><input type="text" id="address" /></td>
+            </tr>
+            <tr>
+                <td>时间</td>
+                <td><input type="datetime-local" id="starttime" /></td>
+            </tr>
+            <tr>
+                <td>类型</td>
+                <td><select id="type">
+                    <option value="1">体育馆</option>
+                    <option value="2">交通枢纽</option>
+                </select></td>
+            </tr>
+            <tr>
+                <td>滞留说明</td>
+                <td><input type="text" id="remark" /></td>
+            </tr>
+           
+        </table>
+        <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
+        <script>
+            $("#type").bind("change", function () {
+                if ($("#type").val() == 1)
+                    GetChild("event_gym", "id|name", "type_id", "select");
+                else
+                    GetChild("traffic_hub", "id|name", "type_id", "select");
+            });
+            $("#type").change();
+            $("#OKbtn").click(function () {
+                if (getUrlParam("eid")) {
+                    SetTable('traffic_delay', "id=" + getUrlParam("eid"));
+                }
+                else {
+                    SetTable("traffic_delay", "");
+                }
+            });
+            setTimeout(function () {
+                if (getUrlParam("eid")) {
+                    EditTable("traffic_delay", getUrlParam("eid"));
+                }}, 200);
+        </script>
+    </div>
+</body>
+</html>

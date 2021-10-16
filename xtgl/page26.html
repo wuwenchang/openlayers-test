@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/normal.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="allbody">
+        <div class="top">
+            <label>站点名称<input type="text" id="name" /></label>
+            <div class="btns">
+                <a id="findbtn">查询</a>
+                <a href="editpage26.html" target="_self">新增</a>
+            </div>
+        </div>
+        <div class="body">
+            <table id="listtable">
+                <tr>
+                    <th>编号</th>
+                    <th>站点名称</th>
+                    <th>进站时间</th>
+                    <th>出站时间</th>
+                    <th>进站人数</th>
+                    <th>出站人数</th>
+                    <th>到站列车数</th>
+                    <th>出站列车数</th>
+                    <th style="width:200px;">操作</th>
+                </tr>
+            </table><div id="listtag" class="tbl_footer"></div>
+            <script>
+                GetTable("event_flow", "");
+                function addList(nowTable) {
+                    var tblcnt = nowTable[0].cnt;
+                    $("#listtable tr:not(:first)").remove();
+                    if (nowTable != null) {
+                        $(nowTable).each(function (i, n) {
+                            var tr = $("<tr></tr>")
+                            $("#listtable").append(tr);
+                            tr.append("<td>" + n.id + "</td>");
+                            tr.append("<td>" + n.name + "</td>");
+                            tr.append("<td>" + n.arrivetimestr + "</td>");
+                            tr.append("<td>" + n.leavetimestr + "</td>");
+                            tr.append("<td>" + n.arrivepnum + "</td>");
+                            tr.append("<td>" + n.leavepnum + "</td>");
+                            tr.append("<td>" + n.arrivenum + "</td>");
+                            tr.append("<td>" + n.leavenum + "</td>");
+                            tr.append("<td><a href=\"editpage26.html?eid=" + n.id +"\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('event_flow'," + n.id + ")\" class=\"btn4\">删除</a></td>");
+                        });
+                    }
+                    AddTableFoot(tblcnt);
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>

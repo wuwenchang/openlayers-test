@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/edit.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="editpage">
+        <table id="edittbl">
+            <tr>
+                <td>赛事</td>
+                <td><select id="sport_id"></select></td>
+            </tr>
+            <tr>
+                <td>进度</td>
+                <td><input type="text" id="progress" /></td>
+            </tr>
+            <tr>
+                <td>状态</td>
+                <td>
+                    <select id="state">
+                        <option value="0">等待中</option>
+                        <option value="1">进行中</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
+        <script>
+            GetChild("event_sport", "id|event", "sport_id", "select");
+            $("#OKbtn").click(function () {
+                if (getUrlParam("eid")) {
+                    SetTable('event_progress', "id=" + getUrlParam("eid"));
+                }
+                else {
+                    SetTable("event_progress", "");
+                }
+            });
+            setTimeout(function () {
+                if (getUrlParam("eid")) {
+                    EditTable("event_progress", getUrlParam("eid"));
+                }}, 200);
+        </script>
+    </div>
+</body>
+</html>

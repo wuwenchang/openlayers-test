@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script src="js/jquery-3.5.0.min.js"></script>
+    <script src="js/layer/layer.js"></script>
+    <script src="js/normal.js"></script>
+    <script src="js/index.js"></script>
+    <link href="css/index.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div id="allpage" class="mappage">
+        
+        <div class="userbox">
+            <p></p>
+            <label>尊敬的用户<span id="username"></span>，欢迎您使用本系统！</label>
+            <a onclick="exit()">退出系统</a>
+            
+        </div>
+        <div class="top">
+            <img style="margin-left:15px;" src="imgs/LOGO.png" /><h1>丨北京冬奥丨运力资源动态适配与应急管控系统</h1><img src="imgs/LOGO1.png" />
+            <a id="showuser"><img src="imgs/t1.png" />个人中心</a>
+            <a onclick="editpw();"><img src="imgs/t3.png" />修改密码</a>
+            <label>
+                <img src="imgs/t4.png" />区域选择中心
+                <select id="pointcenter">
+                    <option value="1">北京城区</option>
+                    <option value="2">延庆城区</option>
+                    <option value="3">张家口</option>
+                </select>
+            </label>
+            <label id="weather">
+                <iframe allowtransparency="true" frameborder="0" width="200" height="50" scrolling="no" src="//tianqi.2345.com/plugin/widget/index.htm?s=3&z=2&t=1&v=0&d=3&bd=0&k=&f=ffffff&ltf=ffffff&htf=ffffff&q=1&e=1&a=1&c=54511&w=200&h=50&align=center"></iframe>
+            </label>
+            <script>
+                if (getCookie("BJDA_userID")) {
+                    $("#username").html(getCookie("BJDA_userName"));
+                }
+                else {
+                    // window.location.href = "login.html";
+                }
+                function exit() {
+                    delCookie("BJDA_userID");
+                    delCookie("BJDA_userName");
+                    window.location.href = "login.html";
+                }
+                $("#showuser").click(function () { $(".userbox").slideToggle(); });
+            </script>
+        </div>
+        <div class="left">
+            <p class="open">
+                <img src="imgs/l2.png" />动态监测
+            </p>
+            <div>
+                <a id="a_4">
+                    动力总览
+                </a>
+                <a id="a_5">
+                    道路路况
+                </a>
+                <a id="a_6">
+                    实时公交
+                </a>
+                <a id="a_7">
+                    实时地铁
+                </a>
+                <a id="a_8">
+                    实时高铁
+                </a>
+                <a id="a_9">
+                    体育场馆
+                </a>
+                <a id="a_10">
+                    交通枢纽
+                </a>
+            </div>
+            <p>
+                <img src="imgs/l1.png" />资源管理
+            </p>
+            <div style="display:none;">
+                <a id="a_1">交通设施管理</a>
+                <a id="a_2">赛事场馆管理</a>
+                <a id="a_3">车辆管理</a>
+            </div>
+            <p><img src="imgs/l3.png" />事故管理</p>
+            <div style="display:none;">
+                <a>交通事故</a>
+                <a>交通违法</a>
+                <a>铁路故障</a>
+                <a>城轨故障</a>
+                <a>公交车事故</a>
+                <a>电动车辆起火</a>
+                <a>赛事推迟</a>
+                <a>赛事限流</a>
+                <a>人群拥堵</a>
+                <a>人群滞留</a>
+            </div>
+            <p><img src="imgs/l4.png" />系统管理</p>
+            <div style="display:none;">
+                <a id="a_21">用户管理</a>
+                <a id="a_22">角色管理</a>
+                <a id="a_23">VMS管理</a>
+                <a id="a_24">高铁管理</a>
+                <a id="a_25">体育馆管理</a>
+                <a id="a_26">场馆客流管理</a>
+                <a id="a_27">体育赛事管理</a>
+                <a id="a_28">赛事进度管理</a>
+                <a id="a_29">赛事推迟管理</a>
+                <a id="a_30">赛事限流管理</a>
+                <a id="a_31">参赛人员管理</a>
+                <a id="a_32">人群拥堵管理</a>
+                <a id="a_33">人群滞留管理</a>
+                <a id="a_34">交通枢纽管理</a>
+                <a id="a_35">交通枢纽客流管理</a>
+                <a id="a_36">运力管理</a>
+                <a id="a_37">救援方案管理</a>
+                <a id="a_38">救援管理</a>
+                <a id="a_39">地铁运营管理</a>
+                <a id="a_40">公交运营管理</a>
+                <a id="a_41">事故类型</a>
+            </div>
+        </div>
+        <div class="body">
+            <div class="tree"></div>
+            <div class="ifrbox" id="ifrbox">
+            </div>
+        </div>
+        <input type="hidden" id="accidentID" value="" />
+    </div>
+    <script type="text/javascript">
+        
+    </script>
+</body>
+</html>

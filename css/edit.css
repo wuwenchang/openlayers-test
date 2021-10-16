@@ -1,0 +1,131 @@
+﻿body, p, a, ul, li {
+    margin: 0px;
+    padding: 0px;
+    font-size: 14px;
+    font-family: "微软雅黑";
+}
+a, span, label, p, h1, h2, h3 {
+    transition: all 0.5s;
+}
+a {
+    cursor: pointer;
+    text-decoration: none;
+}
+ul li, ul {
+    padding: 0px;
+    margin: 0px;
+    list-style-type: none;
+}
+a label {
+}
+.hide {
+    display: none;
+}
+input, select, textarea {
+    font-family: "微软雅黑";
+    padding:0px;
+    margin:0px;
+    border:0px;
+}
+    input[type=date] {
+        font-family: "微软雅黑";
+    }
+/*-------滚动条整体样式----*/
+::-webkit-scrollbar {
+    width: 8px; /*对垂直流动条有效*/
+    height: 8px; /*对水平流动条有效*/
+}
+
+/*定义滚动条的轨道颜色、内阴影及圆角*/
+::-webkit-scrollbar-track {
+    background-color: #f3f3f3;
+    border-radius: 3px;
+}
+
+
+/*定义滑块颜色、内阴影及圆角*/
+::-webkit-scrollbar-thumb {
+    border-radius: 7px;
+    background-color: #091429;
+}
+
+/*定义两端按钮的样式*/
+::-webkit-scrollbar-button {
+    background-color: #f3f3f3;
+    height: 0px;
+    width: 0px;
+}
+
+/*定义右下角汇合处的样式*/
+::-webkit-scrollbar-corner {
+    background: #111114;
+}
+.editpage ,.editpw {
+    margin: 10px;
+    width: calc(100% - 20px);
+    background-color: #fff;
+    border: 1px solid #dddddd;
+    padding: 20px 0px;
+}
+    .editpw
+    {
+        border:0px;
+    }
+    .editpage table {
+        width: 60%;
+        min-width: 600px;
+        margin: 10px auto;
+    }
+    .editpw table
+    {
+        width:80%;
+        min-width:0px;
+    }
+    .editpage table td {
+        height: 30px;
+        padding-bottom: 10px;
+    }
+    .editpage .btns
+    {
+        text-align:center;
+    }
+    .editpage .btns a {
+        height: 30px;
+        line-height: 30px;
+        background-color: #008eff;
+        color: #fff;
+        display: inline-block;
+        padding: 0px 10px;
+        margin:10px 10%;
+    }
+    .editpage table td:first-child
+    {
+        text-align:right;
+        padding-right:10px;
+    }
+    .editpage table td input, .editpage table td select {
+        border: 1px solid #dddddd;
+        height: 30px;
+        width: 80%;
+        text-indent:10px;
+    }
+        .editpage table td select
+        {
+            height:32px;
+            width:calc(80% + 2px);
+        }
+.editpage table td .cbox {
+    width: 80%;
+}
+.editpage table td .cbox input {
+    width: 15px;
+    height: 15px;
+    margin-top: 2px;
+    margin-right: 5px;
+    border: 1px solid #dddddd;
+    float: left;
+}
+    .editpage table td .cbox span {
+        display: inline-block;
+        margin-right:10px;
+    }

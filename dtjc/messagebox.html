@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/index.css" rel="stylesheet" />
+    <script type="text/javascript" src="../js/damap.js"></script>
+</head>
+<body>
+    <div class="allmsg">
+        <p><img src="../imgs/s1.png" /><span>实时消息</span></p>
+        <div class="msgbox">
+            <table id="message">
+                <tr>
+                    <td width="50px"><img src="../imgs/b1.png" /></td>
+                    <td>北四环事故</td>
+                    <td width="30px"><img src="../imgs/pt.gif" /></td>
+
+                </tr>
+                <tr>
+                    <td><img src="../imgs/b2.png" /></td>
+                    <td>北四环事故</td>
+                    <td><img src="../imgs/pt.gif" /></td>
+
+                </tr>
+                <tr>
+                    <td><img src="../imgs/b3.png" /></td>
+                    <td>北四环事故</td>
+                    <td><img src="../imgs/pt.gif" /></td>
+                </tr>
+            </table>
+        </div>
+        <script type="text/javascript">
+            var actable;
+            if (getUrlParam("msg")) {
+                var rowsnum = getUrlParam("msg");
+                var type = getUrlParam("type");
+                var iiload = layer.load(1, false);
+
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    cache: false,
+                    async: false,
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                    data: { tableName: "traffic_accident A,traffic_accident_type B", whereSql: " A.type=B.id  and  type in (" + type + ") order by addtime desc limit " + rowsnum },
+                    success: function (myjson) {
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            actable = jsondatas.Table;
+                            $("#message").find("tr").remove();
+                            $(actable).each(function (i, n) {
+                                $("#message").append("<tr><td  width=\"50px\"><img src=\"../imgs/" + n.img + ".png\" /></td><td>" + n.name + "</td><td  width=\"30px\"><img onclick=\"Location2Marker(" + n.id + ")\"  src=\"../imgs/pt.gif\" /></td></tr>");
+                            });
+                        }
+                        else {
+                            layer.msg(jsondatas.MSG, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        layer.msg("系统错误", { icon: 2 })
+                    },
+                    complete: function () {
+                        layer.close(iiload);
+                    }
+                });
+            }
+            function Location2Marker(id) {
+                var maker;
+                $(actable).each(function (i, n) {
+                    if (n.id == id)
+                        maker = n;
+                });
+                locationbyMark(maker,false);
+            }
+        </script>
+    </div>
+</body>
+</html>

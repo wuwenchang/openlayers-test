@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/normal.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="allbody">
+        <div class="top">
+            <label>交通方式<input type="text" id="type" /></label>
+            <label>比赛区域<input type="text" id="eventarea" /></label>
+            <div class="btns">
+                <a id="findbtn">查询</a>
+                <a href="editpage36.html" target="_self">新增</a>
+            </div>
+        </div>
+        <div class="body">
+            <table id="listtable">
+                <tr>
+                    <th>编号</th>
+                    <th>交通方式</th>
+                    <th>车次</th>
+                    <th>司机</th>
+                    <th>联系电话</th>
+                    <th>比赛区域</th>
+                    <th>开始时间</th>
+                    <th>运行状态</th>
+                    <th>起点区域</th>
+                    <th style="width:200px;">操作</th>
+                </tr>
+            </table><div id="listtag" class="tbl_footer"></div>
+            <script>
+                GetTable("traffic_transport", "");
+                function addList(nowTable) {
+                    var tblcnt = nowTable[0].cnt;
+                    $("#listtable tr:not(:first)").remove();
+                    if (nowTable != null) {
+                        $(nowTable).each(function (i, n) {
+                            var tr = $("<tr></tr>")
+                            $("#listtable").append(tr);
+                            tr.append("<td>" + n.id + "</td>");
+                            tr.append("<td>" + transporttype[n.type] + "</td>");
+                            tr.append("<td>" + n.code + "</td>");
+                            tr.append("<td>" + n.driver + "</td>");
+                            tr.append("<td>" + n.tel + "</td>");
+                            tr.append("<td>" + n.eventarea + "</td>");
+                            tr.append("<td>" + timeFormat(n.starttime) + "</td>");
+                            tr.append("<td>" + (n.state == 0 ? "闲置" : "运行") + "</td>");
+                            tr.append("<td>" + n.startarea + "</td>");
+                            tr.append("<td><a href=\"editpage36.html?eid=" + n.id +"\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('traffic_transport'," + n.id + ")\" class=\"btn4\">删除</a></td>");
+                        });
+                    }
+                    AddTableFoot(tblcnt);
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>

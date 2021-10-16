@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html style="width: 100%;height:100%">
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <script type="text/javascript" src="../js/map.js"></script>
+    <script src="../json/ol.css"></script>
+    <script src="../json/ol.js"></script>
+    <link href="../css/index.css" rel="stylesheet" />
+    <script type="text/javascript" src="../js/damap.js"></script>
+    <link href="../css/dastyle.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body style="background-color: #00192e;">
+    <a id="bemax" class="max">
+        <img src="../imgs/bmax.png" />
+    </a>
+    <div id="map"></div>
+    <div id="legend" class="allmsg allmsg1">
+        <p><img src="../imgs/s2.png" /><span>图例</span></p>
+        <div class="msgbox">
+            <ul>
+                <li><img src="../imgs/tl1.png" /><span>高速</span></li>
+                <li><img src="../imgs/tl2.png" /><span>铁路</span></li>
+                <li><img src="../imgs/tl3.png" /><span>机场</span></li>
+                <li><img src="../imgs/tl4.png" /><span>火车站</span></li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        window.onload = function () {
+            var center1 = [116.011, 40.45];
+            var inilayers = ['dapoi', 'road', 'railway'];
+            var map = loadmap(center1, '250.74811314055756', inilayers);
+        };
+    </script>
+</body>
+</html>

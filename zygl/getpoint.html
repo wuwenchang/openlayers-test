@@ -1,0 +1,373 @@
+﻿<!DOCTYPE html>
+<html style="width: 100%;height:100%">
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/build/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/css/ol.css">
+    <link href="../css/index.css" rel="stylesheet" />
+    <title></title>
+    <style>
+        #legend{
+            position:absolute;
+            left:10px;
+            bottom:10px;
+        }
+        #map{
+            width:100%;
+            height:100%;
+        }
+
+        .toolbox{
+            position: absolute;
+            top:15px;
+            right:30px;
+            height:27px;
+            width:200px;
+            border-radius:5px;
+            z-index:99;
+            background: #fff;
+        }
+
+        .tool-item{
+            float: left;
+            cursor: pointer;
+            margin-left: 5px;
+            border: 1px solid #ccc;
+            width:30px;
+            height:21px;
+            line-height:21px;
+            margin-top:2px;
+            background: #ccc;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .ol-popup {
+            position: absolute;
+            background-color: white;
+            -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+            filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #cccccc;
+            bottom: 12px;
+            left: -50px;
+            width: 250px;
+        }
+        .ol-popup:after, .ol-popup:before {
+            top: 100%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+        .ol-popup:after {
+            border-top-color: white;
+            border-width: 10px;
+            left: 48px;
+            margin-left: -10px;
+        }
+        .ol-popup:before {
+            border-top-color: #cccccc;
+            border-width: 11px;
+            left: 48px;
+            margin-left: -11px;
+        }
+        .popup-content div{
+            margin-bottom: 10px;
+        }
+        .popup-content span {
+            width: 75px;
+            display: inline-block;
+        }
+        .ol-popup-closer {
+            text-decoration: none;
+            position: absolute;
+            top: 2px;
+            right: 8px;
+        }
+        .ol-popup-closer:after {
+            content: "✖";
+        }
+        .footer {
+            text-align: center;
+        }
+    </style>
+</head>
+<body style="width:100%;height:100%">
+    <div class="messagebox">
+        <iframe src="messagebox.html" scrolling="no" frameborder="0"></iframe>
+    </div>
+    <div id="map">
+        <div id="popup" class="ol-popup">
+            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+            <div class="popup-content">
+                <div>
+                    <span>事故名称：</span><input type="text" id="val1">
+                </div>
+                <div>
+                    <span>事故地点：</span><input type="text" id="val2">
+                </div>
+                <div>
+                    <span>事故车辆：</span><input type="text" id="val3">
+                </div>
+                <div>
+                    <span>联系人：</span><input type="text" id="val4">
+                </div>
+                <div>
+                    <span>发生时间：</span><input type="text" id="val5">
+                </div>
+                <div id="latlon"></div>
+                <div class="footer">
+                    <button id="submit">发布</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <div id="legend" class="allmsg allmsg1">
+        <p><img src="../imgs/s2.png" /><span>图例</span></p>
+        <div class="msgbox">
+           <ul><li><img src="../imgs/tl1.png" /><span>高速</span></li>
+               <li><img src="../imgs/tl2.png" /><span>铁路</span></li>
+               <li><img src="../imgs/tl3.png" /><span>机场</span></li>
+               <li><img src="../imgs/tl4.png" /><span>火车站</span></li></ul>
+        </div>
+    </div>
+    <script>
+        window.onload = function () {
+
+            var draw = null;
+            var source = new ol.source.Vector({ wrapX: false });
+            var vector = new ol.layer.Vector({
+                source: source
+            });
+
+            // 地图坐标
+            var projection = ol.proj.get('EPSG:3857');
+            // 基础地图服务切片地址
+            var tileUrl = "http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/{z}/{y}/{x}";
+            // 坐标原点
+            var origin = [-2.0037508342787E7, 2.0037508342787E7];
+            // 分辨率
+            var resolutions = [156543.03392800014, 78271.51696399994, 39135.75848200009, 19567.87924099992, 9783.93962049996, 4891.96981024998, 2445.98490512499
+                , 1222.992452562495, 611.4962262813797, 305.74811314055756, 152.87405657041106, 76.43702828507324, 38.21851414253662, 19.10925707126831, 9.554628535634155,
+                4.77731426794937, 2.388657133974685, 1.1943285668550503, 0.5971642835598172, 0.29858214164761665];
+            //地图范围
+            var fullExtent = [-2.0037507067161843E7, -1.819812769412998E7, 2.0037507067161843E7, 2.8686510967305996E7];
+            var tileGrid = new ol.tilegrid.TileGrid({
+                tileSize: 256,
+                origin: origin,
+                extent: fullExtent,
+                resolutions: resolutions
+            });
+            // 瓦片数据源
+            var tileArcGISXYZ = new ol.source.XYZ({
+                tileGrid: tileGrid,
+                projection: projection,
+                url: tileUrl,
+            });
+           var dapoi = new ol.layer.Tile({
+                source: new ol.source.TileWMS({
+                    url: 'http://114.215.130.203:8080/geoserver/bjda/wms',
+                    params: { 'LAYERS': 'bjda:dapoi', 'singleTile': true }
+ 
+                })
+           })
+            var road = new ol.layer.Tile({
+                source: new ol.source.TileWMS({
+                    url: 'http://114.215.130.203:8080/geoserver/bjda/wms',
+                    params: { 'LAYERS': 'bjda:road', 'singleTile': true }
+ 
+                })
+            })
+           var railway = new ol.layer.Tile({
+                source: new ol.source.TileWMS({
+                    url: 'http://114.215.130.203:8080/geoserver/bjda/wms',
+                    params: { 'LAYERS': 'bjda:railway', 'singleTile': true }
+ 
+                })
+            })
+
+            var center1 = [116.33, 39.95];
+            center1 = ol.proj.transform(center1, 'EPSG:4326', 'EPSG:3857');
+            console.log(center1)
+            var map = new ol.Map({
+                target: 'map',
+                layers: [
+                    // 瓦片图层
+                    new ol.layer.Tile({
+                        source: tileArcGISXYZ
+                    }),
+                    vector,
+                    dapoi,
+                    road,
+                    railway
+                ],
+                view: new ol.View({
+                    //初始化中心点坐标
+                    center: center1,
+                    resolutions: resolutions,
+                    // 注意：此处指定缩放级别不能通过zoom来指定，指定了也无效，必须通过resolution来指定
+                    resolution: 305.74811314055756,
+                    projection: projection,
+                    extent: fullExtent
+                })
+            });
+            
+            document.getElementById("map").onmousedown = function (e) {
+                if (e.button == 2) {
+                    if (draw != null) {
+                        map.removeInteraction(draw);
+                    }
+                }
+                else if (e.button == 1)
+                {
+                    var lonlat = map.getLonLatFromViewPortPx(e.xy);
+                    alert(lonlat);
+                }
+            }
+            
+            /***** start *******/ 
+            var vectorLayer = null;
+            // 添加图标事件
+            function addMarker(params) {
+                let coordinate = ol.proj.transform(params.coordinate, 'EPSG:4326', 'EPSG:3857')
+                var feature = new ol.Feature({
+                    geometry: new ol.geom.Point(coordinate),
+                    name: 'locate',
+                    population: 4000,
+                    rainfall: 500,
+                    params: params.data
+                });
+                var iconStyle = new ol.style.Style({
+                    image: new ol.style.Icon({
+                        // anchor: [0.4, 37],
+                        // anchorXUnits: 'fraction',
+                        // anchorYUnits: 'pixels',
+                        src: !params.isActive ? params.src : params.activeSrc
+                    })
+                });
+
+                feature.setStyle(iconStyle);//图层设置 样式
+                // vectorLayer == null ? null : map.removeLayer(vectorLayer);
+                vectorLayer = new ol.layer.Vector({
+                    id: params.id,
+                    source: new ol.source.Vector({
+                        features: [feature]//图层加进去
+                    })
+                });
+                map.addLayer(vectorLayer);//将图层加入map
+            }
+
+            var container = document.getElementById('popup');
+            var content = document.getElementById('latlon');
+            var closer = document.getElementById('popup-closer');
+            // 关闭气泡
+            closer.onclick = function() {
+                overlay.setPosition(undefined);
+                closer.blur();
+                return false;
+            };
+            // 气泡层
+            var overlay = new ol.Overlay(({
+                element: container,
+                autoPan: true,
+                autoPanAnimation: {
+                    duration: 250   //当Popup超出地图边界时，为了Popup全部可见，地图移动的速度. 单位为毫秒（ms）
+                }
+            }))
+
+            // 地图事件监听
+            map.addEventListener('click', function(e) {
+                var coordinate = e.coordinate;
+                let feature = map.forEachFeatureAtPixel(e.pixel, a => a);
+                // console.log(feature)
+                 var hdms = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
+                    alert("当前经纬度是：" + hdms[0] + "," + hdms[1]);
+                if (feature) {
+                   
+                    // content.innerHTML = '<p>当前经纬度是：</p>'+ hdms[0]+ '，' + hdms[1];
+                    overlay.setPosition(coordinate);
+                    map.addOverlay(overlay);
+                    $('#val1').val(feature.O.params.val1)
+                    $('#val2').val(feature.O.params.val2)
+                    $('#val3').val(feature.O.params.val3)
+                    $('#val4').val(feature.O.params.val4)
+                    $('#val5').val(feature.O.params.val5)
+                }
+            });
+
+            // 离散点绘制线条
+            var pointsList = [
+                ol.proj.transform([116.5, 40.15], 'EPSG:4326', 'EPSG:3857'),
+                ol.proj.transform([116.1, 39.55], 'EPSG:4326', 'EPSG:3857')
+            ]
+            var roadLine = new ol.geom.LineString(pointsList);
+            var roadLineSource = new ol.source.Vector({
+                features: [new ol.Feature(roadLine)]
+            });
+            var roadLineLayer = new ol.layer.Vector({
+                source: roadLineSource,
+                style: new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: 'red',
+                        width: 3
+                    })
+                })
+            });
+            map.addLayer(roadLineLayer);
+
+            var curLayer = null;
+            var activeIndex = 0;
+            var list = [
+                    new ol.layer.Tile({
+                        source: tileArcGISXYZ
+                    }),
+                    vector,
+                    dapoi,
+                    road,
+                    railway,
+                    roadLineLayer
+            ];
+            window.addEventListener('message', function (res) {
+                // console.log(res.data)
+                var data = res.data
+                var coordinate = ol.proj.transform(data.coordinate, 'EPSG:4326', 'EPSG:3857');
+                overlay.setPosition(coordinate);
+                map.addOverlay(overlay);
+                $('#val1').val(data.data.val1)
+                $('#val2').val(data.data.val2)
+                $('#val3').val(data.data.val3)
+                $('#val4').val(data.data.val4)
+                $('#val5').val(data.data.val5)
+                var allLayers = map.getLayers().getArray();
+                if (activeIndex) {
+                    map.removeLayer(allLayers[activeIndex])
+                    list[activeIndex].isActive = false;
+                    addMarker(list[activeIndex])
+                    let obj = list.splice(activeIndex, 1)
+                    obj.isActive = false
+                    list.push(obj)
+                }
+                allLayers.forEach(function(item, index) {
+                    if (item.O.id === data.id) {
+                        map.removeLayer(item)
+                        list.splice(index, 1)
+                    }
+                })
+                addMarker(data)
+                list.push(data)
+                activeIndex = allLayers.length - 1;
+                map.getView().setCenter(ol.proj.transform(data.coordinate, 'EPSG:4326', 'EPSG:3857'))
+            })
+        };
+    </script>
+</body>
+</html>

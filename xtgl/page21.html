@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/normal.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="allbody">
+        <div class="top">
+            <label>登录名<input type="text" /></label>
+            <label>手机号码<input type="text" /></label>
+            <label>账户状态<select><option>--请选择--</option></select></label>
+            <div class="btns"><a onclick="ceshi();">查询</a>
+            <a href="editpage21.html" target="_self">新增</a></div>
+        </div>
+        <div class="body">
+            <table id="listtable">
+                <tr>
+                    <th>ID</th>
+                    <th>登录名</th>
+                    <th>姓名</th>
+                    <th>手机号码</th>
+                    <th>邮箱</th>
+                    <th>角色</th>
+                    <th>维护日期</th>
+                    <th>账户状态</th>
+                    <th style="width:300px;">操作</th>
+                </tr>
+            </table><div id="listtag" class="tbl_footer"></div>
+            <script>
+                GetTable("sys_users", "1=1 order by addtime");
+                function addList(nowTable) {
+                    var tblcnt = nowTable[0].cnt;
+                    $("#listtable tr:not(:first)").remove();
+                    if (nowTable != null) {
+                        $(nowTable).each(function (i, n) {
+                            var tr = $("<tr></tr>")
+                            $("#listtable").append(tr);
+                            tr.append("<td>" + n.id + "</td>");
+                            tr.append("<td>" + n.username + "</td>");
+                            tr.append("<td>" + n.name + "</td>");
+                            tr.append("<td>" + n.tel + "</td>");
+                            tr.append("<td>" + n.mail + "</td>");
+                            var power = n.power.split("^");
+                            var powerstr = "";
+                            for (var p in power) {
+                                powerstr += userpower[power[p]] + ",";
+                            }
+                            powerstr = powerstr.substring(0, powerstr.length - 1);
+                            tr.append("<td>" + powerstr + "</td>");
+                            tr.append("<td>" + timeFormatSmall(n.addtime) + "</td>");
+                            tr.append("<td><a  onclick=\"setuse(" + (n.isuse == 0 ? 1 : 0) + "," + n.id + ")\" class=\"ubtn" + n.isuse +"\">" + (n.isuse == 0 ? "禁用" : "正常") + "</a></td>");
+                            tr.append("<td><a href=\"editpage21.html?eid=" + n.id+"\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('sys_users'," + n.id + ")\" class=\"btn4\">删除</a></td>");
+                        });
+                    }
+                    AddTableFoot(tblcnt);
+                }
+                function setuse(isuse, id) {
+                    SetValue("sys_users", "isuse," + isuse, "id=" + id);
+                    setTimeout(function () { GetTable("sys_users", "1=1 order by addtime"); }, 200);
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>

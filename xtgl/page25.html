@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/normal.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="allbody">
+        <div class="top">
+            <label>体育馆名称<input type="text" id="name" /></label>
+            <label>联系人<input type="text" id="contact"  /></label>
+            <div class="btns">
+                <a id="findbtn">查询</a>
+                <a href="editpage25.html" target="_self">新增</a>
+            </div>
+        </div>
+        <div class="body">
+            <table id="listtable">
+                <tr>
+                    <th>编号</th>
+                    <th>坐标</th>
+                    <th>体育馆名称</th>
+                    <th>地址</th>
+                    <th>座席数</th>
+                    <th>场地面积</th>
+                    <th>洗手间数量</th>
+                    <th>停车位数</th>
+                    <th>公交站点数量</th>
+                    <th>联系人</th>
+                    <th>电话</th>
+                    <th>备注</th>
+                    <th style="width:200px;">操作</th>
+                </tr>
+            </table><div id="listtag" class="tbl_footer"></div>
+            <script>
+                GetTable("event_gym", "");
+                function addList(nowTable) {
+                    var tblcnt = nowTable[0].cnt;
+                    $("#listtable tr:not(:first)").remove();
+                    if (nowTable != null) {
+                        $(nowTable).each(function (i, n) {
+                            var tr = $("<tr></tr>")
+                            $("#listtable").append(tr);
+                            tr.append("<td>" + n.id + "</td>");
+                            tr.append("<td>" + n.xaxis + "," + n.yaxis + "</td>");
+                            tr.append("<td>" + n.name + "</td>");
+                            tr.append("<td>" + n.address + "</td>");
+                            tr.append("<td>" + n.seat + "</td>");
+                            tr.append("<td>" + n.area + "</td>");
+                            tr.append("<td>" + n.toilet + "</td>");
+                            tr.append("<td>" + n.parking + "</td>");
+                            tr.append("<td>" + n.busstop + "</td>");
+                            tr.append("<td>" + n.contact + "</td>");
+                            tr.append("<td>" + n.tel + "</td>");
+                            tr.append("<td>" + n.remark + "</td>");
+                            tr.append("<td><a href=\"editpage25.html?eid=" + n.id +"\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('event_gym'," + n.id + ")\" class=\"btn4\">删除</a></td>");
+                        });
+                    }
+                    AddTableFoot(tblcnt);
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>

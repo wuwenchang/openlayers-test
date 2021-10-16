@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/edit.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="editpage">
+        <table id="edittbl">
+            <tr>
+                <td>赛事</td>
+                <td><select id="sport_id"></select></td>
+            </tr>
+            <tr>
+                <td>计划人数</td>
+                <td><input type="text" id="planpnum" /></td>
+            </tr>
+            <tr>
+                <td>现有人数</td>
+                <td><input type="text" id="realpnum" /></td>
+            </tr>
+            <tr>
+                <td>限流开始时间</td>
+                <td><input type="time" id="starttime" /></td>
+            </tr>
+            <tr>
+                <td>限流说明</td>
+                <td><input type="text" id="remark" /></td>
+            </tr>
+           
+        </table>
+        <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
+        <script>
+            GetChild("event_sport", "id|event", "sport_id", "select");
+            $("#OKbtn").click(function () {
+                if (getUrlParam("eid")) {
+                    SetTable('event_limit', "id=" + getUrlParam("eid"));
+                }
+                else {
+                    SetTable("event_limit", "");
+                }
+            });
+            setTimeout(function () {
+                if (getUrlParam("eid")) {
+                    EditTable("event_limit", getUrlParam("eid"));
+                }}, 200);
+        </script>
+    </div>
+</body>
+</html>

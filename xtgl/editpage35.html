@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/edit.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="editpage">
+        <table id="edittbl">
+            <tr>
+                <td>站点名称</td>
+                <td><input type="text" id="name" /></td>
+            </tr>
+            <tr>
+                <td>进站时间</td>
+                <td><input type="time" id="arrivetime" /></td>
+            </tr>
+            <tr>
+                <td>出站时间</td>
+                <td><input type="time" id="leavetime" /></td>
+            </tr>
+            <tr>
+                <td>进站人数</td>
+                <td><input type="text" id="arrivepnum" /></td>
+            </tr>
+            <tr>
+                <td>出站人数</td>
+                <td><input type="text" id="leavepnum" /></td>
+            </tr>
+            <tr>
+                <td>到站列车数</td>
+                <td><input type="text" id="arrivenum" /></td>
+            </tr>
+            <tr>
+                <td>出站列车数</td>
+                <td><input type="text" id="leavenum" /></td>
+            </tr>
+        </table>
+        <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
+        <script>
+            $("#OKbtn").click(function () {
+                if (getUrlParam("eid")) {
+                    SetTable('traffic_flow', "id=" + getUrlParam("eid"));
+                }
+                else {
+                    SetTable("traffic_flow", "");
+                }
+            });
+            setTimeout(function () {
+                if (getUrlParam("eid")) {
+                    EditTable("traffic_flow", getUrlParam("eid"));
+                }}, 200);
+        </script>
+    </div>
+</body>
+</html>

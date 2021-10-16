@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html style="width: 100%;height:100%">
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <script type="text/javascript" src="../js/map.js"></script>
+    <script src="../json/ol.css"></script>
+    <script src="../json/ol.js"></script>
+    <link href="../css/index.css" rel="stylesheet" />
+    <script src="../json/railwayjson.js"></script>
+    <script src="../json/roadjson.js"></script>
+    <script src="../json/subwayjson.js"></script>
+    <script src="../json/rescuejson.js"></script>
+    <script type="text/javascript" src="../js/damap.js"></script>
+    <script type="text/javascript" src="../js/rescue.js"></script>
+    <link href="../css/dastyle.css" rel="stylesheet" />
+    <title>动力总览</title>
+</head>
+<body style=" background-color:#00192e;">
+    <a id="bemax" class="max">
+        <img src="../imgs/bmax.png" />
+    </a>
+    <a id="showct" class="show"><img src="../imgs/chart.png" /></a>
+    <div class="messagebox" style="height:280px">
+        <iframe src="messagebox.html?msg=5&type=2,3,4,5,6" scrolling="no" frameborder="0"></iframe>
+    </div>
+    <div id="map">
+        <div id="popup" class="ol-popup">
+            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+            <div class="popup-content">
+                <input type="hidden" id="sendid" value="" />
+                <div>
+                    <span>名 称：</span><input type="text" id="val1">
+                </div>
+                <div>
+                    <span>地 点：</span><input type="text" id="val2">
+                </div>
+                <div>
+                    <span>车 辆：</span><input type="text" id="val3">
+                </div>
+                <div>
+                    <span>描 述：</span><input type="text" id="val4">
+                </div>
+                <div>
+                    <span>时 间：</span><input type="text" id="val5">
+                </div>
+                <div id="latlon"></div>
+                <div class="footer">
+                    <button id="submit">
+                        <img src="../imgs/l7.png" />启动预案
+                    </button>
+                    <button id="sendmessage">
+                        <img src="../imgs/l6.png" />发布消息
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div id="legend" class="allmsg allmsg1">
+        <p><img src="../imgs/s2.png" /><span>图例</span></p>
+        <div class="msgbox">
+            <ul>
+                <li><img src="../imgs/b1.png" /><span>轿车</span></li>
+                <li><img src="../imgs/b2.png" /><span>公交</span></li>
+                <li><img src="../imgs/tl7.png" /><span>地铁</span></li>
+                <li><img src="../imgs/tl2.png" /><span>高铁</span></li>
+                <li><img src="../imgs/tl10.png" /><span>电动车</span></li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        window.onload = function () {
+            var center1 = [116.011, 40.15];
+            var inilayers = ['dapoi', 'road'];
+            var map = loadmap(center1, '150.74811314055756', inilayers);
+            activemap = map;
+            locationMap = map;
+            // init();
+            var params;
+            //点击事件
+            map.addEventListener('click', function (e) {
+                popupShow(e, map, params);
+            });
+            window.addEventListener('message', function (res) {
+                 $(".footer").show();
+                params = res;
+                showAccidentPopup(res, map);
+            })
+            // rescueInit()
+        };
+    </script>
+</body>
+</html>

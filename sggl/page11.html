@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <script type="text/javascript" src="../js/accident.js"></script>
+    <link href="../css/normal.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="allbody">
+        <div class="top" id="findlist">
+            <label>事故对象<select id="target" ><option value="all">---全部---</option></select></label>
+            <label>发生时间<input type="date" id="addtime" /></label>
+            <div class="btns"><a id="findbtn">查询</a><a id="addbtn">添加</a></div>
+        </div>
+        <div class="body">
+            <table id="listtable">
+                <tr id="thtr">
+                    <th>ID</th>
+                    <th>坐标</th>
+                    <th>类型</th>
+                    <th>事故对象</th>
+                    <th>事故名称</th>
+                    <th>事故车辆</th>
+                    <th>事故地点</th>
+                    <th>事故描述</th>
+                    <th>事故时间</th>
+                    <th>操作</th>
+                </tr>
+            </table><div id="listtag" class="tbl_footer"></div>
+            <script>
+              
+            </script>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,308 @@
+﻿body, p, a, ul, li {
+    margin: 0px;
+    padding: 0px;
+    font-size: 14px;
+    font-family: "微软雅黑";
+}
+
+a, span, label, p, h1, h2, h3 {
+    transition: all 0.5s;
+}
+
+a {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+ul li, ul {
+    padding: 0px;
+    margin: 0px;
+    list-style-type: none;
+}
+
+a label {
+}
+
+.hide {
+    display: none;
+}
+
+input, select, textarea {
+    font-family: "微软雅黑";
+    padding:0px;
+    margin:0px;
+}
+    input[type=date] {
+        font-family: "微软雅黑";
+    }
+/*-------滚动条整体样式----*/
+::-webkit-scrollbar {
+    width: 8px; /*对垂直流动条有效*/
+    height: 8px; /*对水平流动条有效*/
+}
+
+/*定义滚动条的轨道颜色、内阴影及圆角*/
+::-webkit-scrollbar-track {
+    background-color: #f3f3f3;
+    border-radius: 3px;
+}
+
+
+/*定义滑块颜色、内阴影及圆角*/
+::-webkit-scrollbar-thumb {
+    border-radius: 7px;
+    background-color: #091429;
+}
+
+/*定义两端按钮的样式*/
+::-webkit-scrollbar-button {
+    background-color: #f3f3f3;
+    height: 0px;
+    width: 0px;
+}
+
+/*定义右下角汇合处的样式*/
+::-webkit-scrollbar-corner {
+    background: #111114;
+}
+.allbody {
+    width: calc(100% - 20px);
+    padding: 10px;
+    background-color: transparent;
+}
+
+    .allbody .top {
+        width: calc(100% - 20px);
+        background-color: #fff;
+        border: 1px solid #dddddd;
+        padding: 20px 10px;
+    }
+
+        .allbody .top input, .allbody .top select {
+            height: 25px;
+            border: 1px solid #dddddd;
+            margin: 0px 10px;
+            width:120px;
+        }
+            .allbody .top select
+            {
+                height:27px;
+                width:122px;
+            }
+
+            .allbody .top .btns {
+                float: right;
+            }
+
+            .allbody .top .btns a {
+                height: 30px;
+                line-height: 30px;
+                background-color: #008eff;
+                color: #fff;
+                display: inline-block;
+                padding: 0px 10px;
+                margin-right: 10px;
+            }
+
+    .allbody .body {
+        width: 100%;
+        background-color: #fff;
+        border: 1px solid #dddddd;
+        margin-top: 10px;
+    }
+
+        .allbody .body table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .allbody .body table th {
+                background-color: #eeeeee;
+                height: 30px;
+                white-space:nowrap;
+            }
+
+            .allbody .body table tr:nth-child(2n+1) {
+                background-color: #fafafa;
+            }
+
+            .allbody .body table td {
+                height: 30px;
+                text-align: center;
+            }
+
+                .allbody .body table td a {
+                    height: 25px;
+                    line-height: 25px;
+                    background-color: #008eff;
+                    color: #fff;
+                    display: inline-block;
+                    padding: 0px 10px;
+                    margin: 0px 5px;
+                    font-size: 12px;
+                    border-radius: 5px;
+                }
+                    .allbody .body table td a img {
+                        float: left;
+                        margin: 6px 5px 0px 0px;
+                    }
+                    .allbody .body table td a.btn {
+                        background-color: transparent;
+                        color:#008eff;
+                    }
+
+                    .allbody .body table td a.btn1 {
+                        background-color: #64d990;
+                    }
+
+                    .allbody .body table td a.btn2 {
+                        background-color: #008eff;
+                    }
+
+                    .allbody .body table td a.btn3 {
+                        background-color: #f3a95a;
+                    }
+
+                    .allbody .body table td a.btn4 {
+                        background-color: #ee6f6f;
+                    }
+                    .allbody .body table td a.ubtn1 {
+                        background-color: #64d990;
+                    }
+                    .allbody .body table td a.ubtn0 {
+                        background-color: #ee6f6f;
+                    }
+                    .allbody .body table td a:hover {
+                        background-color: #eeeeee;
+                        color:#008eff;
+                    }
+    .allbody .tbl_footer {
+        line-height: 35px;
+        background-color: #f3f3f3;
+        text-align: center;
+        font-size: 12px;
+        color: #555555;
+    }
+
+        .allbody .tbl_footer .txt {
+            position: absolute;
+            float: left;
+            margin: 0px 10px;
+        }
+
+            .allbody .tbl_footer .txt span {
+                font-weight: bold;
+                margin: 0px 5px;
+                background-color: #fff;
+                border-radius: 10px;
+                padding: 3px 8px;
+            }
+
+        .allbody .tbl_footer .nums label {
+            margin: 5px 0px;
+            cursor: pointer;
+            border-radius: 20px;
+            padding: 3px 8px;
+        }
+
+            .allbody .tbl_footer .nums label.sw {
+                margin: 5px;
+                cursor: pointer;
+                background-color: white;
+                border-radius: 10px;
+                font-weight: bold;
+                font-size: 12px;
+                color: #636675;
+            }
+
+            .allbody .tbl_footer .nums label.active {
+                font-weight: bold;
+                background-color: #008eff;
+                color: #fff;
+            }
+
+.messagebox {
+    height: 190px;
+    width: 400px;
+    display: block;
+    position: absolute;
+    background-color: transparent;
+    right: 0px;
+    bottom: 0px;
+    z-index: 9999;
+}
+
+    .messagebox iframe {
+        width: 100%;
+        height: 100%;
+    }
+
+.allmsg {
+    background-color: rgba(19,35,66,0.8);
+    color: #fff;
+    padding: 10px;
+    height: 180px;
+}
+
+.allmsg1 {
+    height: 95px;
+}
+
+.allmsg table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+    .allmsg table td {
+        height: 40px;
+        line-height: 20px;
+    }
+
+.allmsg p {
+    font-weight: bold;
+    line-height: 20px;
+    display: flex;
+}
+
+    .allmsg p img {
+        display: inline-block;
+    }
+
+    .allmsg p span {
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+.allmsg a {
+    background-color: #103b8c;
+    border-radius: 5px;
+    padding: 3px 8px;
+}
+
+.msgbox {
+    padding: 10px 20px;
+    background-color: #162d5a;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+    .msgbox ul {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+    }
+
+        .msgbox ul li {
+            text-align: center;
+            margin: 0px 5px;
+        }
+
+            .msgbox ul li img {
+                margin: 2px auto;
+            }
+
+            .msgbox ul li span {
+                display: block;
+                text-align: center;
+                white-space: nowrap;
+            }

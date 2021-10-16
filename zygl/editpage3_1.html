@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/edit.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="editpage">
+        <table id="edittbl">
+            <tr>
+                <td>团队名称</td>
+                <td><input type="text"  id="name"  /></td>
+            </tr>
+        </table>
+        <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
+        <script>
+            $("#OKbtn").click(function () {
+                if (getUrlParam("eid")) {
+                     SetTable('traffic_car_team', "id=" + getUrlParam("eid"));
+                }
+                else {
+                    SetTable("traffic_car_team", "");
+                }
+            });
+            if (getUrlParam("eid")) {
+                EditTable("traffic_car_team", getUrlParam("eid"));
+            }
+           
+        </script>
+    </div>
+</body>
+</html>

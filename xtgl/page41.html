@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/normal.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="allbody">
+        <div class="top">
+            <label>类型<select id="type"><option value="all">---全部---</option></select></label>
+            <div class="btns">
+                <a id="findbtn">查询</a>
+                <a href="editpage41.html" target="_self">新增</a>
+            </div>
+        </div>
+        <div class="body">
+            <table id="listtable">
+                <tr>
+                    <th>编号</th>
+                    <th>类型</th>
+                    <th>事故描述</th>
+                    <th style="width:200px;">操作</th>
+                </tr>
+            </table><div id="listtag" class="tbl_footer"></div>
+            <script>
+                for (var key in transporttype) {
+                    $("#type").append("<option value=\"" + key + "\">" + transporttype[key] + "</option>");
+                }
+                GetTable("traffic_accident_normal", "");
+                function addList(nowTable) {
+                    var tblcnt = nowTable[0].cnt;
+                    $("#listtable tr:not(:first)").remove();
+                    if (nowTable != null) {
+                        $(nowTable).each(function (i, n) {
+                            var tr = $("<tr></tr>")
+                            $("#listtable").append(tr);
+                            tr.append("<td>" + n.id + "</td>");
+                            tr.append("<td>" + transporttype[n.type] + "</td>");
+                            tr.append("<td>" + n.message + "</td>");
+                            tr.append("<td><a href=\"editpage41.html?eid=" + n.id +"\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('traffic_accident_normal'," + n.id + ")\" class=\"btn4\">删除</a></td>");
+                        });
+                    }
+                    AddTableFoot(tblcnt);
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>

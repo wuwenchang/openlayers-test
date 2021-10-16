@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/edit.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="editpage">
+        <table id="edittbl">
+            <tr>
+                <td>类型</td>
+                <td>
+                    <select id="type" disabled="disabled">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>事故对象</td>
+                <td>
+                    <select id="target">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>坐标X</td>
+                <td><input type="text" id="xaxis" /></td>
+            </tr>
+            <tr>
+                <td>坐标Y</td>
+                <td><input type="text" id="yaxis" /></td>
+            </tr>
+            <tr>
+                <td>事故车辆</td>
+                <td><input type="text" id="code" /></td>
+            </tr>
+            <tr>
+                <td>事故名称</td>
+                <td><input type="text" id="name" /></td>
+            </tr>
+            <tr>
+                <td>事故地点</td>
+                <td><input type="text" id="address" /></td>
+            </tr>
+            <tr>
+                <td>事故描述</td>
+                <td><input type="text" id="message" /></td>
+            </tr>
+            <tr>
+                <td>事故时间</td>
+                <td><input type="datetime-local" id="addtime" /></td>
+            </tr>
+        </table>
+        <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
+        <script>
+            switch (getUrlParam("type")) {
+                case "1": {
+                    typeid = 1;
+                    $("#edittbl tr").eq(1).find("td").eq(0).html("事故对象");
+                    $("#edittbl tr").eq(5).find("td").eq(0).html("事故名称");
+                    $("#edittbl tr").eq(4).find("td").eq(0).html("事故车辆");
+                    $("#edittbl tr").eq(6).find("td").eq(0).html("事故地点");
+                    $("#edittbl tr").eq(7).find("td").eq(0).html("事故描述");
+                    $("#edittbl tr").eq(8).find("td").eq(0).html("事故时间");
+                }; break;
+                case "8": {
+                    typeid = 8;
+                    $("#edittbl tr").eq(1).find("td").eq(0).html("故障对象");
+                    $("#edittbl tr").eq(5).find("td").eq(0).html("故障名称");
+                    $("#edittbl tr").eq(4).find("td").eq(0).html("故障线路");
+                    $("#edittbl tr").eq(6).find("td").eq(0).html("故障地点");
+                    $("#edittbl tr").eq(7).find("td").eq(0).html("故障描述");
+                    $("#edittbl tr").eq(8).find("td").eq(0).html("故障时间");
+
+                }; break;
+                case "2": {
+                    typeid = 2;
+                    $("#edittbl tr").eq(1).find("td").eq(0).html("故障对象");
+                    $("#edittbl tr").eq(5).find("td").eq(0).html("故障名称");
+                    $("#edittbl tr").eq(4).find("td").eq(0).html("故障车次");
+                    $("#edittbl tr").eq(6).find("td").eq(0).html("故障地点");
+                    $("#edittbl tr").eq(7).find("td").eq(0).html("故障描述");
+                    $("#edittbl tr").eq(8).find("td").eq(0).html("故障时间");
+                }; break;
+                case "7": {
+                    typeid = 7;
+                    $("#edittbl tr").eq(1).find("td").eq(0).html("违法对象");
+                    $("#edittbl tr").eq(5).find("td").eq(0).html("违法名称");
+                    $("#edittbl tr").eq(4).find("td").eq(0).html("违法车辆");
+                    $("#edittbl tr").eq(6).find("td").eq(0).html("违法地点");
+                    $("#edittbl tr").eq(7).find("td").eq(0).html("违法描述");
+                    $("#edittbl tr").eq(8).find("td").eq(0).html("违法时间");
+                }; break;
+                case "9": {
+                    typeid = 9;
+                    $("#edittbl tr").eq(1).find("td").eq(0).html("事故对象");
+                    $("#edittbl tr").eq(5).find("td").eq(0).html("事故名称");
+                    $("#edittbl tr").eq(4).find("td").eq(0).html("事故车牌号");
+                    $("#edittbl tr").eq(6).find("td").eq(0).html("事故地点");
+                    $("#edittbl tr").eq(7).find("td").eq(0).html("事故描述");
+                    $("#edittbl tr").eq(8).find("td").eq(0).html("事故时间");
+                }; break;
+                case "10": {
+                    typeid = 10;
+                    $("#edittbl tr").eq(1).find("td").eq(0).html("事故对象");
+                    $("#edittbl tr").eq(5).find("td").eq(0).html("事故名称");
+                    $("#edittbl tr").eq(4).find("td").eq(0).html("起火车牌号");
+                    $("#edittbl tr").eq(6).find("td").eq(0).html("起火地点");
+                    $("#edittbl tr").eq(7).find("td").eq(0).html("起火描述");
+                    $("#edittbl tr").eq(8).find("td").eq(0).html("起火时间");
+                }; break;
+                case "11": {
+                    typeid = 11;
+                    $("#edittbl tr").eq(1).find("td").eq(0).html("比赛区域");
+                    $("#edittbl tr").eq(5).find("td").eq(0).html("比赛项目");
+                    $("#edittbl tr").eq(4).find("td").eq(0).html("比赛场地");
+                    $("#edittbl tr").eq(6).find("td").eq(0).html("计划开始时间");
+                    $("#edittbl tr").eq(7).find("td").eq(0).html("推迟时间");
+                    $("#edittbl tr").eq(8).find("td").eq(0).html("发布时间");
+                }; break;
+                case "12": {
+                    typeid = 12;
+                    $("#edittbl tr").eq(1).find("td").eq(0).html("比赛区域");
+                    $("#edittbl tr").eq(5).find("td").eq(0).html("比赛项目");
+                    $("#edittbl tr").eq(4).find("td").eq(0).html("比赛场地");
+                    $("#edittbl tr").eq(6).find("td").eq(0).html("场地座位");
+                    $("#edittbl tr").eq(7).find("td").eq(0).html("限流人数");
+                    $("#edittbl tr").eq(8).find("td").eq(0).html("限流时间");
+                }; break;
+                case "13": {
+                    typeid = 13;
+                    $("#edittbl tr").eq(1).find("td").eq(0).html("比赛区域");
+                    $("#edittbl tr").eq(5).find("td").eq(0).html("比赛项目");
+                    $("#edittbl tr").eq(4).find("td").eq(0).html("比赛场地");
+                    $("#edittbl tr").eq(6).find("td").eq(0).html("场地座位");
+                    $("#edittbl tr").eq(7).find("td").eq(0).html("拥堵人数");
+                    $("#edittbl tr").eq(8).find("td").eq(0).html("拥堵时间");
+                }; break;
+                case "14": {
+                    typeid = 14;
+                    $("#edittbl tr").eq(1).find("td").eq(0).html("比赛区域");
+                    $("#edittbl tr").eq(5).find("td").eq(0).html("比赛项目");
+                    $("#edittbl tr").eq(4).find("td").eq(0).html("比赛场地");
+                    $("#edittbl tr").eq(6).find("td").eq(0).html("场地座位");
+                    $("#edittbl tr").eq(7).find("td").eq(0).html("滞留人数");
+                    $("#edittbl tr").eq(8).find("td").eq(0).html("滞留时间");
+                }; break;
+            }
+            GetChild("traffic_accident_type", "id|name", "type", "select");
+            for (var key in accidenttaget) {
+                $("#target").append("<option value=\"" + key + "\">" + accidenttaget[key] + "</option>");
+            }
+            $("#type").val(getUrlParam("type"));
+            $("#OKbtn").click(function () {
+                if (getUrlParam("eid")) {
+                    SetTable('traffic_accident', "id=" + getUrlParam("eid"));
+                }
+                else {
+                    SetTable("traffic_accident", "");
+                }
+            });
+            if (getUrlParam("eid")) {
+                EditTable("traffic_accident", getUrlParam("eid"));
+            }
+            function addData(nowTable) {
+                $("#edittbl tr").each(function (i, n) {
+                    if ($(this).find("input").length > 0) {
+                        if ($(this).find("input").attr("type") == "time") {
+                            if (nowTable[0][$(this).find("input").attr("id") + "str"].length == 4)
+                                $("#" + $(this).find("input").attr("id")).val("0" + nowTable[0][$(this).find("input").attr("id") + "str"]);
+                            else
+                                $("#" + $(this).find("input").attr("id")).val(nowTable[0][$(this).find("input").attr("id") + "str"]);
+                        }
+                        else if ($(this).find("input").attr("type") == "datetime-local") {
+                            var tmer = timeFormat(nowTable[0][$(this).find("input").attr("id")]);
+                            tmer = tmer.replace(" ", "T");
+                            $("#" + $(this).find("input").attr("id")).val(tmer);
+                        }
+                        else {
+                            $("#" + $(this).find("input").attr("id")).val(nowTable[0][$(this).find("input").attr("id")]);
+                        }
+                    }
+                    if ($(this).find("select").length > 0) {
+                        $("#" + $(this).find("select").attr("id")).val(nowTable[0][$(this).find("select").attr("id")]);
+                    }
+                });
+            }
+        </script>
+    </div>
+</body>
+</html>

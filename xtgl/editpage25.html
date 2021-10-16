@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/edit.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="editpage">
+        <table id="edittbl">
+            <tr>
+                <td>坐标X</td>
+                <td><input type="text" id="xaxis" /></td>
+            </tr>
+            <tr>
+                <td>坐标Y</td>
+                <td><input type="text" id="yaxis" /></td>
+            </tr>
+            <tr>
+                <td>体育馆名称</td>
+                <td><input type="text" id="name" /></td>
+            </tr>
+            <tr>
+                <td>地址</td>
+                <td><input type="text" id="address" /></td>
+            </tr>
+            <tr>
+                <td>座席数</td>
+                <td><input type="text" id="seat" /></td>
+            </tr>
+            <tr>
+                <td>场地面积</td>
+                <td><input type="text" id="area" /></td>
+            </tr>
+            <tr>
+                <td>洗手间数量</td>
+                <td><input type="text" id="toilet" /></td>
+            </tr>
+            <tr>
+                <td>停车位数</td>
+                <td><input type="text" id="parking" /></td>
+            </tr>
+            <tr>
+                <td>公交站点数量</td>
+                <td><input type="text" id="busstop" /></td>
+            </tr>
+            <tr>
+                <td>联系人</td>
+                <td><input type="text" id="contact" /></td>
+            </tr>
+            <tr>
+                <td>电话</td>
+                <td><input type="text" id="tel" /></td>
+            </tr>
+            <tr>
+                <td>备注</td>
+                <td><input type="text" id="remark" /></td>
+            </tr>
+        </table>
+        <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
+        <script>
+            $("#OKbtn").click(function () {
+                if (getUrlParam("eid")) {
+                    SetTable('event_gym', "id=" + getUrlParam("eid"));
+                }
+                else {
+                    SetTable("event_gym", "");
+                }
+            });
+            setTimeout(function () {
+                if (getUrlParam("eid")) {
+                    EditTable("event_gym", getUrlParam("eid"));
+                }}, 200);
+        </script>
+    </div>
+</body>
+</html>
