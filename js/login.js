@@ -42,7 +42,7 @@
                 window.location.href = "index.html";
             }
             else {
-                layer.msg(jsondatas.MSG, { icon: 2 });
+                console.log(jsondatas.MSG, { icon: 2 });
             }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {

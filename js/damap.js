@@ -48,11 +48,11 @@ function addacpoint(id) {
                 locationbyMark(maker, true);
             }
             else {
-                layer.msg(jsondatas.MSG, { icon: 2 });
+                console.log(jsondatas.MSG, { icon: 2 });
             }
         },
         error: function () {
-            layer.msg("系统错误", { icon: 2 })
+            console.log("系统错误", { icon: 2 })
         },
         complete: function () {
         }

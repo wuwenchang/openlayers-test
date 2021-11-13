@@ -22,7 +22,7 @@ function GetTable(tblname, wstr) {
             }
         },
         error: function () {
-            layer.msg("系统错误", { icon: 2 })
+            console.log("系统错误", { icon: 2 })
         },
         complete: function () {
             layer.close(iiload);
@@ -91,11 +91,11 @@ function EditTable(tblname, id) {
                 }
             }
             else {
-                layer.msg(jsondatas.MSG, { icon: 2 });
+                console.log(jsondatas.MSG, { icon: 2 });
             }
         },
         error: function () {
-            layer.msg("系统错误", { icon: 2 })
+            console.log("系统错误", { icon: 2 })
         },
         complete: function () {
             layer.close(iiload);
@@ -119,11 +119,11 @@ function SetValue(tblname, valueSql, whereSql) {
                
             }
             else {
-                layer.msg(jsondatas.MSG, { icon: 2 });
+                console.log(jsondatas.MSG, { icon: 2 });
             }
         },
         error: function () {
-            layer.msg("系统错误", { icon: 2 })
+            console.log("系统错误", { icon: 2 })
         },
         complete: function () {
             layer.close(iiload);
@@ -221,11 +221,11 @@ function SetTable(tblname, whereSql) {
                 setTimeout(function () { window.history.go(-1) }, 1000);
             }
             else {
-                layer.msg(jsondatas.MSG, { icon: 2 });
+                console.log(jsondatas.MSG, { icon: 2 });
             }
         },
         error: function () {
-            layer.msg("系统错误", { icon: 2 })
+            console.log("系统错误", { icon: 2 })
         },
         complete: function () {
             layer.close(iiload);
@@ -285,11 +285,11 @@ function DelTable(tblname, id) {
                     setTimeout(function () { window.location.reload(); }, 1000);
                 }
                 else {
-                    layer.msg(jsondatas.MSG, { icon: 2 });
+                    console.log(jsondatas.MSG, { icon: 2 });
                 }
             },
             error: function () {
-                layer.msg("系统错误", { icon: 2 })
+                console.log("系统错误", { icon: 2 })
             },
             complete: function () {
                 layer.close(iiload);
