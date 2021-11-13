@@ -20,6 +20,11 @@
         <p><img src="../imgs/s1.png" /><span>实时消息</span></p>
         <div class="msgbox">
             <table id="message">
+                <tr>
+                    <td width="50px"><img src="../imgs/tl1.png" /></td>
+                    <td>暂无最新事故</td>
+                    <td width="30px"><img src="../imgs/pt.gif" /></td>
+                </tr>
             </table>
         </div>
     </div>
@@ -27,10 +32,11 @@
         var actable;
         var page = parent.location.pathname;
         var trafficType = '';
+        var msgnum = 0;
         if (getUrlParam("msg")) {
             var rowsnum = getUrlParam("msg");
-            var type = getUrlParam("type");
-            console.log(rowsnum, type)
+            var target = getUrlParam("target");
+            getErrorTableData();
             var iiload = layer.load(1, false);
             
             var time = 5000;
@@ -76,33 +82,203 @@
                 }, time)
             }
         }
+        var actables = Array();
+        function SetBoxHeight(num) {
+            $("#messagebox", parent.document).css("height", (66 + 44 * Number(num)) + "px");
+        }
         function getErrorTableData() {
-            $.ajax({
-                type: "POST",  //访问WebService使用post方式请求
-                cache: false,
-                async: false,
-                contentType: "application/x-www-form-urlencoded; charset=utf-8",
-                url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
-                data: { tableName: "traffic_accident A,traffic_accident_type B", whereSql: " A.type=B.id  and  type in (" + type + ") order by addtime desc limit " + rowsnum },
-                success: function (myjson) {
-                    var jsondatas = eval("(" + myjson + ")");
-                    if (jsondatas.CODE > 0) {
-                        actable = jsondatas.Table;
-                        $("#message").find("tr").remove();
-                        $(actable).each(function (i, n) {
-                            $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/` + n.img + `.png" /></td><td>` + n.name + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
-                        });
-                    } else {
-                        layer.msg(jsondatas.MSG, { icon: 2 });
+            msgnum = 0;
+            if (target == 29) {
+                $("#message").find("tr").remove();
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    cache: false,
+                    async: false,
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                    data: {tableName: "event_delay A,event_sport B,event_gym C", whereSql: " A.sport_id=B.id and B.gym_id=C.id ORDER BY A.startdate,A.starttime desc LIMIT 1" },
+                    success: function (myjson) {
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            actables[0] = jsondatas.Table;
+                            $(actables[0]).each(function (i, n) {
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl11.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                msgnum++;
+                                SetBoxHeight(msgnum);
+                            });
+                        } else {
+                            console.log(jsondatas.MSG, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        console.log("系统错误", { icon: 2 })
+                    },
+                    complete: function () {
                     }
-                },
-                error: function () {
-                    layer.msg("系统错误", { icon: 2 })
-                },
-                complete: function () {
-                    layer.close(iiload);
-                }
-            });
+                });
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    cache: false,
+                    async: false,
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                    data: { tableName: "event_limit A,event_sport B,event_gym C", whereSql: "A.sport_id=B.id and B.gym_id=C.id ORDER BY A.starttime desc LIMIT 1" },
+                    success: function (myjson) {
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            actables[1] = jsondatas.Table;
+                            $(actables[1]).each(function (i, n) {
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl12.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                msgnum++;
+                                SetBoxHeight(msgnum);
+                            });
+                        } else {
+                            console.log(jsondatas.MSG, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        console.log("系统错误", { icon: 2 })
+                    },
+                    complete: function () {
+                    }
+                });
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    cache: false,
+                    async: false,
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                    data: { tableName: "traffic_jam A left join event_gym B on A.type_id=B.id", whereSql: "A.type=1 order by starttime desc LIMIT 1" },
+                    success: function (myjson) {
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            actables[2] = jsondatas.Table;
+                            $(actables[2]).each(function (i, n) {
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl13.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                msgnum++;
+                                SetBoxHeight(msgnum);
+                            });
+                        } else {
+                            console.log(jsondatas.MSG, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        console.log("系统错误", { icon: 2 })
+                    },
+                    complete: function () {
+                    }
+                });
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    cache: false,
+                    async: false,
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                    data: { tableName: "traffic_delay A left join event_gym B on A.type_id=B.id", whereSql: "A.type=1 order by starttime desc LIMIT 1" },
+                    success: function (myjson) {
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            actables[3] = jsondatas.Table;
+                            $(actables[3]).each(function (i, n) {
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl14.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                msgnum++;
+                                SetBoxHeight(msgnum);
+                            });
+                        } else {
+                            console.log(jsondatas.MSG, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        console.log("系统错误", { icon: 2 })
+                    },
+                    complete: function () {
+                    }
+                });
+            }
+            else if (target == 32) {
+                $("#message").find("tr").remove();
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    cache: false,
+                    async: false,
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                    data: { tableName: "traffic_jam A  left join traffic_hub C on A.type_id=C.id", whereSql: "A.type=2 order by starttime desc LIMIT 2" },
+                    success: function (myjson) {
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            actables[0] = jsondatas.Table;
+                            $(actables[0]).each(function (i, n) {
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl13.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                msgnum++;
+                                SetBoxHeight(msgnum);
+                            });
+                        } else {
+                            console.log(jsondatas.MSG, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        console.log("系统错误", { icon: 2 })
+                    },
+                    complete: function () {
+                    }
+                });
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    cache: false,
+                    async: false,
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                    data: { tableName: "traffic_delay A  left join traffic_hub C on A.type_id=C.id", whereSql: "A.type=2 order by starttime desc LIMIT 2" },
+                    success: function (myjson) {
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            actables[1] = jsondatas.Table;
+                            $(actables[1]).each(function (i, n) {
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl14.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                msgnum++;
+                                SetBoxHeight(msgnum);
+                            });
+                        } else {
+                            console.log(jsondatas.MSG, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        console.log("系统错误", { icon: 2 })
+                    },
+                    complete: function () {
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    cache: false,
+                    async: false,
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                    data: { tableName: "traffic_accident A,traffic_accident_target B", whereSql: " A.target=B.id  and  target in (" + target + ") order by addtime desc limit " + rowsnum },
+                    success: function (myjson) {
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            actable = jsondatas.Table;
+                            $("#message").find("tr").remove();
+                            $(actable).each(function (i, n) {
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl` + n.img + `.png" /></td><td>` + n.name + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                msgnum++;
+                                SetBoxHeight(msgnum);
+                            });
+                        } else {
+                            console.log(jsondatas.MSG, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        console.log("系统错误", { icon: 2 })
+                    },
+                    complete: function () {
+                    }
+                });
+            }
         }
         getRoundStatus()
         function getRoundStatus() {
@@ -118,7 +294,7 @@
                     console.log(jsondatas)
                 },
                 error: function () {
-                    layer.msg("系统错误", { icon: 2 })
+                    console.log("系统错误", { icon: 2 })
                 },
                 complete: function () {
                     layer.close(iiload);

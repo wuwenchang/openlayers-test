@@ -23,8 +23,8 @@
     </a>
     <a id="showct" onclick="showChart('9');" class="show"><img src="../imgs/chart.png" /></a>
 
-    <div class="messagebox" style="height:236px">
-        <iframe src="messagebox.html?msg=4&type=7,8,9,10" scrolling="no" frameborder="0"></iframe>
+    <div class="messagebox"  id="messagebox" >
+        <iframe src="messagebox.html?msg=4&target=29" scrolling="no" frameborder="0"></iframe>
     </div>
     <div id="map">
         <div id="popup" class="ol-popup">
@@ -145,7 +145,7 @@
                         }
                     },
                     error: function () {
-                        layer.msg("系统错误", { icon: 2 })
+                        console.log("系统错误", { icon: 2 })
                     }
                 });
             }

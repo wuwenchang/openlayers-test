@@ -23,13 +23,13 @@
         <img src="../imgs/bmax.png" />
     </a>
     <a id="showct" onclick="showChart('10');" class="show"><img src="../imgs/chart.png" /></a>
-    <div class="messagebox" style="height:154px">
-        <iframe src="messagebox.html?msg=2&type=9,10" scrolling="no" frameborder="0"></iframe>
+    <div class="messagebox"  id="messagebox" >
+        <iframe src="messagebox.html?msg=4&target=32" scrolling="no" frameborder="0"></iframe>
     </div>
     <div id="map">
         <div id="popup" class="ol-popup">
             <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-            <div class="popup-content" id="accidentMessage">
+            <div class="popup-content">
                 <input type="hidden" id="sendid" value="" />
                 <div>
                     <span>名 称：</span><input type="text" id="val1">
@@ -127,7 +127,7 @@
                         }
                     },
                     error: function () {
-                        layer.msg("系统错误", { icon: 2 })
+                        console.log("系统错误", { icon: 2 })
                     }
                 });
             }
@@ -189,11 +189,11 @@
             //             // });
             //         }
             //         else {
-            //             layer.msg(jsondatas.MSG, { icon: 2 });
+            //             console.log(jsondatas.MSG, { icon: 2 });
             //         }
             //     },
             //     error: function () {
-            //         layer.msg("系统错误", { icon: 2 })
+            //         console.log("系统错误", { icon: 2 })
             //     },
             //     // complete: function () {
             //     //     layer.close(iiload);
@@ -221,11 +221,11 @@
             //             // });
             //         }
             //         else {
-            //             layer.msg(jsondatas.MSG, { icon: 2 });
+            //             console.log(jsondatas.MSG, { icon: 2 });
             //         }
             //     },
             //     error: function () {
-            //         layer.msg("系统错误", { icon: 2 })
+            //         console.log("系统错误", { icon: 2 })
             //     },
             //     // complete: function () {
             //     //     layer.close(iiload);
