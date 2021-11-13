@@ -2,6 +2,7 @@
 var PageNumber = 1;//当前第几页;
 
 function GetTable(tblname, wstr) {
+   // console.log(tblname + "<br/>" + wstr);
     var iiload = layer.load(1, false);
     $.ajax({
         type: "POST",  //访问WebService使用post方式请求
@@ -69,12 +70,7 @@ function AddTableFoot(tblcnt) {
         foot.append(" <div class=\"nums\">" + lbmenu + "</div>");
     }
 }
-function pageChange(jpn) {
-    if (PageNumber == jpn)
-        return;
-    PageNumber = jpn;
-    GetTable("traffic_train", "1=1 order by endtime");
-}
+
 
 function EditTable(tblname, id) {
     var iiload = layer.load(1, false);
@@ -89,6 +85,10 @@ function EditTable(tblname, id) {
             var jsondatas = eval("(" + myjson + ")");
             if (jsondatas.CODE > 0) {
                 addData(jsondatas.Table);
+                if (tblname == "traffic_jam" || tblname == "traffic_delay") {
+                    $("#type").change();
+                    $("#type_id").val(jsondatas.Table[0]["type_id"]);
+                }
             }
             else {
                 layer.msg(jsondatas.MSG, { icon: 2 });
@@ -142,7 +142,7 @@ function FindStr() {
                 findstr += $(this).find("input").attr("id") + "<|" + $(this).find("input").val().replace("T", " ") + " 23:59:59| and ";
             }
             else {
-                findstr += $(this).find("input").attr("id") + "like |%" + $(this).find("input").val() + "%| and ";
+                findstr += $(this).find("input").attr("id") + " like |%" + $(this).find("input").val() + "%| and ";
             }
         }
         if ($(this).find("select").length > 0 && $(this).find("select").val() != "all") {
@@ -326,4 +326,39 @@ function mapback(iid) {
     $("#allpage", parent.document).removeClass("allpage").addClass("mappage");
     $("#ifr" + iid, parent.document).removeClass("mapedit");
     window.history.go(-1);
+}
+function InitExcel() {
+    layer.open({
+        type: 1,
+        title: "导入文件",
+        skin: 'layui-layer-lan', //加上边框
+        content: '<div style=\" padding:30px 30px;\"><input style=\"width:250px; height=30px;\" id="file_excel" type="file"><a  style=\" padding:5px 10px; background-color: #2b8dd0;  color:#fff;\" onclick=\"upExcel();\">上传</a></div>'
+    });
+}
+function addAccident() {
+    var iiload = layer.load(1, false);
+    $.ajax({
+        type: "POST",  //访问WebService使用post方式请求
+        cache: false,
+        async: false,
+        contentType: "application/x-www-form-urlencoded; charset=utf-8",
+        url: getRootPath() + "/Service/AddAccident.ashx", //调用WebService的地址和方法名称组合
+        data: { name: '', address: '', type: 1, message: '', code: '', xaxis: 1, yaxis: 1, target:1},
+        success: function (myjson) {
+            var jsondatas = eval("(" + myjson + ")");
+            if (jsondatas.CODE > 0) {
+                console.log(jsondatas.MSG);
+            }
+            else {
+                console.log(jsondatas.MSG);
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            //通常情况下textStatus和errorThrown只有其中一个包含信息
+            alert(XMLHttpRequest.status + "," + XMLHttpRequest.readyState + textStatus);
+        },
+        complete: function () {
+            layer.close(iiload);
+        }
+    });
 }

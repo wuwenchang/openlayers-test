@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/echarts.min.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/echart.css" />
+    <style>
+        body, div {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .allpage {
+            width: calc(100% - 40px);
+            padding: 20px;
+            overflow: hidden;
+            background-color: rgba(19,35,66,0.8);
+            display: flex;
+            flex-direction: column;
+        }
+
+            .allpage .item {
+                width: 100%;
+                height: 30%;
+                display: inline-block;
+                float: left;
+                margin-bottom: 20px;
+                border-radius: 10px;
+                overflow: hidden;
+                background-color: #162d59;
+            }
+
+                .allpage .item:last-child {
+                    margin: 0px;
+                }
+        .box4 h3
+        {
+            color:#fff;
+            font-size:14px;
+            margin:10px 15px;
+            padding:0px;
+        }
+        .box4> div {
+            width: calc(50% - 10px);
+            height: calc(50% - 30px);
+            display: inline-block;
+            text-align: center;
+            color: #fff;
+            background-color: rgba(0,0,0,0.1);
+            margin: 5px;
+        }
+        .box4 img {
+            height: 30px;
+            width: 30px;
+            margin:10px;
+        }
+        .box4 p {
+            font-size: 30px;
+            display: inline-block;
+            width: 40%;
+            margin-top:13%;
+            float:right;
+            text-align:left;
+        }
+            .box4>div>  div {
+                width:60%;
+                text-align:center;
+                display:inline-block;
+            }
+        .box4  span, .box4 label {
+            display: block;
+        }
+        .box4 label {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin: 10% auto 5px auto;
+            background-color:#000;
+        }
+            .box4 label.y1 {
+                border:1px solid #ff9090;
+            }
+            .box4 label.y2 {
+                border: 1px solid #ffbc90;
+            }
+            .box4 label.y3 {
+                border: 1px solid #fbff90;
+            }
+            .box4 label.y4 {
+                border: 1px solid #99fbb2;
+            }
+    </style>
+    <script>
+
+
+    </script>
+</head>
+<body>
+    <div class="allpage">
+        <div class="item box4" id="con1">
+            <h3>运力统计</h3>
+        </div>
+        <div class="item" id="con2"></div>
+        <div class="item" id="con3"></div>
+    </div>
+    <script type="text/javascript">
+        $(".allpage").css("height", $(window).height() - 40 + "px");
+        $(".item").css("height", ($(window).height() / 2 - 60) + "px");
+        setInterval(function () {
+            var d = new Date();                          //创建Date对象
+            $("#time").html(d.getFullYear()             //调用getFullYear()方法获得四位数年份
+                + "年" + (d.getMonth() + 1)                     //调用getMonth()方法获得月份（0-11）
+                + "月" + d.getDate()                          //调用getDate()方法获得一个月中的某一天（1-31）
+                + "日 星期" + "日一二三四五六".charAt(d.getDay())  // arrary.charAt（index) 调用getDay()获得一周中的某一天（0-6）作为字符数组下标
+                + " " + d.getHours()                               //获取小时（0-23）
+                + ":" + d.getMinutes()                             //获取分（0-59）
+                + ":" + d.getSeconds());                            //获取秒（0-59）
+        }, 10000);       //每1000毫秒(即1秒) 执行一次本段代码
+
+
+        $("#con1").append("<div><div><label class=\"y1\"><img src=\"../imgs/tjtb1.png\" /></label><span>公交车辆</span></div><p>" + (Math.floor(Math.random() * 50) + 50) + "辆</p></div>");
+        $("#con1").append("<div><div><label class=\"y2\"><img src=\"../imgs/tjtb2.png\" /></label><span>地铁</span></div><p>" + (Math.floor(Math.random() * 50) + 50) + "辆</p></div>");
+        $("#con1").append("<div><div><label class=\"y3\"><img src=\"../imgs/tjtb3.png\" /></label><span>高铁</span></div><p>" + (Math.floor(Math.random() * 50) + 50) + "组</p></div>");
+        $("#con1").append("<div><div><label class=\"y4\"><img src=\"../imgs/tjtb4.png\" /></label><span>大巴</span></div><p>" + (Math.floor(Math.random() * 50) + 50) + "辆</p></div>");
+                    var chartlist3 = new Array();
+        chartlist3[0] = ["时段", "公交车", "地铁", "高铁", "大巴","私家车"];
+                    var d = new Date();
+        var h = d.getHours();
+        var z1 = 0;
+        var z2 = 0;
+        var z3 = 0;
+        var z4 = 0;
+        var z5 = 0;
+        for (var i = 0; i <= h; i++) {
+            var r1 = Math.floor(Math.random() * 20);
+            var r2 = Math.floor(Math.random() * 10);
+            var r3 = Math.floor(Math.random() * 10);
+            var r4 = Math.floor(Math.random() * 10);
+            var r5 = Math.floor(Math.random() * 50);
+            z1 += r1;
+            z2 += r2;
+            z3 += r3;
+            z4 += r4;
+            z5 += r5;
+                        chartlist3[i + 1] = [i + ":00", r1, r2, r3, r4, r5];
+                    }
+                    var chartlist2 = new Array();
+                    chartlist2[0] = ["类型", "事故"];
+        chartlist2[1] = ["公交车", z1];
+        chartlist2[2] = ["地铁", z2];
+        chartlist2[3] = ["高铁", z3];
+        chartlist2[4] = ["大巴", z4];
+        chartlist2[5] = ["私家车", z5];
+                    var dom2 = document.getElementById("con2");
+                    var dom3= document.getElementById("con3");
+        var myChart2 = echarts.init(dom2, 'dark');
+        var myChart3 = echarts.init(dom3, 'dark');
+        var option2;
+        option2 = {
+            backgroundColor: '#162d59',
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    animation: false,
+                    label: {
+                        backgroundColor: '#48a3e9'
+                    }
+                }
+            },
+            title: {
+                text: '事故总数统计',
+                left: '10px',
+                top: '10px',
+                textStyle: {
+                    fontSize: 14, //大小
+                }
+            },
+            legend: {
+                top: '40px'
+            },
+            grid: {
+                x: 50,
+                y: 80,
+                x2: 50,
+                y2: 40
+            },
+            dataset: {
+                source: chartlist2
+            },
+            xAxis: {
+                type: 'category',
+                name: '类型'
+            },
+            yAxis: {
+                type: 'value',
+                name: '事故'
+            },
+            series: [{
+                type: 'bar',
+                barWidth: '20px',
+                smooth: true,
+                symbolSize: 8,
+                itemStyle: {
+                    color: ["#64d2ff"]
+                }
+
+            }]
+        };
+                    var option3;
+        option3 = {
+            color: ['#ff9090', '#ffbc90', '#fbff90', '#99fbb2', '#64d2ff', '#749f83', '#ca8622', '#bda29a', '#6e7074', '#546570', '#c4ccd3'],
+                        backgroundColor: '#162d59',
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                animation: false,
+                                label: {
+                                    backgroundColor: '#48a3e9'
+                                }
+                            }
+                        },
+                        title: {
+                            text: '按时段事故统计',
+                            left: '10px',
+                            top: '10px',
+                            textStyle: {
+                                fontSize: 14, //大小
+                            }
+                        },
+                        legend: {
+                            top: '40px'
+                        },
+                        grid: {
+                            x: 50,
+                            y: 80,
+                            x2: 50,
+                            y2: 40
+                        },
+                        dataset: {
+                            source: chartlist3
+                        },
+                        xAxis: {
+                            type: 'category',
+                            name: '时段'
+                        },
+                        yAxis: {
+                            type: 'value',
+                            name: '事故'
+                        },
+                        series: [{
+                            type: 'bar'
+                        },
+                            {
+                                type: 'bar'
+                            }, {
+                                type: 'bar'
+                            }, {
+                                type: 'bar'
+                            }, {
+                                type: 'bar'
+                            }]
+                    };
+                    option2 && myChart2.setOption(option2);
+                    option3 && myChart3.setOption(option3);
+        function getChart() {
+           
+        }
+    </script>
+</body>
+</html>

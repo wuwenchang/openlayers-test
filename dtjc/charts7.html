@@ -1,0 +1,221 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/echarts.min.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/echart.css" />
+    <style>
+        .allpage .item {
+            width: 100%;
+            height: 30%;
+            display: inline-block;
+            float: left;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #162d59;
+        }
+    </style>
+</head>
+<body>
+    <div class="allpage">
+        <div class="item box4" id="con1">
+            <h3>运力统计</h3>
+        </div>
+        <div class="item" id="con2"></div>
+        <div class="item" id="con3"></div>
+    </div>
+    <script type="text/javascript">
+        $(".allpage").css("height", $(window).height() - 40 + "px");
+        $(".item").css("height", ($(window).height() / 3 - 27) + "px");
+        setInterval(function () {
+            var d = new Date();                          //创建Date对象
+            $("#time").html(d.getFullYear()             //调用getFullYear()方法获得四位数年份
+                + "年" + (d.getMonth() + 1)                     //调用getMonth()方法获得月份（0-11）
+                + "月" + d.getDate()                          //调用getDate()方法获得一个月中的某一天（1-31）
+                + "日 星期" + "日一二三四五六".charAt(d.getDay())  // arrary.charAt（index) 调用getDay()获得一周中的某一天（0-6）作为字符数组下标
+                + " " + d.getHours()                               //获取小时（0-23）
+                + ":" + d.getMinutes()                             //获取分（0-59）
+                + ":" + d.getSeconds());                            //获取秒（0-59）
+        }, 10000);       //每1000毫秒(即1秒) 执行一次本段代码
+            $("#con1").append("<div class=\"d0\"><div><label class=\"y0\"><img src=\"../imgs/tjtb0.png\" /></label><span>总客流人数</span></div><p style=\"color:#ff9090\">" + (Math.floor(Math.random() * 10000) + 10000) + "人</p></div>");
+        $("#con1").append("<div><div><label class=\"y1\"><img src=\"../imgs/tjtb0.png\" /></label><span>进站人数</span></div><p style=\"color:#ffbc90\">" + (Math.floor(Math.random() * 5000) + 5000) + "人</p></div>");
+        $("#con1").append("<div><div><label class=\"y2\"><img src=\"../imgs/tjtb0.png\" /></label><span>出站人数</span></div><p style=\"color:#fbff90\">" + (Math.floor(Math.random() * 5000) + 5000) + "人</p></div>");
+        $("#con1").append("<div><div><label class=\"y3\"><img src=\"../imgs/tjtb2.png\" /></label><span>到站地铁数</span></div><p style=\"color:#99fbb2\">" + (Math.floor(Math.random() * 50) + 50) + "列</p></div>");
+        $("#con1").append("<div><div><label class=\"y4\"><img src=\"../imgs/tjtb2.png\" /></label><span>出站地铁数</span></div><p style=\"color:#64d2ff\">" + (Math.floor(Math.random() * 50) + 50) + "列</p></div>");
+        var chartlist2 = new Array();
+        chartlist2[0] = ["时段", "总客流人数", "总地铁数"];
+        var chartlist3 = new Array();
+        chartlist3[0] = ["时段", "客流总人数", "进站人数", "出站人数", "到站地铁数", "出站地铁数"];
+                    var d = new Date();
+        var h = d.getHours();
+        var z1 = 0;
+        var z2 = 0;
+        for (var i = 0; i <= h; i++) {
+            var r1 = Math.floor(Math.random() * 150)+100;
+            var r2 = Math.floor(Math.random() * 150) + 100;
+            var r3 = Math.floor(Math.random() * 5);
+            var r4 = Math.floor(Math.random() * 5);
+            z1 += r1+r2;
+            z2 += r3+r4;
+            chartlist2[i + 1] = [i + ":00", z1, z2];
+            chartlist3[i + 1] = [i + ":00", r1+r2, r1, r2, r3, r4];
+                    }
+                    var dom2 = document.getElementById("con2");
+                    var dom3= document.getElementById("con3");
+        var myChart2 = echarts.init(dom2, 'dark');
+        var myChart3 = echarts.init(dom3, 'dark');
+        var option2;
+        option2 = {
+            color: ['#ff9090', '#64d2ff'],
+            backgroundColor: '#162d59',
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    animation: false,
+                    label: {
+                        backgroundColor: '#48a3e9'
+                    }
+                }
+            },
+            title: {
+                text: '事故总数统计',
+                left: '10px',
+                top: '10px',
+                textStyle: {
+                    fontSize: 14, //大小
+                }
+            },
+            legend: {
+                top: '40px'
+            },
+            grid: {
+                x: 50,
+                y: 80,
+                x2: 50,
+                y2: 40
+            },
+            dataset: {
+                source: chartlist2
+            },
+            xAxis: {
+                type: 'category',
+                name: '时段'
+            },
+            yAxis: [{
+                type: 'value',
+                name: '人数'
+            }, {
+                type: 'value',
+                name: '列'
+            }],
+            series: [{
+                type: 'line',
+                smooth: true,
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        {
+                            offset: 0,
+                            color: 'rgba(0, 0, 0,0.5)'
+                        },
+                        {
+                            offset: 1,
+                            color: 'rgba(255, 144, 144,0)'
+                        }
+                    ])
+                }
+
+            }, {
+                    type: 'line',
+                    smooth: true,
+                    yAxisIndex: 1,
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            {
+                                offset: 0,
+                                color: 'rgba(100, 210, 255,0.5)'
+                            },
+                            {
+                                offset: 1,
+                                color: 'rgba(100, 210, 255,0)'
+                            }
+                        ])
+                    }
+
+                }]
+        };
+                    var option3;
+        option3 = {
+            color: ['#ff9090', '#ffbc90', '#fbff90', '#99fbb2', '#64d2ff', '#749f83', '#ca8622', '#bda29a', '#6e7074', '#546570', '#c4ccd3'],
+                        backgroundColor: '#162d59',
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                animation: false,
+                                label: {
+                                    backgroundColor: '#48a3e9'
+                                }
+                            }
+                        },
+                        title: {
+                            text: '按时段运力统计',
+                            left: '10px',
+                            top: '10px',
+                            textStyle: {
+                                fontSize: 14, //大小
+                            }
+                        },
+                        legend: {
+                            top: '40px'
+                        },
+                        grid: {
+                            x: 50,
+                            y: 80,
+                            x2: 50,
+                            y2: 40
+                        },
+                        dataset: {
+                            source: chartlist3
+                        },
+                        xAxis: {
+                            type: 'category',
+                            name: '时段'
+                        },
+                        yAxis: [{
+                            type: 'value',
+                            name: '人数'
+                        }, {
+                                type: 'value',
+                                name: '列'
+                            }],
+                        series: [{
+                            type: 'line',
+                            smooth: true
+                        },
+                            {
+                                type: 'bar'
+                            }, {
+                                type: 'bar'
+                            }, {
+                                type: 'bar',
+                                yAxisIndex: 1
+                            }, {
+                                type: 'bar',
+                                yAxisIndex: 1
+                            }]
+                    };
+                    option2 && myChart2.setOption(option2);
+                    option3 && myChart3.setOption(option3);
+        function getChart() {
+           
+        }
+    </script>
+</body>
+</html>

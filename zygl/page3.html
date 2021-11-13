@@ -11,12 +11,10 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>登录名<input type="text" /></label>
-            <label>手机号码<input type="text" /></label>
-            <label>账户状态<select><option>--请选择--</option></select></label>
+        <div class="top" id="findlist">
+            <label>车牌号<input id="A.code" type="text" /></label>
             <div class="btns">
-                <a onclick="ceshi();">查询</a>
+                <a id="findbtn">查询</a>
                 <a href="editpage3.html" target="_self">新增</a>
                 <a href="page3_1.html" target="_self">团队管理</a>
                 <a href="page3_2.html" target="_self">车队管理</a>
@@ -36,7 +34,7 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                GetTable("traffic_car A,traffic_car_team B,traffic_car_fleet C", "A.team_id=B.id and A.fleet_id=C.id");
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -94,6 +92,17 @@
                             layer.close(iiload);
                         }
                     });
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("traffic_car A,traffic_car_team B,traffic_car_fleet C", wherestr+"A.team_id=B.id and A.fleet_id=C.id");
                 }
             </script>
         </div>

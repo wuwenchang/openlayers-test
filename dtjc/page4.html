@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html style="width: 100%;height:100%">
+
 <head>
     <meta charset="utf-8" />
     <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
@@ -7,7 +8,7 @@
     <script type="text/javascript" src="../js/normal.js"></script>
     <script type="text/javascript" src="../js/tables.js"></script>
     <script type="text/javascript" src="../js/map.js"></script>
-    <script src="../json/ol.css"></script>
+    <link src="../json/ol.css"/>
     <script src="../json/ol.js"></script>
     <link href="../css/index.css" rel="stylesheet" />
     <script src="../json/railwayjson.js"></script>
@@ -17,20 +18,24 @@
     <script type="text/javascript" src="../js/damap.js"></script>
     <script type="text/javascript" src="../js/rescue.js"></script>
     <link href="../css/dastyle.css" rel="stylesheet" />
+    <script src="../js/errData.js"></script>
+    <!-- <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&key=19fa7d6114bd37540a73669d1bbfedf1"></script>  -->
     <title>动力总览</title>
 </head>
+
 <body style=" background-color:#00192e;">
     <a id="bemax" class="max">
         <img src="../imgs/bmax.png" />
     </a>
-    <a id="showct" class="show"><img src="../imgs/chart.png" /></a>
+    <a id="showct" onclick="showChart('4');" class="show"><img src="../imgs/chart.png" /></a>
+    <!-- <a id="changeMap" class="show">切换地图</a> -->
     <div class="messagebox" style="height:280px">
-        <iframe src="messagebox.html?msg=5&type=2,3,4,5,6" scrolling="no" frameborder="0"></iframe>
+        <iframe src="messagebox.html?msg=5&type=1,2,3,4,5,6" scrolling="no" frameborder="0"></iframe>
     </div>
     <div id="map">
         <div id="popup" class="ol-popup">
             <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-            <div class="popup-content">
+            <div class="popup-content" id="accidentMessage">
                 <input type="hidden" id="sendid" value="" />
                 <div>
                     <span>名 称：</span><input type="text" id="val1">
@@ -56,10 +61,35 @@
                         <img src="../imgs/l6.png" />发布消息
                     </button>
                 </div>
-
+            </div>
+            <div class="popup-content" id="driverMessage">
+                <!-- <input type="hidden" id="sendid" value="" /> -->
+                <div>
+                    <span>公 司：</span><input type="text" id="val11">
+                </div>
+                <div>
+                    <span>车 队：</span><input type="text" id="val12">
+                </div>
+                <div>
+                    <span>姓 名：</span><input type="text" id="val13">
+                </div>
+                <div>
+                    <span>电 话：</span><input type="text" id="val14">
+                </div>
+                <div>
+                    <span>车 辆：</span><input type="text" id="val15">
+                </div>
+                <!-- <div id="latlon"></div> -->
+            </div>
+            <div class="popup-content" id="rescueMessage">
+                <!-- <input type="hidden" id="sendid" value="" /> -->
+                <div>
+                    <span>名 称：</span><input type="text" id="val21">
+                </div>
             </div>
         </div>
     </div>
+    <div id="gaodeMap"></div>
     <div id="legend" class="allmsg allmsg1">
         <p><img src="../imgs/s2.png" /><span>图例</span></p>
         <div class="msgbox">
@@ -73,24 +103,185 @@
         </div>
     </div>
     <script>
+        var showGaoDeMap = false
+        $('#changeMap').click(function () {
+            showGaoDeMap = !showGaoDeMap
+            if (showGaoDeMap) {
+                $('#gaodeMap').show()
+                $('#map').hide()
+                new AMap.Map('gaodeMap', {
+                    resizeEnable: true, //是否监控地图容器尺寸变化
+                    zoom: 11, //初始化地图层级
+                    center: [116.397428, 39.90923] //初始化地图中心点
+                });
+            } else {
+                $('#gaodeMap').hide()
+                $('#map').show()
+            }
+        })
         window.onload = function () {
-            var center1 = [116.011, 40.15];
+
+            var center1 = [116.411, 39.96];
             var inilayers = ['dapoi', 'road'];
-            var map = loadmap(center1, '150.74811314055756', inilayers);
+            // var map = loadmap(center1, '150.74811314055756', inilayers);
+            var map = loadmap(center1, '30', inilayers);
+            console.log(map)
             activemap = map;
             locationMap = map;
-            // init();
             var params;
             //点击事件
             map.addEventListener('click', function (e) {
                 popupShow(e, map, params);
             });
+            var arr
             window.addEventListener('message', function (res) {
-                 $(".footer").show();
-                params = res;
-                showAccidentPopup(res, map);
+                $(".footer").show();
+                var data = res.data
+                beginToSimulate(data, map)
             })
             // rescueInit()
+
+            // 模拟呼叫救援
+            var hadRescue = []
+            $('#submit').click(function () {
+                var accidentMessage = $('#accidentMessage')
+                var data = JSON.parse(accidentMessage.attr('data'))
+                if (hadRescue.includes(data.id)) {
+                    return
+                }
+                hadRescue.push(data.id)
+                data.id += 'rescue'
+                isShowPopup = false;
+                accidentMessage.attr('data', JSON.stringify(data))
+                $('#popup').hide()
+                var line = []
+                if (data.target_type) {
+                    line = getAccidentLine(rescuejson.features, data.target_type).geometry.coordinates[0].map(item => {
+                        return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+                    })
+                    line = line.slice(0, Math.floor(line.length / 2))
+                } else if (data.index) {
+                    line = getLineData(data.index).line.map(item => {
+                        return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+                    })
+                }
+                initAnimation({
+                    pointsList: line,
+                    properties: data,
+                    isDrawHistory: true,
+                    carType: 'jy'
+                })
+            })
+
+
+            // 初始化的函数
+            function init() {
+                var railwayJsonData = dealJson(roadjson)
+                for (let i = 0; i < railwayJsonData.length; i++) {
+                    let properties = railwayJsonData[i][0].properties
+                    let lines = railwayJsonData[i].map(item => {
+                        return ol.proj.transform(item.geometry.coordinates, 'EPSG:4326', 'EPSG:3857')
+                    });
+                    // 绘制线条
+                    // drawMainLine(lines, properties)
+                    if (properties.name === '西直门外大街') {
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: lines,
+                            properties,
+                            carType: 'car'
+                        })
+                        let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: newLine,
+                            properties,
+                            carType: 'car'
+                        })
+                    } else if (properties.name === '四环路') {
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: lines,
+                            properties,
+                            carType: 'bus'
+                        })
+                        let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: newLine,
+                            properties,
+                            carType: 'bus'
+                        })
+                    } else if (properties.name === '学院路') {
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: lines,
+                            properties,
+                            carType: 'bus'
+                        })
+                        let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: newLine,
+                            properties,
+                            carType: 'bus'
+                        })
+                    } else if (properties.name === '北辰西路') {
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: lines,
+                            properties,
+                            carType: 'tram'
+                        })
+                        let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: newLine,
+                            properties,
+                            carType: 'tram'
+                        })
+                    } else if (properties.name === '惠中路') {
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: lines,
+                            properties,
+                            carType: 'train'
+                        })
+                        let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: newLine,
+                            properties,
+                            carType: 'train'
+                        })
+                    }
+                }
+                // createHeatmap(railwayjson)
+            }
+            init();
+
+            createMarkersStyles()
+            map.getView().on('change:resolution', function () {
+                // 重新设置图标的缩放率，基于层级20来做缩放
+                let zoom = this.getZoom()
+                let scale = 0.001;
+                for (let key in markerStyles) {
+                    if (zoom < 10) {
+                        scale = 0.001
+                    } else {
+                        scale = zoom / 15 > 1 ? 1 : Math.pow(zoom / 15, 2)
+                    }
+                    markerStyles[key].getImage().setScale(scale)
+                }
+                console.log(zoom)
+            })
+            // // 获取司机信息
+            // getDriverList().then(res => {
+            //     console.log(res)
+            // })
+            // updateAccident(
+            //     { name: '追尾', address: '故宫紫禁城两车发生追尾', type: 1, message: '测试交通数据', code: '京A888888', xaxis: 116.411, yaxis: 39.96, target:1}
+            // )
         };
     </script>
 </body>

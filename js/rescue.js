@@ -17,15 +17,15 @@
 function rescueInit() {
     // var rescuejson = dealJson(rescuejson)
     var vectorSource = new ol.source.Vector({ 
-        features: (new ol.format.GeoJSON()).readFeatures(rescuejson,{
-        dataProjection : 'EPSG:4326',
-        featureProjection : 'EPSG:3857'
+        features: (new ol.format.GeoJSON()).readFeatures(rescuejson, {
+            dataProjection : 'EPSG:4326',
+            featureProjection : 'EPSG:3857'
         })
     });
     var roadLineLayer = new ol.layer.Vector({
-        id: 'trackLine',
+        // id: 'trackLine',
         source: vectorSource,
-        style: getCustomStyle({ color: 'gray' })
+        style: getCustomStyle({ color: '#5298fe' })
     });
     map.addLayer(roadLineLayer)
 }

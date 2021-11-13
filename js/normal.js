@@ -21,9 +21,11 @@ function getRootPath() {
     //获取带"/"的项目名，如：/uimcardprj
     var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
     projectName = projectName.toLowerCase();
-    // projectName = projectName.replace("/web", "");
-    console.log(projectName)
-    projectName = '/grandmap/BJDA'
+    if (curWwwPath.includes('localhost')) {
+        projectName = '/grandmap/BJDA'
+    } else {
+        projectName = projectName.replace("/web", "");
+    }
     return (localhostPaht + projectName);
 }
 //JS操作cookies方法!
@@ -38,7 +40,7 @@ function setCookie(name, value, day) {
     else {
         document.cookie = name + '=' + value;
     }
-    
+
 };
 //获取cookie
 function getCookie(name) {
@@ -194,7 +196,7 @@ function isRegisterUserName(s) {
     return patrn.exec(s);
 }
 function GetChild(tname, tstr, sname, type, isfind) {
-   // console.log(tstr);
+    // console.log(tstr);
     var sstr = tstr.split("|");
     var wstr = "";
     if (sstr.length > 2) {
@@ -205,6 +207,8 @@ function GetChild(tname, tstr, sname, type, isfind) {
             wstr = sstr[2].replace(/~/g, "|") + " and " + sstr[3].replace(/~/g, "|");
         }
     }
+    if (wstr == "") wstr = "1=1 order by id";
+    else wstr += " order by id";
     var idstr = sstr[0];
     var namestr = sstr[1];
     $.ajax({
@@ -216,7 +220,7 @@ function GetChild(tname, tstr, sname, type, isfind) {
         async: false,
         success: function (result) {
             var myjson = result.d;
-           // console.log(myjson);
+            // console.log(myjson);
             var jsondatas = eval("(" + myjson + ")");
             if (jsondatas.CODE > 0) {
                 var mytbl = jsondatas.Table;
@@ -232,7 +236,7 @@ function GetChild(tname, tstr, sname, type, isfind) {
                         $("#" + sname).append("<option value=\"" + n[idstr] + "\">" + n[namestr] + "</option>");
                     });
                 }
-                else if (type == "checkbox" || type=="button") {
+                else if (type == "checkbox" || type == "button") {
                     $("#" + sname).empty();
                     $.each(mytbl, function (i, n) {
                         $("#" + sname).append("<span><input type=\"checkbox\" value=\"" + n[idstr] + "\" />" + n[namestr] + "</span>");
@@ -265,10 +269,10 @@ function formatZero(num, len) {
     if (String(num).length > len) return num;
     return (Array(len).join(0) + num).slice(-len);
 }
-function getFormat(nTime){
+function getFormat(nTime) {
     format = "";
     format += nTime.getFullYear() + "-";
-    
+
     format += (nTime.getMonth() + 1) < 10 ? ("0" + (nTime.getMonth() + 1)) : (nTime.getMonth() + 1);
     format += "-";
     format += nTime.getDate() < 10 ? ("0" + (nTime.getDate())) : (nTime.getDate());
@@ -375,13 +379,13 @@ function nowdate() {//将当前时间转换成yyyymmdd格式
     var str = "" + mydate.getFullYear();
     var mm = mydate.getMonth() + 1
     if (mydate.getMonth() > 9) {
-        str +="-"+ mm;
+        str += "-" + mm;
     }
     else {
         str += "-0" + mm;
     }
     if (mydate.getDate() > 9) {
-        str += "-" +mydate.getDate();
+        str += "-" + mydate.getDate();
     }
     else {
         str += "-0" + mydate.getDate();
@@ -417,7 +421,7 @@ function exportEvent(dom, name, img) {
     }
 
     var table = $(dom).prop("outerHTML");
-   // console.log($(dom).prop("outerHTML"));
+    // console.log($(dom).prop("outerHTML"));
     var html = "<html><head><meta charset='utf-8' /><style>th,td {border: 0.5px solid ; text-align:center;}</style></head><body>" + table + "</body></html>";
 
     // 实例化一个Blob对象，其构造函数的第一个参数是包含文件内容的数组，第二个参数是包含文件类型属性的对象

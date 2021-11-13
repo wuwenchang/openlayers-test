@@ -7,7 +7,7 @@
     <script type="text/javascript" src="../js/normal.js"></script>
     <script type="text/javascript" src="../js/tables.js"></script>
     <script type="text/javascript" src="../js/map.js"></script>
-    <script src="../json/ol.css"></script>
+    <link href="../json/ol.css"/>
     <script src="../json/ol.js"></script>
     <link href="../css/index.css" rel="stylesheet" />
     <link href="../css/dastyle.css" rel="stylesheet" />
@@ -21,13 +21,14 @@
     <a id="bemax" class="max">
         <img src="../imgs/bmax.png" />
     </a>
+    <a id="showct" onclick="showChart('8');" class="show"><img src="../imgs/chart.png" /></a>
     <div class="messagebox" style="height:110px">
         <iframe src="messagebox.html?msg=1&type=3" scrolling="no" frameborder="0"></iframe>
     </div>
     <div id="map">
         <div id="popup" class="ol-popup">
             <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-            <div class="popup-content">
+            <div class="popup-content" id="accidentMessage">
                 <input type="hidden" id="sendid" value="" />
                 <div>
                     <span>名 称：</span><input type="text" id="val1">
@@ -77,10 +78,80 @@
             });
 
             window.addEventListener('message', function (res) {
-                 $(".footer").show();
-                params = res;
-                showAccidentPopup(res, map);
+                $(".footer").show();
+                var data = res.data
+                beginToSimulate(data, map)
             })
+            // 初始化的函数
+            function init() {
+                var railwayJsonData = dealJson(railwayjson)
+                for (let i = 0; i < railwayJsonData.length; i++) {
+                    let properties = railwayJsonData[i][0].properties
+                    let lines = railwayJsonData[i].map(item => {
+                        return ol.proj.transform(item.geometry.coordinates, 'EPSG:4326', 'EPSG:3857')
+                    });
+                    // 绘制线条
+                    // drawMainLine(lines, properties)
+                    if (['北京北-清河站', '昌平站-张家口站'].includes(properties.name || properties.region)) {
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: lines,
+                            properties,
+                            carType: 'train'
+                        })
+                        let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: newLine,
+                            properties,
+                            carType: 'train'
+                        })
+                    }
+
+                }
+            }
+            
+            init()
+            createMarkersStyles()
+            map.getView().on('change:resolution', function () {
+                // 重新设置图标的缩放率，基于层级20来做缩放
+                let zoom = this.getZoom()
+                let scale = 0.001;
+                for (let key in markerStyles) {
+                    if (zoom < 10) {
+                        scale = 0.001
+                    } else {
+                        scale = zoom / 15 > 1 ? 1 : Math.pow(zoom / 15, 2)
+                    }
+                    markerStyles[key].getImage().setScale(scale)
+                }
+                console.log(zoom)
+            })
+
+            // 模拟呼叫救援
+            var hadRescue = []
+            $('#submit').click(function () {
+                var accidentMessage = $('#accidentMessage')
+                var data = JSON.parse(accidentMessage.attr('data'))
+                if (hadRescue.includes(data.id)) {
+                    return
+                }
+                hadRescue.push(data.id)
+                data.id += 'rescue'
+                isShowPopup = false;
+                accidentMessage.attr('data', JSON.stringify(data))
+                $('#popup').hide()
+                var line = getLineData(data.index).line.map(item => {
+                    return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+                })
+                initAnimation({
+                    pointsList: line,
+                    properties: data,
+                    isDrawHistory: true,
+                    carType: 'jy'
+                })
+            })
+
         };
     </script>
 </body>

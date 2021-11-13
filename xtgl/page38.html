@@ -11,8 +11,9 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>类型<select id="type"><option value="all">---全部---</option></select></label>
+        <div class="top" id="findlist">
+            <label>救援方案<select id="rescue_id"></select></label>
+            <label>事故名称<select id="accident_id"></select></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
                 <a href="editpage38.html" target="_self">新增</a>
@@ -29,7 +30,9 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                GetTable("traffic_rescue_record A,traffic_rescue B,traffic_accident C", "A.rescue_id=B.id and A.accident_id=C.id");
+                GetChild("traffic_rescue", "id|name", "rescue_id", "select", true);
+                GetChild("traffic_accident", "id|name", "accident_id", "select", true);
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -45,6 +48,18 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                $(".top select").change(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("traffic_rescue_record A,traffic_rescue B,traffic_accident C", wherestr+"A.rescue_id=B.id and A.accident_id=C.id");
                 }
             </script>
         </div>

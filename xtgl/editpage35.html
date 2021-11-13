@@ -14,7 +14,7 @@
         <table id="edittbl">
             <tr>
                 <td>站点名称</td>
-                <td><input type="text" id="name" /></td>
+                <td><select id="hub_id"></select></td>
             </tr>
             <tr>
                 <td>进站时间</td>
@@ -43,6 +43,7 @@
         </table>
         <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
         <script>
+            GetChild("traffic_hub", "id|name", "hub_id", "select");
             $("#OKbtn").click(function () {
                 if (getUrlParam("eid")) {
                     SetTable('traffic_flow', "id=" + getUrlParam("eid"));

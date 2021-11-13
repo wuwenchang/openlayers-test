@@ -11,55 +11,49 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>登录名<input type="text" /></label>
-            <label>手机号码<input type="text" /></label>
-            <label>账户状态<select><option>--请选择--</option></select></label>
-            <div class="btns"><a onclick="ceshi();">查询</a><a>新增</a></div>
+        <div class="top" id="findlist">
+            <label>cell_connect<input id="cell_connect" type="text" /></label>
+            <div class="btns">
+                <a id="findbtn">查询</a>
+                <a href="editpage24_1.html" target="_self">新增</a>
+            </div>
         </div>
         <div class="body">
-            <table>
+            <table id="listtable">
                 <tr>
-                    <th>登录名</th>
-                    <th>姓名</th>
-                    <th>手机号码</th>
-                    <th>邮箱</th>
-                    <th>角色</th>
-                    <th>维护日期</th>
-                    <th>账户状态</th>
-                    <th style="width:300px;">操作</th>
+                    <th>cell_connect</th>
+                    <th>A00:30:00</th>
+                    <th>A22:00:00</th>
                 </tr>
-                <tr>
-                    <td>登录名</td>
-                    <td>姓名</td>
-                    <td>手机号码</td>
-                    <td>邮箱</td>
-                    <td>角色</td>
-                    <td>维护日期</td>
-                    <td>账户状态</td>
-                    <td><a class="btn1">详情</a><a class="btn2">编辑</a><a class="btn3">重置密码</a><a class="btn4">删除</a></td>
-                </tr>
-                <tr>
-                    <td>登录名</td>
-                    <td>姓名</td>
-                    <td>手机号码</td>
-                    <td>邮箱</td>
-                    <td>角色</td>
-                    <td>维护日期</td>
-                    <td>账户状态</td>
-                    <td><a class="btn1">详情</a><a class="btn2">编辑</a><a class="btn3">重置密码</a><a class="btn4">删除</a></td>
-                </tr>
-                <tr>
-                    <td>登录名</td>
-                    <td>姓名</td>
-                    <td>手机号码</td>
-                    <td>邮箱</td>
-                    <td>角色</td>
-                    <td>维护日期</td>
-                    <td>账户状态</td>
-                    <td><a class="btn1">详情</a><a class="btn2">编辑</a><a class="btn3">重置密码</a><a class="btn4">删除</a></td>
-                </tr>
-            </table>
+            </table><div id="listtag" class="tbl_footer"></div>
+            <script>
+                FindTable();
+                function addList(nowTable) {
+                    var tblcnt = nowTable[0].cnt;
+                    $("#listtable tr:not(:first)").remove();
+                    if (nowTable != null) {
+                        $(nowTable).each(function (i, n) {
+                            var tr = $("<tr></tr>")
+                            $("#listtable").append(tr);
+                            tr.append("<td>" + n.cell_connect + "</td>");
+                            tr.append("<td>" + n["A00:30:00"] + "</td>");
+                            tr.append("<td>" + n["A22:00:00"] + "</td>");
+                        });
+                    }
+                    AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("roadstatus", wherestr+"1=1");
+                }
+            </script>
         </div>
     </div>
 </body>

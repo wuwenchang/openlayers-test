@@ -1,0 +1,347 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/echarts.min.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/echart.css" />
+    <style>
+            .allpage .item {
+                width: calc(50% - 10px);
+                height: 50%;
+                display: inline-block;
+                float: left;
+                border-radius: 10px;
+                overflow: hidden;
+                background-color: #162d59;
+                margin-bottom:20px;
+                margin-right:20px;
+            }
+        .allpage .item:nth-child(2n)
+        {
+            margin-right:0px;
+        }
+    </style>
+    <script>
+
+
+    </script>
+</head>
+<body>
+    <div class="allpage">
+        <div class="item" id="con1"></div>
+        <div class="item" id="con2"></div>
+        <div class="item" id="con3"></div>
+        <div class="item" id="con4"></div>
+    </div>
+    <script type="text/javascript">
+        $(".allpage").css("height", $(window).height() - 20 + "px");
+        $(".item").css("height", ($(window).height() / 2 - 30) + "px");
+        setInterval(function () {
+            var d = new Date();                          //创建Date对象
+            $("#time").html(d.getFullYear()             //调用getFullYear()方法获得四位数年份
+                + "年" + (d.getMonth() + 1)                     //调用getMonth()方法获得月份（0-11）
+                + "月" + d.getDate()                          //调用getDate()方法获得一个月中的某一天（1-31）
+                + "日 星期" + "日一二三四五六".charAt(d.getDay())  // arrary.charAt（index) 调用getDay()获得一周中的某一天（0-6）作为字符数组下标
+                + " " + d.getHours()                               //获取小时（0-23）
+                + ":" + d.getMinutes()                             //获取分（0-59）
+                + ":" + d.getSeconds());                            //获取秒（0-59）
+        }, 1000);       //每1000毫秒(即1秒) 执行一次本段代码
+        var iiload = layer.load(1, false);
+        $.ajax({
+            type: "POST",  //访问WebService使用post方式请求
+            contentType: "application/json; charset=utf-8",
+            url: getRootPath() + "/Service/MyWebService.asmx/GetTable", //调用WebService的地址和方法名称组合
+            data: "{tableName:'event_gym',whereSql:''}",
+            dataType: "json",
+            success: function (result) {
+                var myjson = result.d;
+                var jsondatas = eval("(" + myjson + ")");
+                if (jsondatas.CODE > 0) {
+                    var mytbl = jsondatas.Table;
+                    var chartlist1 = new Array();
+                    chartlist1[0] = ["体育场", "坐席"];
+                    var chartlist5 = new Array();
+                    chartlist5[0] = ["体育场", "参赛报名人数"];
+                    var chartlist2 = new Array();
+                    chartlist2[0] = ["体育场", "进度"];
+                    var chartlist3 = new Array();
+                    var chartlist4 = new Array();
+                    $.each(mytbl, function (i, n) {
+                        chartlist1[i + 1] = [n.name, n.seat];
+                        chartlist5[i + 1] = [n.name, Math.floor(Math.random() * 200)+50];
+                        chartlist2[i + 1] = [n.name, Math.floor(Math.random() * 100)];
+                        chartlist3[i] = {
+                            name: n.name,
+                            value: [n.toilet, n.parking, n.busstop, n.area, n.seat]
+
+                        };
+                        chartlist4[i] = n.name;
+                    });
+                    console.log(chartlist4);
+                    var dom1 = document.getElementById("con1");
+                    var dom2 = document.getElementById("con2");
+                    var dom3 = document.getElementById("con3");
+                    var dom4 = document.getElementById("con4");
+                    var myChart1 = echarts.init(dom1, 'dark');
+                    var myChart2 = echarts.init(dom2, 'dark');
+                    var myChart3 = echarts.init(dom3, 'dark');
+                    var myChart4 = echarts.init(dom4, 'dark');
+                    var option1;
+                    option1 = {
+                        backgroundColor: '#162d59',
+                        title: {
+                            text: '赛事场馆坐席数量分布',
+                            left: '10px',
+                            top: '10px',
+                            textStyle: {
+                                fontSize: 14, //大小
+                            }
+                        },
+                        grid: {
+                            x: 70,
+                            y: 80,
+                            x2: 50,
+                            y2: 80
+                        },
+                        legend: {
+                            top: '40px'
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                animation: false,
+                                label: {
+                                    backgroundColor: '#48a3e9'
+                                }
+                            }
+                        },
+                        dataset: {
+                            source: chartlist1
+                        },
+                        xAxis: {
+                            type: 'category',
+                            name: '体育馆' ,
+                            axisLabel: {
+                                interval: 0,
+                                rotate: 40,
+                                fontSize: 10//大小
+                            }  
+                        },
+                        yAxis: { name: '坐席' },
+                        series: [
+                            {
+                                type: 'bar',
+                                barWidth: '20px',
+                                itemStyle: {
+                                    color: ["#64d2ff"]
+                                }
+                            }
+                        ]
+                    };
+                    option2 = {
+                        backgroundColor: '#162d59',
+                        tooltip: {
+                        },
+                        title: {
+                            text: '场馆赛事进度表',
+                            left: '10px',
+                            top: '10px',
+                            textStyle: {
+                                fontSize: 14, //大小
+                            }
+                        },
+                        grid: {
+                            x: 120,
+                            y: 40,
+                            x2: 50,
+                            y2: 20
+                        },
+                        dataset: {
+                            source: chartlist2
+                        },
+                        xAxis: {
+                            type: 'value',
+                            max: 100,
+                            splitLine: {
+                                show: false
+                            },
+                            axisTick: {
+                                show: false
+                            },
+                            axisLine: {
+                                show: false
+                            },
+                            axisLabel: {
+                                show: false,
+
+                            }
+                        },
+                        yAxis: {
+                            type: 'category',
+                            splitLine: {
+                                show: false
+                            },
+                            axisTick: {
+                                show: false
+                            },
+                            axisLine: {
+                                show: false
+                            }
+                        },
+                        series: [
+                            {
+                                type: 'bar',
+                                stack: 'chart',
+                                label: {
+                                    show: true,
+                                    position: 'right',
+                                    formatter: function (params) {
+                                        return params.value[1]  + '%';
+                                    }
+                                },
+                                showBackground: true,
+                                backgroundStyle: {
+                                    color: ["#233c6b"],
+                                },
+                                itemStyle: {
+                                    color: function (param) {
+                                        return getcolor(param.value[1]) || '#5470c6';
+                                    }
+                                },
+                            }
+                        ]
+                    };
+                    var getcolor=function(value) {
+                        if (value <= 100 && value>80)
+                            return "#ff9090";
+                        else if (value <= 80 && value > 60)
+                            return "#ffbc90";
+                        else if (value <= 60 && value > 40)
+                            return "#fbff90";
+                        else if (value <= 40 && value > 20)
+                            return "#99fbb2";
+                        else
+                            return "#64d2ff";
+                    }
+                    var option3;
+                    option3 = {
+                        backgroundColor: '#162d59',
+                        tooltip: {
+                        },
+                        title: {
+                            text: '赛事场馆配套设施',
+                            left: '10px',
+                            top: '10px',
+                            textStyle: {
+                                fontSize: 14, //大小
+                            }
+                        },
+                        legend: {
+                            type: 'scroll',
+                            orient: 'vertical',
+                            right: 10,
+                            top: "center",
+                            data: chartlist4,
+                            textStyle: {
+                                fonsSize:10
+                            }
+                        },
+                       
+                        radar: {
+                            indicator: [
+                                { name: '厕所数', max: 33 },
+                                { name: '停车位数', max: 423 },
+                                { name: '公交车站数', max: 30 },
+                                { name: '面积', max: 300000 },
+                                { name: '座位数', max: 91000 }
+                            ],
+                            center: ['36%', '57%'],
+                            radius: 120
+                        },
+                        series: {
+                            type: 'radar',
+                            data: chartlist3
+                        }
+                    };
+                    var option4;
+                    option4 = {
+                        backgroundColor: '#162d59',
+                        title: {
+                            text: '赛事场馆参赛人员统计',
+                            left: '10px',
+                            top: '10px',
+                            textStyle: {
+                                fontSize: 14, //大小
+                            }
+                        },
+                        grid: {
+                            x: 70,
+                            y: 80,
+                            x2: 50,
+                            y2: 80
+                        },
+                        legend: {
+                            top: '40px'
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                animation: false,
+                                label: {
+                                    backgroundColor: '#48a3e9'
+                                }
+                            }
+                        },
+                        dataset: {
+                            source: chartlist5
+                        },
+                        xAxis: {
+                            type: 'category',
+                            name: '体育馆',
+                            axisLabel: {
+                                interval: 0,
+                                rotate: 40,
+                                fontSize: 10//大小
+                            }
+                        },
+                        yAxis: { name: '人数' },
+                        series: [
+                            {
+                                type: 'line',
+                                itemStyle: {
+                                    color: ["#64d2ff"]
+                                }
+                            }
+                        ]
+                    };
+                    option1 && myChart1.setOption(option1);
+                    option2 && myChart2.setOption(option2);
+                    option3 && myChart3.setOption(option3);
+                    option4 && myChart4.setOption(option4);
+                    
+                }
+                else {
+                    layer.msg(jsondatas.MSG, { icon: 2 });
+                }
+            },
+            error: function () {
+                layer.msg("系统错误", { icon: 2 });
+            },
+            complete: function () {
+                layer.close(iiload);
+            }
+        });
+        function getChart() {
+           
+        }
+
+    </script>
+</body>
+</html>

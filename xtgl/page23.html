@@ -11,10 +11,10 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>名称<input type="text" id="fname" /></label>
+        <div class="top" id="findlist">
+            <label>名称<input id="name" type="text" /></label>
             <div class="btns">
-                <a onclick="ceshi();">查询</a>
+                <a id="findbtn">查询</a>
                 <a href="editpage24_1.html" target="_self">新增</a>
             </div>
         </div>
@@ -27,7 +27,7 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                GetTable("sendmessage_vms", "");
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -41,6 +41,17 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("sendmessage_vms", wherestr+ "1=1");
                 }
             </script>
         </div>

@@ -19,25 +19,6 @@
             $("#showct").css("top", "100px");
         }
     });
-    $("#showct").click(function () {
-        if ($("#showct").hasClass("show")) {
-            $("#showct").find("img").attr("src", "../imgs/close.png");
-            $("#showct").css("background-color", "rgba(19,35,66,0.8)");
-            $("#showct").removeClass("show");
-            $(this).after("<div id=\"chartdiv\" class=\"chartdiv\"></div>");
-            if ($("#showct").css("top") == "60px")
-                $("#chartdiv").removeClass("chartdiv").addClass("chartdiv1");
-            $("#chartdiv").append("<iframe src=\"charts.html\" scrolling=\"no\" frameborder=\"0\"></iframe>");
-            $("#showct").css("right", $("#chartdiv").css("width"));
-        }
-        else {
-            $("#showct").find("img").attr("src", "../imgs/chart.png");
-            $("#showct").css("background-color", "#162d5a");
-            $("#showct").addClass("show");
-            $("#chartdiv").remove();
-            $("#showct").css("right", "50px");
-        }
-    });
     $("#sendmessage").click(function () {
         var dv = $("<div></div>");
         dv.append("<label>发布方式</label><div id=\"sendmod\"></div><label><input id=\"vmsall\" type=\"checkbox\" value=\"all\" />交通诱导屏(VMS)</label><div id=\"vmslist\"></div>");
@@ -70,9 +51,31 @@
      //关闭浮动窗口
     $("#popup-closer").click(function () {
         $("#popup-closer").blur();
+        window.isShowPopup = ''
         document.getElementById("popup").style.display = "none";
     });
 });
+function showChart(type) {
+    if ($("#showct").hasClass("show")) {
+        $("#showct").find("img").attr("src", "../imgs/close.png");
+        $("#showct").css("background-color", "rgba(19,35,66,0.8)");
+        $("#showct").removeClass("show");
+        $("#showct").after("<div id=\"chartdiv\" class=\"chartdiv\"></div>");
+        if ($("#showct").css("top") == "60px")
+            $("#chartdiv").removeClass("chartdiv").addClass("chartdiv1");
+        $("#chartdiv").append("<iframe src=\"charts" + type + ".html\" scrolling=\"no\" frameborder=\"0\"></iframe>");
+        if (type == 2 || type == 9)
+            $("#chartdiv").css("width", "60%");
+        $("#showct").css("right", $("#chartdiv").css("width"));
+    }
+    else {
+        $("#showct").find("img").attr("src", "../imgs/chart.png");
+        $("#showct").css("background-color", "#162d5a");
+        $("#showct").addClass("show");
+        $("#chartdiv").remove();
+        $("#showct").css("right", "50px");
+    }
+}
 function closesend() {
     layer.close($(".sendbox").attr("times"));
 }

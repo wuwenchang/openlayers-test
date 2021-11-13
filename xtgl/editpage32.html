@@ -13,8 +13,17 @@
     <div class="editpage">
         <table id="edittbl">
             <tr>
+                <td>类型</td>
+                <td>
+                    <select id="type">
+                        <option value="1">体育馆</option>
+                        <option value="2">交通枢纽</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <td>拥堵地区</td>
-                <td><select id="type_id" ></select></td>
+                <td><select id="type_id"></select></td>
             </tr>
             <tr>
                 <td>拥堵地址</td>
@@ -25,17 +34,10 @@
                 <td><input type="datetime-local" id="starttime" /></td>
             </tr>
             <tr>
-                <td>类型</td>
-                <td><select id="type">
-                    <option value="1">体育馆</option>
-                    <option value="2">交通枢纽</option>
-                </select></td>
-            </tr>
-            <tr>
                 <td>拥堵说明</td>
                 <td><input type="text" id="remark" /></td>
             </tr>
-           
+
         </table>
         <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
         <script>
@@ -48,7 +50,6 @@
                     GetChild("traffic_hub", "id|name", "type_id", "select");
                 }
             });
-            $("#type").change();
             $("#OKbtn").click(function () {
                 if (getUrlParam("eid")) {
                     SetTable('traffic_jam', "id=" + getUrlParam("eid"));
@@ -60,7 +61,9 @@
             setTimeout(function () {
                 if (getUrlParam("eid")) {
                     EditTable("traffic_jam", getUrlParam("eid"));
-                }}, 200);
+                } else
+                    $("#type").change();
+            }, 200);
         </script>
     </div>
 </body>

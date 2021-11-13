@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
     <script type="text/javascript" src="../js/layer/layer.js"></script>
     <script type="text/javascript" src="../js/normal.js"></script>
@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
+        <div class="top" id="findlist">
             <label>赛事<select id="sport_id"></select></label>
             <label>推迟日期<input type="date" id="startdate" /></label>
             <div class="btns">
@@ -23,6 +23,7 @@
             <table id="listtable">
                 <tr>
                     <th>编号</th>
+                    <th>坐标</th>
                     <th>赛事</th>
                     <th>比赛区域</th>
                     <th>推迟日期</th>
@@ -32,9 +33,9 @@
                     <th style="width:200px;">操作</th>
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
-            <script>
+            <script type="text/javascript">
                 GetChild("event_sport", "id|event", "sport_id", "select", true);
-                GetTable("event_delay A,event_sport B", "A.sport_id=B.id");
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -43,6 +44,7 @@
                             var tr = $("<tr></tr>")
                             $("#listtable").append(tr);
                             tr.append("<td>" + n.id + "</td>");
+                            tr.append("<td>【" + n.xaxis + "," + n.yaxis + "】<img onclick=\"pointMap(7," + n.id + ")\"  src=\"../imgs/pt.png\" /></td>");
                             tr.append("<td>" + n.event + "</td>");
                             tr.append("<td>" + n.area + "</td>");
                             tr.append("<td>" + timeFormatSmall(n.startdate) + "</td>");
@@ -53,6 +55,21 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                function pointMap(type, id) {
+                    window.parent.accidentPointMap(type, id);
+                }
+                $("#findbtn").click(FindTable);
+                $(".top select").change(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("event_delay A,event_sport B,event_gym C", wherestr+ "A.sport_id=B.id and B.gym_id=C.id");
                 }
             </script>
         </div>

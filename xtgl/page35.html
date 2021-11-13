@@ -11,8 +11,8 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>站点名称<input type="text" id="name" /></label>
+        <div class="top" id="findlist">
+            <label>站点名称<select id="hub_id"></select></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
                 <a href="editpage35.html" target="_self">新增</a>
@@ -33,7 +33,8 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                GetTable("traffic_flow", "");
+                GetChild("traffic_hub", "id|name", "hub_id", "select", true);
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -53,6 +54,18 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                $(".top select").change(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("traffic_flow A,traffic_hub B", wherestr+"A.hub_id=B.id order by arrivetime");
                 }
             </script>
         </div>

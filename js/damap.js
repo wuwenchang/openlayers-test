@@ -1,4 +1,35 @@
 ﻿var map;
+var isShowPopup = false
+var allCarMarker = []; // 所有交通方式数组，geoMarker, id, refreshTime
+var markerStyles = {} // 图标类型库
+
+function createMarkersStyles() {
+    // 车图标
+    var list = ['jy', 'subway', 'bus', 'car', 'train', 'tram']
+    for (let i = 0; i < list.length; i++) {
+        markerStyles[list[i]] = new ol.style.Style({
+            image: new ol.style.Icon({
+                anchor: [0.5, 1],
+                // anchor: [0.75, 0.5],
+                scale: 0.5,
+                src: '../imgs/carImgs/' + list[i] + '.png',
+            }),
+        }) 
+    }
+    // 其他图标
+    var list2 = ['accident', 'tl1', 'tl2', 'tl3', 'tl4','tl5', 'tl6', 'tl7', 'tl8','tl9', 'tl10','tl11', 'tl12', 'tl13', 'tl14']
+    for (let i = 0; i < list2.length; i++) {
+        markerStyles[list2[i]] = new ol.style.Style({
+            image: new ol.style.Icon({
+                anchor: [0.5, 1],
+                // anchor: [0.75, 0.5],
+                scale: 0.5,
+                src: '../imgs/' + list2[i] + '.png',
+            }),
+        }) 
+    }
+}
+
 function addacpoint(id) {
     $.ajax({
         type: "POST",  //访问WebService使用post方式请求
@@ -172,8 +203,9 @@ function addMarker(params, map) {
         rainfall: 500,
         params: params.data
     });
-    var iconStyle = setMarkStyle(params);
-    feature.setStyle(iconStyle);//图层设置 样式
+    // var iconStyle = setMarkStyle(params);
+    // feature.setStyle(iconStyle);//图层设置 样式
+    feature.setStyle(markerStyles[params.stylepng])
     // vectorLayer == null ? null : map.removeLayer(vectorLayer);
     vectorLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
@@ -182,18 +214,18 @@ function addMarker(params, map) {
     });
     map.addLayer(vectorLayer);//将图层加入map
 }
-function setMarkStyle(params) {
-    var iconStyle = new ol.style.Style({
-        image: new ol.style.Icon({
-            anchor: [0.4, 37],
-            anchorXUnits: 'fraction',
-            anchorYUnits: 'pixels',
-            src: params.src || "../imgs/" + params.stylepng + ".png",
-            activeSrc: params.activeSrc || "../imgs/" + params.stylepng + ".png",
-        })
-    });
-    return iconStyle;
-}
+// function setMarkStyle(params) {
+//     var iconStyle = new ol.style.Style({
+//         image: new ol.style.Icon({
+//             anchor: [0.4, 37],
+//             anchorXUnits: 'fraction',
+//             anchorYUnits: 'pixels',
+//             src: params.src || "../imgs/" + params.stylepng + ".png",
+//             activeSrc: params.activeSrc || "../imgs/" + params.stylepng + ".png",
+//         })
+//     });
+//     return iconStyle;
+// }
 
 //随机抽取数据库的数据车辆信息或者随机生成社会车辆信息
 //抽取道路 / 高铁线路 / 地铁线路 / 体育场馆 / 交通枢纽等点信息
@@ -210,9 +242,16 @@ var closer = document.getElementById('popup-closer');
 
 function showAccidentPopup(res, map) {
     var data = res.data;
-    var overlay = getOverlay();
-    overlay.setPosition(data.coordinate);
-    map.addOverlay(overlay);
+    // var overlay = getOverlay();
+    // overlay.setPosition(data.coordinate);
+    // map.addOverlay(overlay);
+    if (map.getOverlays().C.length) {
+        map.getOverlays().C[0].setPosition(data.coordinate)
+    } else {
+        var overlay = getOverlay();
+        overlay.setPosition(data.coordinate);
+        map.addOverlay(overlay);
+    }
     $('#val1').val(data.data.val1)
     $('#val2').val(data.data.val2)
     $('#val3').val(data.data.val3)
@@ -238,24 +277,56 @@ function getOverlay() {
 
 
 function popupShow(e, map, params) {
-    console.log(params);
+    // console.log(params);
     var coordinate = e.coordinate;
     let feature = map.forEachFeatureAtPixel(e.pixel, a => a);
     // console.log(feature)
     if (feature) {
-        var overlay = getOverlay();
-        overlay.setPosition(coordinate);
-        map.addOverlay(overlay);
-        $('#val1').val(feature.O.params.val1)
-        $('#val2').val(feature.O.params.val2)
-        $('#val3').val(feature.O.params.val3)
-        $('#val4').val(feature.O.params.val4)
-        $('#val5').val(feature.O.params.val5)
-        $('#sendid').val(feature.O.params.val7)
+        if (feature.O.params.hideMessage) return
+        if (map.getOverlays().C.length) {
+            map.getOverlays().C[0].setPosition(coordinate)
+        } else {
+            var overlay = getOverlay();
+            overlay.setPosition(coordinate);
+            map.addOverlay(overlay);
+        }
+        var showType = feature.O.params.showType;
+        var driverMessage = $('#driverMessage')
+        var accidentMessage = $('#accidentMessage')
+        var rescueMessage = $('#rescueMessage');
+        isShowPopup = feature.O.params.id
+        if (showType === 'accident' || !showType) {
+            $('#val1').val(feature.O.params.val1)
+            $('#val2').val(feature.O.params.val2)
+            $('#val3').val(feature.O.params.val3)
+            $('#val4').val(feature.O.params.val4)
+            $('#val5').val(feature.O.params.val5)
+            $('#sendid').val(feature.O.params.val7)
+            if (driverMessage) driverMessage.hide()
+            if (accidentMessage) {
+                accidentMessage.show()
+                accidentMessage.attr('data', JSON.stringify(feature.O.params))
+            }
+            if (rescueMessage) rescueMessage.hide()
+        } else if (showType === 'rescue') {
+            $('#val21').val(feature.O.params.val)
+            if (driverMessage) driverMessage.hide()
+            if (accidentMessage) accidentMessage.hide()
+            if (rescueMessage) rescueMessage.show()
+        } else if (showType === 'car') {
+            // $('#val11').val(feature.O.params.val1)
+            // $('#val12').val(feature.O.params.val2)
+            // $('#val13').val(feature.O.params.val3)
+            // $('#val14').val(feature.O.params.val4)
+            // $('#val15').val(feature.O.params.val5)
+            if (driverMessage) driverMessage.show()
+            if (accidentMessage) accidentMessage.hide()
+            if (rescueMessage) rescueMessage.hide()
+        }
         document.getElementById("popup").style.display = "block";
+        
     }
 }
-
 //生成动态模拟运动轨迹
 // 绘制主路
 function drawMainLine(pointsList, properties) {
@@ -269,7 +340,7 @@ function drawMainLine(pointsList, properties) {
         id,
         properties,
         source: roadLineSource,
-        style: getCustomStyle({ color: lineBg[properties.id] || '#4ddc2c', text: properties.region || properties.name })
+        style: getCustomStyle({ color: lineBg[0] || '#4ddc2c', text: properties.region || properties.name || properties.XLMC })
     });
     hadMarkerIds.push(id)
     map.addLayer(roadLineLayer);
@@ -289,7 +360,6 @@ function drawTrackLine(pointsList, i) {
     hadMarkerIds.push(id)
     map.addLayer(roadLineLayer2);
 }
-
 // 添加起点、终点事件
 function addSEMarker(params) {
     // let coordinate = ol.proj.transform(params.coordinate, 'EPSG:4326', 'EPSG:3857')
@@ -313,8 +383,6 @@ function addSEMarker(params) {
     hadMarkerIds.push(params.id)
     map.addLayer(vectorLayer);//将图层加入map
 }
-
-
 // 模拟交通事故
 function trafficLines(params, pointsList) {
     removeLayer('trafficLine1')
@@ -327,7 +395,7 @@ function trafficLines(params, pointsList) {
     var trafficLayer1 = new ol.layer.Vector({
         id: 'trafficLine1',
         source: trafficLineSource2,
-        style: getCustomStyle({ color: 'pink' })
+        style: getCustomStyle({ color: '#ff0' })
     });
     hadMarkerIds.push('trafficLine1')
     map.addLayer(trafficLayer1);
@@ -344,7 +412,6 @@ function trafficLines(params, pointsList) {
     hadMarkerIds.push('trafficLine2')
     map.addLayer(trafficLayer2);
 }
-
 // 移除layer, 根据id或者features的type
 function removeLayer(type) {
     var allLayers = map.getLayers().getArray()
@@ -366,14 +433,13 @@ function removeLayer(type) {
         map.removeLayer(pointLayer)
     }
 }
-
 /**
  * @description: 模拟交通事故
- * @param {type} 
- *  pointIndex：交通事故在线路上的位置
- *  line1Radius：比较拥堵路线半径
- *  line2Radius：非常拥堵路线半径
- *  times：执行次数
+ * @param {number} pointIndex：交通事故在线路上的位置
+ * @param {number} pointIndex：交通事故在线路上的位置
+ * @param {number} line1Radius：比较拥堵路线半径
+ * @param {number} line2Radius：非常拥堵路线半径
+ * @param {number} times：执行次数
  * */
 function startTraffic(pointsList, params) {
     let { pointIndex, line1Radius, line2Radius, times } = params
@@ -384,22 +450,21 @@ function startTraffic(pointsList, params) {
         end2: pointIndex + line2Radius >= pointsList.length - 1 ? pointsList.length - 1 : pointIndex + line2Radius,
     }, pointsList)
     setTimeout(() => {
-        if (times) {
+        if (times > 0) {
             startTraffic(pointsList, {
                 pointIndex,
-                line1Radius: line1Radius + 2,
-                line2Radius: line2Radius + 2,
-                times: times--
+                line1Radius: line1Radius * 2,
+                line2Radius: line2Radius * 2,
+                times: times - 1
             })
         }
     }, 1000);
 }
 // 开始动画
-function startAnimation(pointsList, carMarker, carType) {
-    let pointIndex = 0;
-    const position = new ol.geom.Point(pointsList[0]);
+function startAnimation(params) {
+    let {pointsList, carMarker, carType, properties, isDrawHistory, endIndex} = params
+    let pointIndex = 0, roadLine2;
     var allLayers = map.getLayers().getArray()
-    // console.log(allLayers)
     let pointLayer;
     for (let i = 0; i < allLayers.length; i++) {
         let item = allLayers[i];
@@ -407,39 +472,75 @@ function startAnimation(pointsList, carMarker, carType) {
             pointLayer = allLayers[i]
         }
     }
-    // 初始化轨迹路线
-    var roadLine2 = new ol.geom.LineString([])
-    var roadLineSource2 = new ol.source.Vector({
-        features: [new ol.Feature(roadLine2)]
-    });
-    var roadLineLayer2 = new ol.layer.Vector({
-        id: 'trackLine',
-        source: roadLineSource2,
-        style: getCustomStyle({ color: 'gray' })
-    });
-    map.addLayer(roadLineLayer2);
-    roadLine2.appendCoordinate(pointsList[0])
+    if (isDrawHistory) {
+         // 初始化轨迹路线
+        roadLine2 = new ol.geom.LineString([pointsList[0]])
+        var roadLineSource2 = new ol.source.Vector({
+            features: [new ol.Feature(roadLine2)]
+        });
+        var roadLineLayer2 = new ol.layer.Vector({
+            id: 'trackLine',
+            source: roadLineSource2,
+            style: getCustomStyle({ color: params.historyColor || '#4ddc2c' })
+        });
+        map.addLayer(roadLineLayer2);
+    }
+   
     if (pointLayer) {
+        const position = new ol.geom.Point(pointsList[0]);
+        let allPoint = []
+        // if (carType === 'subway') {
+            for (let i = 0; i < pointsList.length; i++) {
+                let list = createMinLine(pointsList[i], pointsList[i + 1], 10)
+                allPoint = allPoint.concat(list)
+            }
+            allPoint.push(pointsList[pointsList.length - 1])
+        // }
+        if (allPoint.length < 2) return
         let startMove = setInterval(() => {
+            if (endIndex && endIndex <= pointIndex) return
             pointIndex++
-            position.setCoordinates(pointsList[pointIndex]);
-            let rotation = Math.atan2(pointsList[pointIndex][1] - pointsList[pointIndex - 1][1], pointsList[pointIndex][0] - pointsList[pointIndex - 1][0])
-            pointLayer.setStyle(getCarType(carType, rotation))
+            position.setCoordinates(allPoint[pointIndex]);
+            let rotation = Math.atan2(allPoint[pointIndex][1] - allPoint[pointIndex - 1][1], allPoint[pointIndex][0] - allPoint[pointIndex - 1][0])
+            // pointLayer.setStyle(getCarType(carType, rotation))
+            pointLayer.setStyle(markerStyles[carType])
             carMarker.geoMarker.setGeometry(position);
-            // 添加轨迹点位
-            roadLine2.appendCoordinate(pointsList[pointIndex])
-            if (pointIndex >= pointsList.length - 1) {
+            if (isDrawHistory) {
+                // 添加轨迹点位
+                roadLine2.appendCoordinate(allPoint[pointIndex])
+            }
+            if (isShowPopup === properties.id && !properties.hideMessage && map.getOverlays().C.length) {
+                map.getOverlays().C[0].setPosition(allPoint[pointIndex])
+            }
+            if (pointIndex >= allPoint.length - 1) {
                 clearInterval(startMove)
             }
-        }, 500);
+        }, (properties.refreshTime || 0.5) * 1000);
     }
-    
 }
-
+// 根据速度生成更小的线路
+function createMinLine(cur, next, v) {
+    if (!next) return []
+    var curPoint = ol.proj.transform(cur, 'EPSG:3857', 'EPSG:4326')
+    var nextPoint = ol.proj.transform(next, 'EPSG:3857', 'EPSG:4326')
+    // 获取两个经纬度之间的距离
+    var distance = ol.sphere.getDistance(curPoint, nextPoint)
+    var lineLength = Math.ceil(distance / v);
+    var newList = new Array(lineLength)
+    for (let i = 0; i < newList.length; i++) {
+        if (i !== newList - 1) {
+            newList[i] =[cur[0] - (cur[0] - next[0]) * i / lineLength, cur[1] - (cur[1] - next[1]) * i / lineLength]
+        } else {
+            newList[i] = next
+        }
+    }
+    return newList;
+}
 // 汽车图标
-function createGeoMarker(pointsList, carType) {
+function createGeoMarker(pointsList, properties, carType) {
     let id = carType + 'geoMarker' + Math.floor(Math.random() * 10000);
     const geoMarker = new ol.Feature({
+        params: properties,
         geometry: new ol.geom.Point(pointsList[0])
     });
     const arrowLayer = new ol.layer.Vector({
@@ -447,27 +548,29 @@ function createGeoMarker(pointsList, carType) {
         source: new ol.source.Vector({
             features: [geoMarker]
         }),
-        style: getCarType(carType)
+        // style: getCarType(carType),
+        style: markerStyles[carType],
+        zIndex: 9999
     });
     map.addLayer(arrowLayer);
     return {
         geoMarker,
-        id
+        id,
+        refreshTime: 0.5
     } 
 }
-
 function getCarType(carType, rotation) {
     let imgsUrl = '../imgs/carImgs/' + carType + '.png';
     // let carTypes = ['arrow.png', 'b1.png', 'b2.png', 'tl7.png', 'tl2.png', 'tl10.png'];
     return new ol.style.Style({
         image: new ol.style.Icon({
-            anchor: [0.75, 0.5],
+            anchor: [0.5, 1],
+            // anchor: [0.75, 0.5],
             src: imgsUrl,
-            rotation: rotation || -0.6
+            // rotation: rotation || -0.6
         }),
     })
 }
-
 // 实线样式
 function getCustomStyle(params) {
     return new ol.style.Style({
@@ -478,19 +581,24 @@ function getCustomStyle(params) {
         text: new ol.style.Text({
             font: '15px Microsoft yaHei',
             text: params.text,
+            // offsetX: 100,
+            offsetY: 15,
             placement: 'line',
             fill: new ol.style.Fill({
-                color: '#4ddc2c'
+                // color: '#4ddc2c'
+                color: '#fff'
             })
         })
     });
 }
 // 动画
-function initAnimation (pointsList, carType, showStartEnd) {
-    const carMarker = createGeoMarker(pointsList, carType)
+function initAnimation (params) {
+    const {pointsList, properties, carType, showStartEnd} = params
+    const carMarker = createGeoMarker(pointsList, properties, carType)
+    allCarMarker.push(carMarker)
     setTimeout(() => {
         // 开始动画
-        startAnimation(pointsList, carMarker, carType)
+        startAnimation({...params, carMarker})
         if (showStartEnd) {
             // 起始点
             addSEMarker({
@@ -507,12 +615,63 @@ function initAnimation (pointsList, carType, showStartEnd) {
         }
     }, 1000);
 }
-
+// 模拟交通事故，拥堵路线，车辆停止
+function trafficRoute(data, mainline, trafficObj) {
+    // 救援路线
+    var line = mainline.map(item => {
+        return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+    })
+    // 根据数据拐点，生成每一步点位
+    let allPoint = []
+    let extensionPoint = []
+    for (let i = 0; i < line.length; i++) {
+        let list = createMinLine(line[i], line[i + 1], 10)
+        if (data.trafficIndex > i) {
+            allPoint = allPoint.concat(list)
+            if (data.trafficIndex === i) allPoint.push(line[line.length - 1])
+        } else {
+            extensionPoint = extensionPoint.concat(list)
+            if (i === line.length - 1) {
+                extensionPoint.push(line[line.length - 1])
+                extensionPoint.shift()
+                extensionPoint = allPoint.concat(extensionPoint)
+            }
+        }
+    }
+    allPoint.push(line[line.length - 1])
+    // // 延长线
+    // var line2 = JSON.parse(JSON.stringify(extensionLine))
+    // line2 = line2.map(item => {
+    //     return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+    // })
+    // let extensionPoint = []
+    // for (let i = 0; i < line2.length; i++) {
+    //     let list = createMinLine(line2[i], line2[i + 1], 10)
+    //     extensionPoint = extensionPoint.concat(list)
+    // }
+    // extensionPoint.push(line[line.length - 1])
+    // extensionPoint.shift()
+    // extensionPoint = allPoint.concat(extensionPoint)
+    initAnimation({
+        pointsList: line, // 线路点
+        properties: data, // 参数
+        carType: data.carType,  // 车辆类型
+        isDrawHistory: true, // 是否绘制轨迹
+        endIndex: allPoint.length - 1 - trafficObj.line1Radius * Math.pow(2, trafficObj.times) // 停止点
+    })
+    // 交通事故
+    startTraffic(extensionPoint, {
+        pointIndex: allPoint.length - 1,
+        line1Radius: trafficObj.line1Radius,
+        line2Radius: trafficObj.line2Radius,
+        times: trafficObj.times
+    })
+}
 function dealJson(railwayjson) {
     let lines = []
     let textLines = []
     for (let i = 0; i < railwayjson.features.length; i++) {
-        let id = railwayjson.features[i].properties.id
+        let id = railwayjson.features[i].properties.id || railwayjson.features[i].properties.name
         // let text = railwayjson.features[i].properties.region || railwayjson.features[i].properties.name;
         if (textLines.indexOf(id) == -1) {
             textLines.push(id)
@@ -523,7 +682,6 @@ function dealJson(railwayjson) {
     }
     return lines
 }
-
 // 初始化的函数
 function init() {
     var railwayJsonData = dealJson(roadjson)
@@ -533,32 +691,88 @@ function init() {
             return ol.proj.transform(item.geometry.coordinates, 'EPSG:4326', 'EPSG:3857')
         });
         // 绘制线条
-        drawMainLine(lines, properties)
-        if (i == 3) { // 第三条线动画
-            initAnimation(lines, 'car')
-        } else if (i === 39) {
-            initAnimation(lines, 'train')
-        } else if (i === 35) {
-            initAnimation(lines, 'subway')
-        } else if (i === 34) {
-            initAnimation(lines, 'tram')  
-        } else if (i == 0) { // 第一条线模拟交通事故
-            setTimeout(() => {
-                startTraffic(lines, {
-                    pointIndex: 5,
-                    line1Radius: 8,
-                    line2Radius: 2,
-                    times: 10
-                })
-            }, 1000);
+        // drawMainLine(lines, properties)
+        if (properties.name === '机场高速') {
+            // initAnimation({
+            //     isDrawHistory: true, 
+            //     pointsList: lines, 
+            //     properties, 
+            //     carType: 'bus'
+            // })
+            // let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+            // initAnimation({
+            //     isDrawHistory: true,
+            //     pointsList: newLine, 
+            //     properties, 
+            //     carType: 'bus'
+            // })
+        } else if (properties.name === '四环路') {
+            initAnimation({
+                isDrawHistory: true, 
+                pointsList: lines, 
+                properties, 
+                carType: 'bus'
+            })
+            let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+            initAnimation({
+                isDrawHistory: true,
+                pointsList: newLine, 
+                properties, 
+                carType: 'bus'
+            })
+        } else if (properties.name === '学院路') {
+            initAnimation({
+                isDrawHistory: true, 
+                pointsList: lines, 
+                properties, 
+                carType: 'bus'
+            })
+            let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+            initAnimation({
+                isDrawHistory: true,
+                pointsList: newLine, 
+                properties, 
+                carType: 'bus'
+            })
         }
     }
-    createHeatmap(railwayjson)
+    // createHeatmap(railwayjson)
+}
+
+function beginToSimulate(data, map) {
+    // 救援点
+    addMarker({
+        data: {
+            val: data.data.rescueName,
+            showType: 'rescue'
+        },
+        coordinate: data.line[0],
+        stylepng: 'redCross'
+    }, map)
+    //事故点
+    addMarker({
+        data: {
+            val1: data.maker.name,
+            val2: data.maker.address,
+            val3: data.maker.code,
+            val4: data.maker.message,
+            val5: timeFormat(data.maker.addtime),
+            val6: data.maker.name1,
+            target_type: data.maker.target_type,
+            index: data.trafficData.index,
+            id: data.data.id,
+            showType: 'accident'
+        },
+        coordinate: data.line[data.data.trafficIndex],
+        stylepng: 'accident'
+    }, map)
+    map.getView().setCenter(ol.proj.transform(data.line[data.data.trafficIndex], 'EPSG:4326', 'EPSG:3857'))
+    map.getView().setZoom(13)
+    trafficRoute(data.data, data.line, data.trafficData)
 }
 
 // 热力图
 function createHeatmap (heatData) {
-    // railwayjson
     var vectorSource = new ol.source.Vector({ 
         features: (new ol.format.GeoJSON()).readFeatures(heatData,{
             dataProjection : 'EPSG:4326',
@@ -572,4 +786,79 @@ function createHeatmap (heatData) {
       radius: parseInt(5, 10),
     });
     map.addLayer(vector)
+}
+
+function updateAccident(params) {
+    $.ajax({
+        cache: false,
+        async: false,
+        contentType: "application/x-www-form-urlencoded; charset=utf-8",
+        url: getRootPath() + "/Service/AddAccident.ashx", //调用WebService的地址和方法名称组合
+        data: params,
+        dataType: "json",
+        success: function (result) { 
+            // console.log(result)
+            var jsondatas = eval("(" + result + ")");
+            console.log(jsondatas)
+        }
+    })
+}
+
+function createAccident(rescuejson, accidentCarData) {
+    var data = rescuejson.features;
+    var i = 0;
+    var accidentCarType  = {
+        1: '社会车辆',
+        2: '公交车',
+        3: '电动汽车',
+        4: '奥运小巴',
+        5: '地铁路线',
+        6: '高铁车组'
+    }
+    // 车类型对应的故障类型
+    var CarErrorType = {
+        1: ['直行事故', '追尾事故', '左转弯事故', '超车事故', '窄道事故', '弯道事故', '坡道事故', '占用车道事故'],
+        2: ['公交车侧翻', '直行事故', '追尾事故', '左转弯事故','超车事故', '窄道事故', '弯道事故', '坡道事故', '占用车道事故'],
+        3: ['通信故障', '通信信号设备故障', '线路设备故障'],
+        4: ['直行事故', '追尾事故', '左转弯事故', '超车事故', '窄道事故', '弯道事故', '坡道事故', '占用车道事故'],
+        5: ['信号故障', '路线故障', '电力故障', '地面轨道故障'],
+        6: ['电力故障', '地面轨道故障', '占用车道事故']
+    }
+    var accidentType = [
+        '', '公交车侧翻', '直行事故', '追尾事故', '左转弯事故', 
+        '超车事故', '窄道事故', '弯道事故', '坡道事故', '占用车道事故', '信号故障', '路线故障', '电力故障', '地面轨道故障'
+    ]
+    var time = setInterval(function() {
+        i++
+        var target = Math.floor(1 + Math.random() * 6)
+        var name = CarErrorType[target][Math.floor(Math.random() * CarErrorType[target].length)]
+        var accidentPoint = data[i].geometry.coordinates[Math.floor(data[i].geometry.coordinates.length / 2)]
+        var obj = { 
+            name: name, // 事故名称
+            address: data[i].properties.XLMC.slice(0, -3), // 事故地址
+            type: accidentCarData.type, // 事故类型
+            message: data[i].properties.XLMC.slice(0, -3) + name,  // 描述
+            code: accidentCarData.code,
+            // code: '京A' + (10000 + Math.floor(Math.random() * 90000)), 
+            xaxis: accidentPoint[0][0],
+            yaxis: accidentPoint[0][1],
+            // line: data[i].geometry.coordinates,
+            target_type: data[i].properties.Id, // 救援路线
+            target: accidentCarData.type // 事故对象
+        }
+        // console.log(obj)
+        updateAccident(obj)
+        if (i === data.length - 1) {
+            clearInterval(time)
+        }
+    }, accidentCarData.time || 10000)
+}
+
+// 获取事故路线
+function getAccidentLine(lines, type) {
+    for (let i = 0; i < lines.length; i++) {
+        if (type == lines[i].properties.Id) {
+            return lines[i]
+        }
+    }
 }

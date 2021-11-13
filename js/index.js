@@ -80,7 +80,7 @@ function menuclick(index) {
     }
     else {
         $("#ifrbox iframe").hide();
-        if (index > 9 && index < 20) {
+        if (index > 9 && index < 16) {
             if ($(".left a").eq(index).attr("id"))
             {
                 var idex = $(".left a").eq(index).attr("id").substring(2);
@@ -98,7 +98,7 @@ function menuclick(index) {
             var idex = $(".left a").eq(index).attr("id").substring(2);
             $("#ifrbox").append("<iframe src=\"zygl/page" + idex + ".html\" id=\"ifr" + index + "\" frameborder=\"0\"></iframe>");
         }
-        else if (index > 19 ) {
+        else if (index > 15 ) {
             var idex = $(".left a").eq(index).attr("id").substring(2);
             $("#ifrbox").append("<iframe src=\"xtgl/page" + idex + ".html\" id=\"ifr" + index + "\" frameborder=\"0\"></iframe>");
         }

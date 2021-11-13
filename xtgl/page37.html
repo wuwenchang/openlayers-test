@@ -11,8 +11,8 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>交通枢纽名称<input type="text" id="name" /></label>
+        <div class="top" id="findlist">
+            <label>方案名称<input type="text" id="name" /></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
                 <a href="editpage37.html" target="_self">新增</a>
@@ -32,7 +32,7 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                GetTable("traffic_rescue", "");
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -41,7 +41,7 @@
                             var tr = $("<tr></tr>")
                             $("#listtable").append(tr);
                             tr.append("<td>" + n.id + "</td>");
-                            tr.append("<td>" + n.xaxis + "," + n.yaxis + "</td>");
+                            tr.append("<td>【" + n.xaxis + "," + n.yaxis + "】</td>");
                             tr.append("<td>" + n.name + "</td>");
                             tr.append("<td>" + transporttype[n.type] + "救援</td>");
                             tr.append("<td>" + n.respondtime + "</td>");
@@ -51,6 +51,17 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("traffic_rescue", wherestr+"1=1 order by respondtime");
                 }
             </script>
         </div>

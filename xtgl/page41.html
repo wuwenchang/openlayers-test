@@ -11,8 +11,9 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
+        <div class="top" id="findlist">
             <label>类型<select id="type"><option value="all">---全部---</option></select></label>
+            <label>事故描述<input id="message" type="text" /></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
                 <a href="editpage41.html" target="_self">新增</a>
@@ -31,7 +32,7 @@
                 for (var key in transporttype) {
                     $("#type").append("<option value=\"" + key + "\">" + transporttype[key] + "</option>");
                 }
-                GetTable("traffic_accident_normal", "");
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -46,6 +47,18 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                $(".top select").change(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("traffic_accident_normal", wherestr+"1=1");
                 }
             </script>
         </div>

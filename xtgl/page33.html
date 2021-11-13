@@ -11,9 +11,8 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>体育馆名称<input type="text" id="name" /></label>
-            <label>联系人<input type="text" id="contact"  /></label>
+        <div class="top" id="findlist">
+            <label>滞留地址<input type="text" id="address" /></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
                 <a href="editpage33.html" target="_self">新增</a>
@@ -23,6 +22,7 @@
             <table id="listtable">
                 <tr>
                     <th>编号</th>
+                    <th>坐标</th>
                     <th>滞留地区</th>
                     <th>滞留地址</th>
                     <th>时间</th>
@@ -32,15 +32,16 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                GetTable("traffic_delay A,event_gym B,traffic_hub C", "(A.type=1 and A.type_id=B.id) or (A.type=2 and A.type_id=C.id)");
+                FindTable(); 
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
-                    if (nowTable != null) {
+                    if (nowTable != null) { 
                         $(nowTable).each(function (i, n) {
                             var tr = $("<tr></tr>")
                             $("#listtable").append(tr);
                             tr.append("<td>" + n.id + "</td>");
+                            tr.append("<td>【" + n.xaxis + "," + n.yaxis + "】<img onclick=\"pointMap(10," + n.id + ")\"  src=\"../imgs/pt.png\" /></td>");
                             tr.append("<td>" + (n.type == 1 ? n.name : n.name1) + "</td>");
                             tr.append("<td>" + n.address + "</td>");
                             tr.append("<td>" + timeFormat(n.starttime) + "</td>");
@@ -50,6 +51,20 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                function pointMap(type, id) {
+                    window.parent.accidentPointMap(type, id);
+                }
+                $("#findbtn").click(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("traffic_delay A left join event_gym B on A.type_id=B.id left join traffic_hub C on A.type_id=C.id", wherestr+"1=1 order by starttime");
                 }
             </script>
         </div>

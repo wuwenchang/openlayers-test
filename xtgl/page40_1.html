@@ -11,8 +11,10 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>类型<select id="type"><option value="all">---全部---</option></select></label>
+        <div class="top" id="findlist">
+            <label>线路名称<input id="name" type="text" /></label>
+            <label>起始站<input id="startstation" type="text" /></label>
+            <label>终点站<input id="endstation" type="text" /></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
                 <a href="editpage40_1.html" target="_self">新增</a>
@@ -31,7 +33,7 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                GetTable("traffic_bus", "");
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -48,6 +50,17 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("traffic_bus", wherestr+"1=1");
                 }
             </script>
         </div>

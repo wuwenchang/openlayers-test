@@ -11,10 +11,10 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>名称<input type="text" id="fname" /></label>
+        <div class="top" id="findlist">
+            <label>名称<input id="name" type="text" /></label>
             <div class="btns">
-                <a onclick="ceshi();">查询</a>
+                <a id="findbtn">查询</a>
                 <a href="editpage3_1.html" target="_self">新增</a>
                 <a href="page3.html" target="_self">返回</a>
             </div>
@@ -28,7 +28,7 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                GetTable("traffic_car_team", "");
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -38,10 +38,21 @@
                             $("#listtable").append(tr);
                             tr.append("<td>" + n.id + "</td>");
                             tr.append("<td>" + n.name + "</td>");
-                            tr.append("<td><a href=\"editpage3_1.html?eid=" + n.id+"\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('traffic_car_team'," + n.id + ")\" class=\"btn4\">删除</a></td>");
+                            tr.append("<td><a href=\"editpage3_1.html?eid=" + n.id + "\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('traffic_car_team'," + n.id + ")\" class=\"btn4\">删除</a></td>");
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("traffic_car_team", wherestr+ "1=1");
                 }
             </script>
         </div>

@@ -1,0 +1,256 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/echarts.min.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/echart.css" />
+    <style>
+            .allpage .item {
+                width: 100%;
+                height: 30%;
+                display: inline-block;
+                float: left;
+                margin-bottom: 20px;
+                border-radius: 10px;
+                overflow: hidden;
+                background-color: #162d59;
+            }
+    </style>
+</head>
+<body>
+    <div class="allpage">
+        <div class="item" id="con1"></div>
+        <div class="item" id="con2"></div>
+        <div class="item" id="con3"></div>
+    </div>
+    <script type="text/javascript">
+        $(".allpage").css("height", $(window).height() - 40 + "px");
+        $(".item").css("height", ($(window).height() / 3 - 27) + "px");
+        setInterval(function () {
+            var d = new Date();                          //创建Date对象
+            $("#time").html(d.getFullYear()             //调用getFullYear()方法获得四位数年份
+                + "年" + (d.getMonth() + 1)                     //调用getMonth()方法获得月份（0-11）
+                + "月" + d.getDate()                          //调用getDate()方法获得一个月中的某一天（1-31）
+                + "日 星期" + "日一二三四五六".charAt(d.getDay())  // arrary.charAt（index) 调用getDay()获得一周中的某一天（0-6）作为字符数组下标
+                + " " + d.getHours()                               //获取小时（0-23）
+                + ":" + d.getMinutes()                             //获取分（0-59）
+                + ":" + d.getSeconds());                            //获取秒（0-59）
+        }, 10000);       //每1000毫秒(即1秒) 执行一次本段代码
+
+                    var chartlist1 = new Array();
+                    chartlist1[0] = ["时段", "公交运力", "地铁运力"];
+                    var chartlist3 = new Array();
+                    chartlist3[0] = ["时段", "交通枢纽客流"];
+                    var d = new Date();
+                    var h = d.getHours();
+                    for (var i = 0; i <= h; i++) {
+                        chartlist1[i + 1] = [i + ":00", Math.floor(Math.random() * 50) + 50, Math.floor(Math.random() * 200) + 100];
+                        chartlist3[i + 1] = [i + ":00", Math.floor(Math.random() * 150) + 50];
+                    }
+                    console.log(chartlist1);
+                    var chartlist2 = new Array();
+                    chartlist2[0] = ["类型", "个数"];
+                    chartlist2[1] = ["地铁客运", Math.floor(Math.random() * 100) + 100];
+                    chartlist2[2] = ["公交客运", Math.floor(Math.random() * 1000) + 1000];
+                    chartlist2[3] = ["大巴客运", Math.floor(Math.random() * 500) + 500];
+                    chartlist2[4] = ["铁路客运", Math.floor(Math.random() * 50) + 50];
+                    chartlist2[5] = ["私家车", Math.floor(Math.random() * 2000) + 2000];
+                    console.log(chartlist2);
+                    var dom1 = document.getElementById("con1");
+                    var dom2 = document.getElementById("con2");
+                    var dom3= document.getElementById("con3");
+        var myChart1 = echarts.init(dom1, 'dark');
+        var myChart2 = echarts.init(dom2, 'dark');
+        var myChart3 = echarts.init(dom3, 'dark');
+                    var option1;
+                    option1 = {
+                        backgroundColor: '#162d59',
+                        title: {
+                            text: '公共交通运力随时间变化图',
+                            left: '10px',
+                            top: '10px',
+                            textStyle: {
+                                fontSize: 14, //大小
+                            }
+                        },
+                        grid: {
+                            x: 50,
+                            y: 80,
+                            x2: 50,
+                            y2: 40
+                        },
+                        legend: {
+                            // Try 'horizontal'
+                            top: '40px'
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                animation: false
+                            }
+                        },
+                        dataset: {
+                            source: chartlist1
+                        },
+                        xAxis: {
+                            type: 'category',
+                            name: '时段' 
+                        },
+                        yAxis: { name: '人数' },
+                        // Declare several bar series, each will be mapped
+                        // to a column of dataset.source by default.
+                        series: [
+                            {
+                                name: '公交运力',
+                                type: 'line',
+                                itemStyle: {
+                                    color: ["#64d2ff"]
+                                }
+                            },
+                            {
+                                name: '地铁运力',
+                                type: 'line',
+                                itemStyle: {
+                                    color: ["#99fbb2"]
+                                }
+                            }
+                        ]
+                    };
+                    var option2;
+        option2 = {
+            color: ['#ff9090', '#ffbc90', '#fbff90', '#99fbb2', '#64d2ff', '#749f83', '#ca8622', '#bda29a', '#6e7074', '#546570', '#c4ccd3'],
+
+                        backgroundColor: '#162d59',
+                        tooltip: {
+                           
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            right: 15,
+                            top: 'center'
+                        },
+                        grid: {
+                            x: 50,
+                            y: 80,
+                            x2: 50,
+                            y2: 40
+                        },
+                        title: {
+                            text: '客运能力对比',
+                            left: '10px',
+                            top: '10px',
+                            textStyle: {
+                                fontSize: 14, //大小
+                            }
+                        },
+                        dataset: {
+                            source: chartlist2
+                        },
+                        series: [
+                            {
+                                //roseType: 'angle',
+                                type: 'pie',
+                                radius: ['40%', '70%'],
+                                center: ['40%', '52%'],
+                                selectedMode: 'single',
+                                itemStyle: {
+                                    borderRadius: 5,
+                                    borderColor: '#162d59',
+                                    borderWidth: 1
+                                },
+                                label: {
+                                    formatter: '{time|{c}次}\n {per|{d}%}',
+                                    minMargin: 5,
+                                    edgeDistance: 10,
+                                    lineHeight: 15,
+                                    rich: {
+                                        time: {
+                                            fontSize: 10,
+                                            color: '#fff',
+                                            padding: [3, 4]
+                                        },
+                                        per: {
+                                            color: '#fff',
+                                            backgroundColor: '#233c6b',
+                                            padding: [3, 4],
+                                            borderRadius: 4
+                                        }
+                                    }
+                                },
+                                emphasis: {
+                                    itemStyle: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                }
+                            }
+                        ]
+                    };
+                    var option3;
+                    option3 = {
+                        backgroundColor: '#162d59',
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'cross',
+                                animation: false,
+                                label: {
+                                    backgroundColor: '#48a3e9'
+                                }
+                            }
+                        },
+                        title: {
+                            text: '交通枢纽客流量分布图',
+                            left: '10px',
+                            top: '10px',
+                            textStyle: {
+                                fontSize: 14, //大小
+                            }
+                        },
+                        legend: {
+                            top: '40px'
+                        },
+                        grid: {
+                            x: 50,
+                            y: 80,
+                            x2: 50,
+                            y2: 40
+                        },
+                        dataset: {
+                            source: chartlist3
+                        },
+                        xAxis: {
+                            type: 'category',
+                            name: '时段'
+                        },
+                        yAxis: {
+                            type: 'value',
+                            name: '人数'
+                        },
+                        series: [{
+                            type: 'bar',
+                            barWidth: '50%',
+                            itemStyle: {
+                                color: ["#64d2ff"]
+                            }
+                        }]
+                    };
+                    option1 && myChart1.setOption(option1);
+                    option2 && myChart2.setOption(option2);
+                    option3 && myChart3.setOption(option3);
+                    
+               
+        function getChart() {
+           
+        }
+
+    </script>
+</body>
+</html>

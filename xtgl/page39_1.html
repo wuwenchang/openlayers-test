@@ -11,8 +11,10 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>类型<select id="type"><option value="all">---全部---</option></select></label>
+        <div class="top" id="findlist">
+            <label>线路名称<input id="name" type="text" /></label>
+            <label>起始站<input id="startstation" type="text" /></label>
+            <label>终点站<input id="endstation" type="text" /></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
                 <a href="editpage39_1.html" target="_self">新增</a>
@@ -48,6 +50,17 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    GetTable("traffic_metro", "");
+                }
+                $("#findbtn").click(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("traffic_metro", wherestr+"1=1");
                 }
             </script>
         </div>

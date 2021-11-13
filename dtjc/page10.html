@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html style="width: 100%;height:100%">
+
 <head>
     <meta charset="utf-8" />
     <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
@@ -7,27 +8,28 @@
     <script type="text/javascript" src="../js/normal.js"></script>
     <script type="text/javascript" src="../js/tables.js"></script>
     <script type="text/javascript" src="../js/map.js"></script>
-    <script src="../json/ol.css"></script>
-    <script src="../json/ol.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/build/ol.js"></script>
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/css/ol.css">
     <link href="../css/index.css" rel="stylesheet" />
-    <link href="../css/dastyle.css" rel="stylesheet" />
     <script src="../json/railwayjson.js"></script>
-    <script src="../json/roadjson.js"></script>
-    <script src="../json/subwayjson.js"></script>
     <script type="text/javascript" src="../js/damap.js"></script>
+    <link href="../css/dastyle.css" rel="stylesheet" />
     <title>交通枢纽</title>
 </head>
+
 <body style="background-color: #00192e;">
     <a id="bemax" class="max">
         <img src="../imgs/bmax.png" />
     </a>
+    <a id="showct" onclick="showChart('10');" class="show"><img src="../imgs/chart.png" /></a>
     <div class="messagebox" style="height:154px">
         <iframe src="messagebox.html?msg=2&type=9,10" scrolling="no" frameborder="0"></iframe>
     </div>
     <div id="map">
         <div id="popup" class="ol-popup">
             <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-            <div class="popup-content">
+            <div class="popup-content" id="accidentMessage">
                 <input type="hidden" id="sendid" value="" />
                 <div>
                     <span>名 称：</span><input type="text" id="val1">
@@ -66,7 +68,6 @@
     </div>
     <script>
         window.onload = function () {
-
             var center1 = [116.011, 40.45];
             var inilayers = ['dapoi'];
             var map = loadmap(center1, '250.74811314055756', inilayers);
@@ -77,11 +78,162 @@
             });
 
             window.addEventListener('message', function (res) {
-                 $(".footer").show();
+                $(".footer").show();
                 params = res;
                 showAccidentPopup(res, map);
             })
+            // var pointStyle=new ol.style.Style({ 
+            //     image: new ol.style.Icon({
+            //         src: '........’,
+            //     })
+            // });
+            map.getView().on('change:resolution', function () {
+                // 重新设置图标的缩放率，基于层级20来做缩放
+                for (let key in markerStyles) {
+                    markerStyles[key].getImage().setScale(this.getZoom() / 20)
+                }
+                // pointStyle.getImage().setScale(this.getZoom() / 20);
+                // console.log(map.getView().getZoom())
+            })
+            var headVectorSource = new ol.source.Vector({
+                features: (new ol.format.GeoJSON()).readFeatures({
+                    features: [],
+                    "type": "FeatureCollection",
+                }, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:3857'
+                })
+            });
+            var headVector = new ol.layer.Heatmap({
+                source: headVectorSource,
+                blur: parseInt(10, 10),
+                radius: parseInt(5, 10),
+            });
+            map.addLayer(headVector)
+            getData("traffic_hub", "1=1");
+            function getData(tblname, wstr) {
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    cache: false,
+                    async: false,
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                    data: { tableName: tblname, whereSql: wstr, pageNum: 1, rowsNum: 1000 },
+                    success: function (myjson) {
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            var list = jsondatas.Table;
+                            randomHeatmap(list)
+                        }
+                    },
+                    error: function () {
+                        layer.msg("系统错误", { icon: 2 })
+                    }
+                });
+            }
+            // function randomHeatmap(features) {
+            //     let newFeature = features.map(item => {
+            //         let random = Math.random() > 0.5 ? (0 - Math.random() / 10000000) : (Math.random() / 10000000);
+            //         return {
+            //             type: 'Feature',
+            //             geometry: {
+            //                 "type": "Point", 
+            //                 "coordinates": [item.xaxis + random, item.yaxis + random]
+            //             }
+            //         }
+            //     })
+            //     setInterval(() => {
+
+            //         createHeatmap({
+            //             "type": "FeatureCollection",
+            //             'features': newFeature
+            //         })
+            //     }, 3000)
+            // }
+            function randomHeatmap(list) {
+                setInterval(() => {
+                    let features = list.map(item => {
+                        let random1 = Math.random() > 0.5 ? (0 - Math.random() / 1000) : (Math.random() / 1000);
+                        let random2 = Math.random() > 0.5 ? (0 - Math.random() / 1000) : (Math.random() / 1000);
+                        let coordinate = ol.proj.transform([item.xaxis + random1, item.yaxis + random2], 'EPSG:4326', 'EPSG:3857')
+                        return {
+                            type: 'Feature',
+                            geometry: new ol.geom.Point(coordinate)
+                        }
+                    })
+                    // map.removeLayer(headVector)
+                    // headVectorSource.addFeature(new ol.Feature(features[i]))
+                    for (let i = 0; i < features.length; i++) {
+                        headVectorSource.addFeature(new ol.Feature(features[i]))
+                    }
+                }, 3000)
+            }
+            // $.ajax({
+            //     type: "POST",  //访问WebService使用post方式请求
+            //     cache: false,
+            //     async: false,
+            //     contentType: "application/x-www-form-urlencoded; charset=utf-8",
+            //     url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+            //     data: { 
+            //         tableName: "roadnet", 
+            //         whereSql: "select connect,f_lng,f_lat,n_lng,n_lat from roadnet"
+            //     },
+            //     success: function (myjson) {
+            //         var jsondatas = eval("(" + myjson + ")");
+            //         console.log(jsondatas)
+            //         if (jsondatas.CODE > 0) {
+            //             // actable = jsondatas.Table;
+            //             // $("#message").find("tr").remove();
+            //             // $(actable).each(function (i, n) {
+            //             //     $("#message").append("<tr><td  width=\"50px\"><img src=\"../imgs/" + n.img + ".png\" /></td><td>" + n.name + "</td><td  width=\"30px\"><img onclick=\"Location2Marker(" + n.id + ")\"  src=\"../imgs/pt.gif\" /></td></tr>");
+            //             // });
+            //         }
+            //         else {
+            //             layer.msg(jsondatas.MSG, { icon: 2 });
+            //         }
+            //     },
+            //     error: function () {
+            //         layer.msg("系统错误", { icon: 2 })
+            //     },
+            //     // complete: function () {
+            //     //     layer.close(iiload);
+            //     // }
+            // });
+
+            // $.ajax({
+            //     type: "POST",  //访问WebService使用post方式请求
+            //     cache: false,
+            //     async: false,
+            //     contentType: "application/x-www-form-urlencoded; charset=utf-8",
+            //     url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+            //     data: { 
+            //         tableName: "roadstatus", 
+            //         whereSql: "select cell_connect,A22:00:00 from raodstatus"
+            //     },
+            //     success: function (myjson) {
+            //         var jsondatas = eval("(" + myjson + ")");
+            //         console.log(jsondatas)
+            //         if (jsondatas.CODE > 0) {
+            //             // actable = jsondatas.Table;
+            //             // $("#message").find("tr").remove();
+            //             // $(actable).each(function (i, n) {
+            //             //     $("#message").append("<tr><td  width=\"50px\"><img src=\"../imgs/" + n.img + ".png\" /></td><td>" + n.name + "</td><td  width=\"30px\"><img onclick=\"Location2Marker(" + n.id + ")\"  src=\"../imgs/pt.gif\" /></td></tr>");
+            //             // });
+            //         }
+            //         else {
+            //             layer.msg(jsondatas.MSG, { icon: 2 });
+            //         }
+            //     },
+            //     error: function () {
+            //         layer.msg("系统错误", { icon: 2 })
+            //     },
+            //     // complete: function () {
+            //     //     layer.close(iiload);
+            //     // }
+            // });
+
         };
     </script>
 </body>
+
 </html>

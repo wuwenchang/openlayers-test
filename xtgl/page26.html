@@ -11,8 +11,8 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>站点名称<input type="text" id="name" /></label>
+        <div class="top" id="findlist">
+            <label>场馆名称<select id="gym_id"></select></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
                 <a href="editpage26.html" target="_self">新增</a>
@@ -22,18 +22,18 @@
             <table id="listtable">
                 <tr>
                     <th>编号</th>
-                    <th>站点名称</th>
-                    <th>进站时间</th>
-                    <th>出站时间</th>
-                    <th>进站人数</th>
-                    <th>出站人数</th>
-                    <th>到站列车数</th>
-                    <th>出站列车数</th>
+                    <th>场馆名称</th>
+                    <th>进场时间</th>
+                    <th>出场时间</th>
+                    <th>进场人数</th>
+                    <th>出场人数</th>
+                    <th>说明</th>
                     <th style="width:200px;">操作</th>
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                GetTable("event_flow", "");
+                GetChild("event_gym", "id|name", "gym_id", "select", true);
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -47,12 +47,23 @@
                             tr.append("<td>" + n.leavetimestr + "</td>");
                             tr.append("<td>" + n.arrivepnum + "</td>");
                             tr.append("<td>" + n.leavepnum + "</td>");
-                            tr.append("<td>" + n.arrivenum + "</td>");
-                            tr.append("<td>" + n.leavenum + "</td>");
+                            tr.append("<td>" + n.remark + "</td>");
                             tr.append("<td><a href=\"editpage26.html?eid=" + n.id +"\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('event_flow'," + n.id + ")\" class=\"btn4\">删除</a></td>");
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                $("#gym_id").change(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("event_flow A,event_gym B", wherestr+ "A.gym_id=B.id order by A.arrivetime");
                 }
             </script>
         </div>

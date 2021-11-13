@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
+        <div class="top" id="findlist">
             <label>赛事<select  id="sport_id" ></select></label>
             <label>限流开始时间<input type="date" id="starttime" /></label>
             <div class="btns">
@@ -23,6 +23,7 @@
             <table id="listtable">
                 <tr>
                     <th>编号</th>
+                    <th>坐标</th>
                     <th>赛事</th>
                     <th>计划人数</th>
                     <th>现有人数</th>
@@ -33,7 +34,7 @@
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
                 GetChild("event_sport", "id|event", "sport_id", "select", true);
-                GetTable("event_limit A,event_sport B", "A.sport_id=B.id");
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -42,6 +43,7 @@
                             var tr = $("<tr></tr>")
                             $("#listtable").append(tr);
                             tr.append("<td>" + n.id + "</td>");
+                            tr.append("<td>【" + n.xaxis + "," + n.yaxis + "】<img onclick=\"pointMap(8," + n.id + ")\"  src=\"../imgs/pt.png\" /></td>");
                             tr.append("<td>" + n.event + "</td>");
                             tr.append("<td>" + n.planpnum + "</td>");
                             tr.append("<td>" + n.realpnum + "</td>");
@@ -51,6 +53,21 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                function pointMap(type, id) {
+                    window.parent.accidentPointMap(type, id);
+                }
+                $("#findbtn").click(FindTable);
+                $(".top select").change(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("event_limit A,event_sport B,event_gym C", wherestr+ "A.sport_id=B.id and B.gym_id=C.id");
                 }
             </script>
         </div>

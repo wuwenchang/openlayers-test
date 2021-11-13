@@ -11,8 +11,11 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>交通方式<input type="text" id="type" /></label>
+        <div class="top" id="findlist">
+            <label>交通方式<select id="type"><option value="all">---全部---</option></select></label>
+            <label>车次<input type="text" id="code" /></label>
+            <label>司机<input type="text" id="driver" /></label>
+            <label>联系电话<input type="text" id="tel" /></label>
             <label>比赛区域<input type="text" id="eventarea" /></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
@@ -35,7 +38,10 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                GetTable("traffic_transport", "");
+                for (var key in transporttype) {
+                    $("#type").append("<option value=\"" + key + "\">" + transporttype[key] + "</option>");
+                }
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -56,6 +62,18 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                $(".top select").change(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("traffic_transport", wherestr+"1=1 order by starttime");
                 }
             </script>
         </div>

@@ -1,0 +1,508 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/echarts.min.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/echart.css" />
+    <style>
+        body, div {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .allpage {
+            width: calc(100% - 20px);
+            padding: 20px 0px 0px 20px;
+            overflow: hidden;
+            background-color: rgba(19,35,66,0.8);
+        }
+
+            .allpage .item {
+                width: calc(50% - 20px);
+                height: 33.333%;
+                display: inline-block;
+                float: left;
+                border-radius: 10px;
+                overflow: hidden;
+                background-color: #162d59;
+                margin-bottom:20px;
+                margin-right:20px;
+            }
+
+                .allpage .item:last-child {
+                    margin: 0px;
+                }
+
+    </style>
+</head>
+<body>
+    <div class="allpage">
+        <div class="top"><label>选择体育场馆：</label><select id="gym"></select></div>
+        <div class="item" id="con2"></div>
+        <div class="item" id="con1"></div>
+        <div class="item" id="con3"></div>
+        <div class="item" id="con4"></div>
+        <div class="item" id="con5"></div>
+        <div class="item" id="con6"></div>
+    </div>
+    <script type="text/javascript">
+        $(".allpage").css("height", $(window).height() - 20 + "px");
+        $(".item").css("height", ($(window).height() / 3 - 32.5) + "px");
+        GetChild("event_gym", "id|name", "gym", "select");
+        $("#gym").change(getChart);
+        getChart();
+        function getChart() {
+            var iiload = layer.load(1, false);
+            $.ajax({
+                type: "POST",  //访问WebService使用post方式请求
+                contentType: "application/json; charset=utf-8",
+                url: getRootPath() + "/Service/MyWebService.asmx/GetEchart", //调用WebService的地址和方法名称组合
+                data: "{type:'9',key:'" + $("#gym").val() + "'}",
+                dataType: "json",
+                success: function (result) {
+                    var myjson = result.d;
+                    var jsondatas = eval("(" + myjson + ")");
+                    if (jsondatas.CODE > 0) {
+                        var mytbl1 = jsondatas.Table;
+                        var mytbl2 = jsondatas.Table1;
+                        var mytbl3 = jsondatas.Table2;
+                        var mytbl4 = jsondatas.Table3;
+                        var mytbl5 = jsondatas.Table4;
+                        var mytbl6 = jsondatas.Table5;
+                        var chartlist1 = new Array();
+                        chartlist1[0] = ["时间段", "进场人数","离场人数"];
+                        var chartlist2 = new Array();
+                        chartlist2[0] = ["赛事", "进度"];
+                        var chartlist3 = new Array();
+                        chartlist3[0] = ["时间段", "推迟日期","推迟时间","结束时间"];
+                        var chartlist4 = new Array();
+                        chartlist4[0] = ["时间段", "限流时间","限流人数","实际人数"];
+                        $.each(mytbl1, function (i, n) {
+                            chartlist2[i + 1] = [n.event, Math.floor(Math.random() * 100)];
+                        });
+                        $.each(mytbl2, function (i, n) {
+                            chartlist1[i + 1] = [n.atime + "-" + n.ltime, n.arrivepnum, n.leavepnum];
+                        });
+                        console.log(chartlist1);
+                        $.each(mytbl3, function (i, n) {
+                            chartlist3[i + 1] = [n.event+n.id, n.adate , n.atime,n.ltime];
+                        });
+                        $.each(mytbl4, function (i, n) {
+                            chartlist4[i + 1] = [n.event+ n.id, n.atime, n.planpnum, n.realpnum];
+                        });
+                        var chartlist5 = new Array();
+                        chartlist5[0] = ["日期", "次数"];
+                        var chartlist6 = new Array();
+                        chartlist6[0] = ["日期", "次数"];
+                        $.each(mytbl5, function (i, n) {
+                            chartlist5[i + 1] = [n.to_char, n.con];
+                        });
+                        $.each(mytbl6, function (i, n) {
+                            chartlist6[i + 1] = [n.to_char, n.con];
+                        });
+                        var dom1 = document.getElementById("con1");
+                        var dom2 = document.getElementById("con2");
+                        var dom3 = document.getElementById("con3");
+                        var dom4 = document.getElementById("con4");
+                        var dom5 = document.getElementById("con5");
+                        var dom6 = document.getElementById("con6");
+                        var myChart1 = echarts.init(dom1, 'dark');
+                        var myChart2 = echarts.init(dom2, 'dark');
+                        var myChart3 = echarts.init(dom3, 'dark');
+                        var myChart4 = echarts.init(dom4, 'dark');
+                        var myChart5 = echarts.init(dom5, 'dark');
+                        var myChart6 = echarts.init(dom6, 'dark');
+                        var option1;
+                        option1 = {
+                            color: ['#64d2ff','#ff9090'],
+                            backgroundColor: '#162d59',
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    animation: false,
+                                    label: {
+                                        backgroundColor: '#48a3e9'
+                                    }
+                                }
+                            },
+                            title: {
+                                text: '人群流量热度',
+                                left: '10px',
+                                top: '10px',
+                                textStyle: {
+                                    fontSize: 14, //大小
+                                }
+                            },
+                            legend: {
+                                top: '40px'
+                            },
+                            grid: {
+                                x: 50,
+                                y: 80,
+                                x2: 50,
+                                y2: 40
+                            },
+                            dataset: {
+                                source: chartlist1
+                            },
+                            xAxis: {
+                                type: 'category',
+                                name: '时段'
+                            },
+                            yAxis: {
+                                type: 'value',
+                                name: '事故'
+                            },
+                            series: [{
+                                type: 'bar',
+                                barWidth: '20px'
+                            },
+                            {
+                                type: 'bar',
+                                barWidth: '20px'
+                                }]
+                        };
+                        option2 = {
+                            backgroundColor: '#162d59',
+                            tooltip: {
+                            },
+                            title: {
+                                text: '赛事进度',
+                                left: '10px',
+                                top: '10px',
+                                textStyle: {
+                                    fontSize: 14, //大小
+                                }
+                            },
+                            grid: {
+                                x: 120,
+                                y: 40,
+                                x2: 50,
+                                y2: 20
+                            },
+                            dataset: {
+                                source: chartlist2
+                            },
+                            xAxis: {
+                                type: 'value',
+                                max: 100,
+                                splitLine: {
+                                    show: false
+                                },
+                                axisTick: {
+                                    show: false
+                                },
+                                axisLine: {
+                                    show: false
+                                },
+                                axisLabel: {
+                                    show: false,
+
+                                }
+                            },
+                            yAxis: {
+                                type: 'category',
+                                splitLine: {
+                                    show: false
+                                },
+                                axisTick: {
+                                    show: false
+                                },
+                                axisLine: {
+                                    show: false
+                                }
+                            },
+                            series: [
+                                {
+                                    type: 'bar',
+                                    stack: 'chart',
+                                    barWidth: '20px',
+                                    label: {
+                                        show: true,
+                                        position: 'right',
+                                        formatter: function (params) {
+                                            return params.value[1] + '%';
+                                        }
+                                    },
+                                    showBackground: true,
+                                    backgroundStyle: {
+                                        color: ["#233c6b"],
+                                    },
+                                    itemStyle: {
+                                        color: function (param) {
+                                            return getcolor(param.value[1]) || '#5470c6';
+                                        }
+                                    },
+                                }
+                            ]
+                        };
+                        var getcolor = function (value) {
+                            if (value <= 100 && value > 80)
+                                return "#ff9090";
+                            else if (value <= 80 && value > 60)
+                                return "#ffbc90";
+                            else if (value <= 60 && value > 40)
+                                return "#fbff90";
+                            else if (value <= 40 && value > 20)
+                                return "#99fbb2";
+                            else
+                                return "#64d2ff";
+                        }
+                        var option3;
+                        option3 = {
+                            color: ['#64d2ff', '#99fbb2', '#ff9090', '#ffbc90'],
+                            backgroundColor: '#162d59',
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    animation: false
+                                }
+                            },
+                            title: {
+                                text: '赛事推迟',
+                                left: '10px',
+                                top: '10px',
+                                textStyle: {
+                                    fontSize: 14, //大小
+                                }
+                            },
+                            legend: {
+                                top: '40px'
+                            },
+                            grid: {
+                                x: 60,
+                                y: 80,
+                                x2: 50,
+                                y2: 40
+                            },
+                            dataset: {
+                                source: chartlist3
+                            },
+                            xAxis: {
+                                type: 'category',
+                                name: '时段'
+                            },
+                            yAxis: [ {
+                                    type: 'value',
+                                    name: '时间',
+                                    max: 2359,
+                                    axisLabel: {
+                                        formatter: function (value, index) {
+                                            if (value == 0)
+                                                return "00:00";
+                                            else if (value < 1000)
+                                                return "0" + (value + "").substring(0, 1) + ':' + (value + "").substring(1);
+                                            else
+                                                return (value + "").substring(0, 2) + ':' + (value + "").substring(2);
+                                        }
+                                    }
+                            }, {
+                                    type: 'value',
+                                    name: '日期',
+                                    data: ['2021-02-05', '2021-02-10', '2021-02-15', '2021-02-20'],
+                                    axisLabel: false
+                                }],
+                            series: [{
+                                type: 'bar',
+                                yAxisIndex: 1
+                            },
+                                {
+                                    type: 'line',
+                                    yAxisIndex: 0
+                                }, {
+                                    type: 'line',
+                                    yAxisIndex: 0
+                                }]
+                        };
+                        var option4;
+                        option4 = {
+                            color: ['#64d2ff', '#99fbb2', '#ff9090', '#ffbc90'],
+                            backgroundColor: '#162d59',
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    animation: false,
+                                    label: {
+                                        backgroundColor: '#48a3e9'
+                                    }
+                                }
+                            },
+                            title: {
+                                text: '赛事限流',
+                                left: '10px',
+                                top: '10px',
+                                textStyle: {
+                                    fontSize: 14, //大小
+                                }
+                            },
+                            legend: {
+                                top: '40px'
+                            },
+                            grid: {
+                                x: 50,
+                                y: 80,
+                                x2: 50,
+                                y2: 40
+                            },
+                            dataset: {
+                                source: chartlist4
+                            },
+                            xAxis: {
+                                type: 'category',
+                                name: '时段'
+                            },
+                            yAxis: [{
+                                type: 'value',
+                                name: '时间',
+                                max:2359,
+                                axisLabel: {
+                                    formatter: function (value, index) {
+                                        if (value == 0)
+                                            return "00:00";
+                                        else if (value < 1000)
+                                            return "0"+(value + "").substring(0, 1) + ':' + (value + "").substring(1);
+                                        else
+                                            return (value + "").substring(0, 2) + ':' + (value + "").substring(2);
+                                    }
+                                }
+                            }, {
+                                type: 'value',
+                                name: '人数'
+                            }],
+                            series: [{
+                                type: 'line',
+                                yAxisIndex: 0
+                            },
+                                {
+                                    type: 'bar',
+                                    yAxisIndex: 1
+                                }, {
+                                    type: 'bar',
+                                    yAxisIndex: 1
+                                }]
+                        };
+                        var option5;
+                        option5 = {
+                            color: ['#64d2ff'],
+                            backgroundColor: '#162d59',
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    animation: false,
+                                    label: {
+                                        backgroundColor: '#48a3e9'
+                                    }
+                                }
+                            },
+                            title: {
+                                text: '人群拥堵',
+                                left: '10px',
+                                top: '10px',
+                                textStyle: {
+                                    fontSize: 14, //大小
+                                }
+                            },
+                            legend: {
+                                top: '40px'
+                            },
+                            grid: {
+                                x: 50,
+                                y: 80,
+                                x2: 50,
+                                y2: 40
+                            },
+                            dataset: {
+                                source: chartlist5
+                            },
+                            xAxis: {
+                                type: 'category',
+                                name: '日期'
+                            },
+                            yAxis: {
+                                type: 'value',
+                                name: '拥堵'
+                            },
+                            series: [{
+                                type: 'bar',
+                                barWidth: '20px'
+                            }]
+                        };
+                        var option6;
+                        option6 = {
+                            color: ['#ff9090'],
+                            backgroundColor: '#162d59',
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    animation: false,
+                                    label: {
+                                        backgroundColor: '#48a3e9'
+                                    }
+                                }
+                            },
+                            title: {
+                                text: '人群滞留',
+                                left: '10px',
+                                top: '10px',
+                                textStyle: {
+                                    fontSize: 14, //大小
+                                }
+                            },
+                            legend: {
+                                top: '40px'
+                            },
+                            grid: {
+                                x: 50,
+                                y: 80,
+                                x2: 50,
+                                y2: 40
+                            },
+                            dataset: {
+                                source: chartlist6
+                            },
+                            xAxis: {
+                                type: 'category',
+                                name: '日期'
+                            },
+                            yAxis: {
+                                type: 'value',
+                                name: '拥堵'
+                            },
+                            series: [{
+                                type: 'bar',
+                                barWidth: '20px'
+                            }]
+                        };
+                        option1 && myChart1.setOption(option1);
+                        option2 && myChart2.setOption(option2);
+                        option3 && myChart3.setOption(option3);
+                        option4 && myChart4.setOption(option4);
+                        option5 && myChart5.setOption(option5);
+                        option6 && myChart6.setOption(option6);
+
+                    }
+                    else {
+                        layer.msg(jsondatas.MSG, { icon: 2 });
+                    }
+                },
+                error: function () {
+                    layer.msg("系统错误", { icon: 2 });
+                },
+                complete: function () {
+                    layer.close(iiload);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

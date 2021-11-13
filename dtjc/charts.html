@@ -10,20 +10,6 @@
     <script type="text/javascript" src="../js/tables.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/echart.css" />
     <style>
-        body, div {
-            margin: 0px;
-            padding: 0px;
-        }
-
-        .allpage {
-            width: calc(100% - 40px);
-            padding: 20px;
-            overflow: hidden;
-            background-color: rgba(19,35,66,0.8);
-            display: flex;
-            flex-direction: column;
-        }
-
             .allpage .item {
                 width: 100%;
                 height: 30%;
@@ -34,10 +20,6 @@
                 overflow: hidden;
                 background-color: #162d59;
             }
-
-                .allpage .item:last-child {
-                    margin: 0px;
-                }
     </style>
     <script>
 
@@ -288,7 +270,7 @@
                 }
             },
             error: function () {
-                layer.msg("修改失败", { icon: 2 });
+                layer.msg("系统错误", { icon: 2 });
             },
             complete: function () {
                 layer.close(iiload);

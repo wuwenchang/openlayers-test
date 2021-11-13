@@ -11,9 +11,9 @@
 </head>
 <body>
     <div class="allbody">
-        <div class="top">
-            <label>体育馆名称<input type="text" id="name" /></label>
-            <label>联系人<input type="text" id="contact"  /></label>
+        <div class="top" id="findlist">
+            <label>赛事<input type="text" id="event" /></label>
+            <label>参赛人员<input type="text" id="name" /></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
                 <a href="editpage31.html" target="_self">新增</a>
@@ -32,7 +32,7 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                GetTable("event_player A,event_sport B", "A.sport_id=B.id");
+                FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
@@ -50,6 +50,17 @@
                         });
                     }
                     AddTableFoot(tblcnt);
+                }
+                function pageChange(jpn) {
+                    if (PageNumber == jpn)
+                        return;
+                    PageNumber = jpn;
+                    FindTable();
+                }
+                $("#findbtn").click(FindTable);
+                function FindTable() {
+                    var wherestr = FindStr();
+                    GetTable("event_player A,event_sport B", wherestr+"A.sport_id=B.id");
                 }
             </script>
         </div>
