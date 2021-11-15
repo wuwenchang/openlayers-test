@@ -96,13 +96,13 @@
                     async: false,
                     contentType: "application/x-www-form-urlencoded; charset=utf-8",
                     url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
-                    data: {tableName: "event_delay A,event_sport B,event_gym C", whereSql: " A.sport_id=B.id and B.gym_id=C.id ORDER BY A.startdate,A.starttime desc LIMIT 1" },
+                    data: { tableName: "event_delay A,event_sport B,event_gym C", whereSql: " A.sport_id=B.id and B.gym_id=C.id ORDER BY A.startdate,A.starttime desc LIMIT 1" },
                     success: function (myjson) {
                         var jsondatas = eval("(" + myjson + ")");
                         if (jsondatas.CODE > 0) {
                             actables[0] = jsondatas.Table;
                             $(actables[0]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl11.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl11.png" /></td><td>` + n.name + `赛事推迟</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
@@ -128,7 +128,7 @@
                         if (jsondatas.CODE > 0) {
                             actables[1] = jsondatas.Table;
                             $(actables[1]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl12.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl12.png" /></td><td>` + n.name + `赛事限流</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
@@ -154,7 +154,7 @@
                         if (jsondatas.CODE > 0) {
                             actables[2] = jsondatas.Table;
                             $(actables[2]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl13.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl13.png" /></td><td>` + n.name + `人群拥堵</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
@@ -180,7 +180,7 @@
                         if (jsondatas.CODE > 0) {
                             actables[3] = jsondatas.Table;
                             $(actables[3]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl14.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl14.png" /></td><td>` + n.name + `人群滞留</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
@@ -209,7 +209,7 @@
                         if (jsondatas.CODE > 0) {
                             actables[0] = jsondatas.Table;
                             $(actables[0]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl13.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl13.png" /></td><td>` + n.name + `人群拥堵</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
@@ -235,7 +235,7 @@
                         if (jsondatas.CODE > 0) {
                             actables[1] = jsondatas.Table;
                             $(actables[1]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl14.png" /></td><td>` + n.remark + `</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl14.png" /></td><td>` + n.name + `人群滞留</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
