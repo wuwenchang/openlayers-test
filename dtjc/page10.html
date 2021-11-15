@@ -56,6 +56,23 @@
                     </button>
                 </div>
             </div>
+            <div class="popup-content" id="rescue">
+                <div>
+                    <span>名 称：</span><input type="text" id="val21">
+                </div>
+                <div>
+                    <span>地 点：</span><input type="text" id="val22">
+                </div>
+                <!-- <div>
+                    <span>赛 事：</span><input type="text" id="val23">
+                </div>
+                <div>
+                    <span>负 责：</span><input type="text" id="val24">
+                </div>
+                <div>
+                    <span>电 话：</span><input type="text" id="val25">
+                </div> -->
+            </div>
         </div>
     </div>
     <div id="legend" class="allmsg allmsg1">
@@ -81,19 +98,6 @@
                 $(".footer").show();
                 params = res;
                 showAccidentPopup(res, map);
-            })
-            // var pointStyle=new ol.style.Style({ 
-            //     image: new ol.style.Icon({
-            //         src: '........’,
-            //     })
-            // });
-            map.getView().on('change:resolution', function () {
-                // 重新设置图标的缩放率，基于层级20来做缩放
-                for (let key in markerStyles) {
-                    markerStyles[key].getImage().setScale(this.getZoom() / 20)
-                }
-                // pointStyle.getImage().setScale(this.getZoom() / 20);
-                // console.log(map.getView().getZoom())
             })
             var headVectorSource = new ol.source.Vector({
                 features: (new ol.format.GeoJSON()).readFeatures({
@@ -123,8 +127,29 @@
                         var jsondatas = eval("(" + myjson + ")");
                         if (jsondatas.CODE > 0) {
                             var list = jsondatas.Table;
+                            list.forEach(item => {
+                                // 动态添加赛事馆图标
+                                addMarker({
+                                    data: {
+                                        val: item.name,
+                                        val2: item.address,
+                                        val3: item.remark,
+                                        val4: item.contact,
+                                        val5: item.tel,
+                                        // val5: timeFormat(item.addtime),
+                                        // val6: item.name1,
+                                        // target_type: item.target_type,
+                                        // index: data.trafficData.index,
+                                        // id: data.data.id,
+                                        showType: 'rescue'
+                                    },
+                                    coordinate: [item.xaxis, item.yaxis],
+                                    stylepng: 'tl14'
+                                }, map)
+                            })
                             randomHeatmap(list)
                         }
+                        
                     },
                     error: function () {
                         console.log("系统错误", { icon: 2 })

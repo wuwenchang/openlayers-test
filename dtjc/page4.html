@@ -15,7 +15,6 @@
     <script src="../json/roadjson.js"></script>
     <script src="../json/subwayjson.js"></script>
     <script src="../json/rescuejson.js"></script>
-    <script type="text/javascript" src="../js/damap.js"></script>
     <script type="text/javascript" src="../js/rescue.js"></script>
     <link href="../css/dastyle.css" rel="stylesheet" />
     <script src="../js/errData.js"></script>
@@ -62,8 +61,7 @@
                     </button>
                 </div>
             </div>
-            <div class="popup-content" id="driverMessage">
-                <!-- <input type="hidden" id="sendid" value="" /> -->
+            <!-- <div class="popup-content" id="driverMessage">
                 <div>
                     <span>公 司：</span><input type="text" id="val11">
                 </div>
@@ -79,8 +77,7 @@
                 <div>
                     <span>车 辆：</span><input type="text" id="val15">
                 </div>
-                <!-- <div id="latlon"></div> -->
-            </div>
+            </div> -->
             <div class="popup-content" id="rescueMessage">
                 <!-- <input type="hidden" id="sendid" value="" /> -->
                 <div>
@@ -102,6 +99,7 @@
             </ul>
         </div>
     </div>
+    <script type="text/javascript" src="../js/damap.js"></script>
     <script>
         var showGaoDeMap = false
         $('#changeMap').click(function () {
@@ -120,7 +118,6 @@
             }
         })
         window.onload = function () {
-
             var center1 = [116.411, 39.96];
             var inilayers = ['dapoi', 'road'];
             // var map = loadmap(center1, '150.74811314055756', inilayers);
@@ -133,46 +130,19 @@
             map.addEventListener('click', function (e) {
                 popupShow(e, map, params);
             });
-            var arr
+            var messageIds = [];
             window.addEventListener('message', function (res) {
                 $(".footer").show();
                 var data = res.data
+                if (messageIds.includes(data.id)) {
+                    map.getView().setCenter(ol.proj.transform(data.line[data.data.trafficIndex], 'EPSG:4326', 'EPSG:3857'))
+                    map.getView().setZoom(13)
+                    return
+                }
+                messageIds.push(data.id)
                 beginToSimulate(data, map)
             })
             // rescueInit()
-
-            // 模拟呼叫救援
-            var hadRescue = []
-            $('#submit').click(function () {
-                var accidentMessage = $('#accidentMessage')
-                var data = JSON.parse(accidentMessage.attr('data'))
-                if (hadRescue.includes(data.id)) {
-                    return
-                }
-                hadRescue.push(data.id)
-                data.id += 'rescue'
-                isShowPopup = false;
-                accidentMessage.attr('data', JSON.stringify(data))
-                $('#popup').hide()
-                var line = []
-                if (data.target_type) {
-                    line = getAccidentLine(rescuejson.features, data.target_type).geometry.coordinates[0].map(item => {
-                        return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
-                    })
-                    line = line.slice(0, Math.floor(line.length / 2))
-                } else if (data.index) {
-                    line = getLineData(data.index).line.map(item => {
-                        return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
-                    })
-                }
-                initAnimation({
-                    pointsList: line,
-                    properties: data,
-                    isDrawHistory: true,
-                    carType: 'jy'
-                })
-            })
-
 
             // 初始化的函数
             function init() {
@@ -231,50 +201,34 @@
                             isDrawHistory: true,
                             pointsList: lines,
                             properties,
-                            carType: 'tram'
+                            carType: 'car'
                         })
                         let newLine = JSON.parse(JSON.stringify(lines)).reverse()
                         initAnimation({
                             isDrawHistory: true,
                             pointsList: newLine,
                             properties,
-                            carType: 'tram'
+                            carType: 'bus'
                         })
                     } else if (properties.name === '惠中路') {
                         initAnimation({
                             isDrawHistory: true,
                             pointsList: lines,
                             properties,
-                            carType: 'train'
+                            carType: 'car'
                         })
                         let newLine = JSON.parse(JSON.stringify(lines)).reverse()
                         initAnimation({
                             isDrawHistory: true,
                             pointsList: newLine,
                             properties,
-                            carType: 'train'
+                            carType: 'bus'
                         })
                     }
                 }
                 // createHeatmap(railwayjson)
             }
             init();
-
-            createMarkersStyles()
-            map.getView().on('change:resolution', function () {
-                // 重新设置图标的缩放率，基于层级20来做缩放
-                let zoom = this.getZoom()
-                let scale = 0.001;
-                for (let key in markerStyles) {
-                    if (zoom < 10) {
-                        scale = 0.001
-                    } else {
-                        scale = zoom / 15 > 1 ? 1 : Math.pow(zoom / 15, 2)
-                    }
-                    markerStyles[key].getImage().setScale(scale)
-                }
-                console.log(zoom)
-            })
             // // 获取司机信息
             // getDriverList().then(res => {
             //     console.log(res)

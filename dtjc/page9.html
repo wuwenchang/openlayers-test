@@ -46,14 +46,30 @@
                 <div>
                     <span>时 间：</span><input type="text" id="val5">
                 </div>
-                <div id="latlon"></div>
                 <div class="footer">
-                    <button id="submit">
+                    <!-- <button id="submit">
                         <img src="../imgs/l7.png" />启动预案
-                    </button>
+                    </button> -->
                     <button id="sendmessage">
                         <img src="../imgs/l6.png" />发布消息
                     </button>
+                </div>
+            </div>
+            <div class="popup-content" id="rescue">
+                <div>
+                    <span>名 称：</span><input type="text" id="val21">
+                </div>
+                <div>
+                    <span>地 点：</span><input type="text" id="val22">
+                </div>
+                <div>
+                    <span>赛 事：</span><input type="text" id="val23">
+                </div>
+                <div>
+                    <span>负 责：</span><input type="text" id="val24">
+                </div>
+                <div>
+                    <span>电 话：</span><input type="text" id="val25">
                 </div>
             </div>
         </div>
@@ -80,27 +96,37 @@
 
             window.addEventListener('message', function (res) {
                 $(".footer").show();
-                params = res;
-                showAccidentPopup(res, map);
+                var data = res.data;
+                //事故点
+                addMarker({
+                    data: {
+                        val1: data.name,
+                        val2: data.address,
+                        val3: data.remark,
+                        val4: data.remark1,
+                        val5: timeFormat(data.startdate),
+                        // val6: data.name1,
+                        // target_type: data.target_type,
+                        // index: data.trafficData.index,
+                        // id: data.data.id,
+                        showType: 'accident'
+                    },
+                    coordinate: [data.xaxis, data.yaxis],
+                    stylepng: 'tl11'
+                }, map)
+                // params = res;
+                // if (res.data.data) {
+                //     Object.assign(res.data.data, {
+                //         val1: res.data.data.name,
+                //         val2: res.data.data.name,
+                //         val3: res.data.data.name,
+                //         val4: res.data.data.name,
+                //         val5: res.data.data.name,
+                //         showType: 'rescue'
+                //     })
+                // }
+                // showAccidentPopup(res, map);
             })
-            var obj = {
-                "cnt": 36,
-                "id": 34,
-                "arrivetime": "\/Date(-62135596800000)\/",
-                "leavetime": "\/Date(-62135596800000)\/",
-                "arrivepnum": 300,
-                "leavepnum": 110,
-                "arrivenum": 7,
-                "leavenum": 6,
-                "hub_id": 34, "id1": 34,
-                "xaxis": 116.416470132112,
-                "yaxis": 39.9487411296858,
-                "name": "雍和宫",
-                "address": "北京市东城区",
-                "remark": "地铁站",
-                "arrivetimestr": "6:00",
-                "leavetimestr": "8:00"
-            }
             var list = [];
 
             var headVectorSource = new ol.source.Vector({
@@ -118,7 +144,7 @@
                 radius: parseInt(5, 10),
             });
             map.addLayer(headVector)
-            getData("traffic_flow A,traffic_hub B", "A.hub_id=B.id order by arrivetime");
+            getData("event_gym", "1=1");
             function getData(tblname, wstr) {
                 $.ajax({
                     type: "POST",  //访问WebService使用post方式请求
@@ -132,16 +158,35 @@
                         if (jsondatas.CODE > 0) {
                             var list = jsondatas.Table;
                             let features = list.map(item => {
+                                // 动态添加赛事馆图标
+                                addMarker({
+                                    data: {
+                                        val: item.name,
+                                        val2: item.address,
+                                        val3: item.remark,
+                                        val4: item.contact,
+                                        val5: item.tel,
+                                        // val5: timeFormat(item.addtime),
+                                        // val6: item.name1,
+                                        // target_type: item.target_type,
+                                        // index: data.trafficData.index,
+                                        // id: data.data.id,
+                                        showType: 'rescue'
+                                    },
+                                    coordinate: [item.xaxis, item.yaxis],
+                                    stylepng: 'tl12'
+                                }, map)
                                 let coordinate = ol.proj.transform([item.xaxis, item.yaxis], 'EPSG:4326', 'EPSG:3857')
                                 return {
                                     type: 'Feature',
                                     geometry: new ol.geom.Point(coordinate)
                                 }
                             })
-                            for (let i = 0; i < features.length; i++) {
-                                headVectorSource.addFeature(new ol.Feature(features[i]))
-                            }
-                            randomHeatmap(list)
+                            // for (let i = 0; i < features.length; i++) {
+                            //     headVectorSource.addFeature(new ol.Feature(features[i]))
+                            // }
+                            
+                            // randomHeatmap(list)
                         }
                     },
                     error: function () {
@@ -168,7 +213,42 @@
                     }
                 }, 3000)
             }
-            // createHeatmap(railwayjson)
+            
+            function updateData(tabIndex, type, data) {
+                var tableNames = ['event_delay', 'event_limit', 'traffic_accident', 'traffic_jam', 'traffic_delay'];
+                let message = ''
+                for (let key in data) {
+                    message += ((message ? ',': '') + key + ',|' + data[key] + '|')
+                }
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    cache: false,
+                    async: false,
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                    data: { tableName: tableNames[tabIndex], type, message },
+                    success: function (myjson) {
+                        var jsondatas = eval("(" + myjson + ")");
+                        console.log(jsondatas)
+                        if (jsondatas.CODE > 0) {
+                            var list = jsondatas.Table;
+                            // let features = list.map(item => {})
+                        }
+                    },
+                    error: function () {
+                        console.log("系统错误", { icon: 2 })
+                    }
+                });
+            }
+
+            updateData(4, 2, {
+                address: '北京市朝阳区国家体育场南路1号',
+                starttime: '4/2/2022 10:30:00',
+                type: '1', 
+                type_id: '3',
+                remark: '冬奥会开幕式'
+            })
+
         };
     </script>
 </body>

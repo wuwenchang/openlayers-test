@@ -7,20 +7,22 @@
     <script type="text/javascript" src="../js/normal.js"></script>
     <script type="text/javascript" src="../js/tables.js"></script>
     <script type="text/javascript" src="../js/map.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/build/ol.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/css/ol.css">
+    <link src="../json/ol.css"/>
+    <script src="../json/ol.js"></script>
     <link href="../css/index.css" rel="stylesheet" />
     <script src="../json/roadjson.js"></script>
-    <script type="text/javascript" src="../js/damap.js"></script>
+    <script src="../json/roadstatus.js"></script>
+    <script src="../json/rescuejson.js"></script>
     <link href="../css/dastyle.css" rel="stylesheet" />
     <title>道路路况</title>
 </head>
+
 <body style="background-color:#00192e;">
     <a id="bemax" class="max">
         <img src="../imgs/bmax.png" />
     </a>
     <a id="showct" onclick="showChart('5');" class="show"><img src="../imgs/chart.png" /></a>
-    <div class="messagebox"  id="messagebox" >
+    <div class="messagebox" id="messagebox">
         <iframe src="messagebox.html?msg=3&target=1,5" scrolling="no" frameborder="0"></iframe>
     </div>
     <div id="map">
@@ -66,11 +68,13 @@
             </ul>
         </div>
     </div>
+    <script type="text/javascript" src="../js/damap.js"></script>
     <script>
         window.onload = function () {
 
             var center1 = [116.011, 40.15];
-            var inilayers = ['dapoi', 'road'];
+            // var inilayers = ['dapoi', 'road', 'roadstatus'];
+            var inilayers = ['roadstatus']
             var map = loadmap(center1, '150.74811314055756', inilayers);
             activemap = map;
             var params;
@@ -78,63 +82,141 @@
             map.addEventListener('click', function (e) {
                 popupShow(e, map, params);
             });
-
+            var messageIds = [];
             window.addEventListener('message', function (res) {
                 $(".footer").show();
-                // params = res;
-                // showAccidentPopup(res, map);
                 var data = res.data
-                beginToSimulate(data, map)
-            })
-            init()
-            createMarkersStyles()
-            map.getView().on('change:resolution', function () {
-                // 重新设置图标的缩放率，基于层级20来做缩放
-                let zoom = this.getZoom()
-                let scale = 0.001;
-                for (let key in markerStyles) {
-                    if (zoom < 10) {
-                        scale = 0.001
-                    } else {
-                        scale = zoom / 15 > 1 ? 1 : Math.pow(zoom / 15, 2)
-                    }
-                    markerStyles[key].getImage().setScale(scale)
-                }
-                console.log(zoom)
-            })
-
-            // 模拟呼叫救援
-            var hadRescue = []
-            $('#submit').click(function () {
-                var accidentMessage = $('#accidentMessage')
-                var data = JSON.parse(accidentMessage.attr('data'))
-                if (hadRescue.includes(data.id)) {
+                if (messageIds.includes(data.id)) {
+                    map.getView().setCenter(ol.proj.transform(data.line[data.data.trafficIndex], 'EPSG:4326', 'EPSG:3857'))
+                    map.getView().setZoom(13)
                     return
                 }
-                hadRescue.push(data.id)
-                data.id += 'rescue'
-                isShowPopup = false;
-                accidentMessage.attr('data', JSON.stringify(data))
-                $('#popup').hide()
-                var line = []
-                if (data.target_type) {
-                    line = getAccidentLine(rescuejson.features, data.target_type).geometry.coordinates[0].map(item => {
-                        return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
-                    })
-                    line = line.slice(0, Math.floor(line.length / 2))
-                } else if (data.index) {
-                    line = getLineData(data.index).line.map(item => {
-                        return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
-                    })
-                }
-                initAnimation({
-                    pointsList: line,
-                    properties: data,
-                    isDrawHistory: true,
-                    carType: 'jy'
-                })
+                messageIds.push(data.id)
+                beginToSimulate(data, map)
             })
 
+            // 初始化的函数
+            function init() {
+                var railwayJsonData = dealJson(roadjson)
+                for (let i = 0; i < railwayJsonData.length; i++) {
+                    let properties = railwayJsonData[i][0].properties
+                    let lines = railwayJsonData[i].map(item => {
+                        return ol.proj.transform(item.geometry.coordinates, 'EPSG:4326', 'EPSG:3857')
+                    });
+                    // 绘制线条
+                    // drawMainLine(lines, properties)
+                    if (properties.name === '机场高速') {
+                        // initAnimation({
+                        //     isDrawHistory: true, 
+                        //     pointsList: lines, 
+                        //     properties, 
+                        //     carType: 'bus'
+                        // })
+                        // let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+                        // initAnimation({
+                        //     isDrawHistory: true,
+                        //     pointsList: newLine, 
+                        //     properties, 
+                        //     carType: 'bus'
+                        // })
+                    } else if (properties.name === '四环路') {
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: lines,
+                            properties,
+                            carType: 'bus'
+                        })
+                        let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: newLine,
+                            properties,
+                            carType: 'bus'
+                        })
+                    } else if (properties.name === '学院路') {
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: lines,
+                            properties,
+                            carType: 'bus'
+                        })
+                        let newLine = JSON.parse(JSON.stringify(lines)).reverse()
+                        initAnimation({
+                            isDrawHistory: true,
+                            pointsList: newLine,
+                            properties,
+                            carType: 'bus'
+                        })
+                    }
+                }
+                // createHeatmap(railwayjson)
+            }
+            init()
+
+            // 创建虚拟路线
+            function createMNLine(loadsNum, color) {
+                for (let i = 0; i < loadsNum; i++) {
+                    let num = Math.floor(Math.random() * roadstatus.features.length)
+                    let data = createGeoList(num)
+                    if (num < roadstatus.features.length - 5) {
+                        data.concat(
+                            createGeoList(num + 1), 
+                            createGeoList(num + 2), 
+                            createGeoList(num + 3), 
+                            createGeoList(num + 4)
+                        )
+                    }
+                     // 救援路线
+                    let line = data.map(item => {
+                        return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+                    })
+                    drawMainLine(line, {
+                        color: color,
+                        text: '',
+                        id: new Date().getTime() + Math.random()
+                    })
+                }
+            }
+
+            function createGeoList(num) {
+                let data = roadstatus.features[num].properties
+                return [[data.f_lng, data.f_lat], [data.n_lng, data.n_lat]]   
+            }
+
+            createMNLine(1000, 'yellow')
+            createMNLine(500, 'red')
+
+            // getData("roadnet", "", 2, 10);
+            // function getData(tblname, wstr, pageNum, rowsNum) {
+            //     $.ajax({
+            //         type: "POST",  //访问WebService使用post方式请求
+            //         cache: false,
+            //         async: false,
+            //         contentType: "application/x-www-form-urlencoded; charset=utf-8",
+            //         url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+            //         data: { tableName: tblname, whereSql: wstr, pageNum, rowsNum},
+            //         success: function (myjson) {
+            //             var jsondatas = eval("(" + myjson + ")");
+            //             console.log(jsondatas)
+            //             // if (jsondatas.CODE > 0) {
+            //             //     var list = jsondatas.Table;
+            //             //     let features = list.map(item => {
+            //             //         let coordinate = ol.proj.transform([item.xaxis, item.yaxis], 'EPSG:4326', 'EPSG:3857')
+            //             //         return {
+            //             //             type: 'Feature',
+            //             //             geometry: new ol.geom.Point(coordinate)
+            //             //         }
+            //             //     })
+            //             //     for (let i = 0; i < features.length; i++) {
+            //             //         headVectorSource.addFeature(new ol.Feature(features[i]))
+            //             //     }
+            //             // }
+            //         },
+            //         error: function () {
+            //             console.log("系统错误", { icon: 2 })
+            //         }
+            //     });
+            // }
         };
     </script>
 </body>

@@ -33,13 +33,14 @@
         var page = parent.location.pathname;
         var trafficType = '';
         var msgnum = 0;
+        var actables = [];
         if (getUrlParam("msg")) {
             var rowsnum = getUrlParam("msg");
             var target = getUrlParam("target");
             getErrorTableData();
-            var iiload = layer.load(1, false);
+            // var iiload = layer.load(1, false);
             
-            var time = 5000;
+            var time = 10000;
             if (page.includes('page4')) {
                 createAccident(rescuejson, {
                     type: 1 + Math.ceil(Math.random() * 5),
@@ -76,13 +77,12 @@
                 })
                 trafficType = 'train'
             }
-            if (!trafficType) {
+            // if (!trafficType) {
                 setInterval(() => {
                     getErrorTableData()
                 }, time)
-            }
+            // }
         }
-        var actables = Array();
         function SetBoxHeight(num) {
             $("#messagebox", parent.document).css("height", (66 + 44 * Number(num)) + "px");
         }
@@ -280,31 +280,33 @@
                 });
             }
         }
-        getRoundStatus()
-        function getRoundStatus() {
-            $.ajax({
-                type: "POST",  //访问WebService使用post方式请求
-                cache: false,
-                async: false,
-                contentType: "application/x-www-form-urlencoded; charset=utf-8",
-                url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
-                data: { tableName: 'roadstatus', whereSql: '', pageNum: 1, rowsNum: 100 },
-                success: function (myjson) {
-                    var jsondatas = eval("(" + myjson + ")");
-                    console.log(jsondatas)
-                },
-                error: function () {
-                    console.log("系统错误", { icon: 2 })
-                },
-                complete: function () {
-                    layer.close(iiload);
-                }
-            });
-        }
+        // getRoundStatus()
+        // function getRoundStatus() {
+        //     $.ajax({
+        //         type: "POST",  //访问WebService使用post方式请求
+        //         cache: false,
+        //         async: false,
+        //         contentType: "application/x-www-form-urlencoded; charset=utf-8",
+        //         url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+        //         data: { tableName: 'roadstatus', whereSql: '', pageNum: 1, rowsNum: 100 },
+        //         success: function (myjson) {
+        //             var jsondatas = eval("(" + myjson + ")");
+        //             console.log(jsondatas)
+        //         },
+        //         error: function () {
+        //             console.log("系统错误", { icon: 2 })
+        //         },
+        //         complete: function () {
+        //             layer.close(iiload);
+        //         }
+        //     });
+        // }
         function Location2Marker(data) {
-            console.log(data)
             var maker, index;
-            // if (!data.target_type) return
+            if (!trafficType) {
+                parent.postMessage(data, '*');
+                return
+            }
             if (!data.target_type) {
                 $(actable).each(function (i, n) {
                     if (n.id == data.id) {
@@ -321,7 +323,6 @@
             data.line = result.geometry.coordinates[0];
             data.maker = data;
 
-            // ['jy', 'subway', 'bus', 'car', 'train', 'tram']
             data.data = { 
                 rescueName: result.properties.XLMC,
                 id: 'bus' + Math.random(),
