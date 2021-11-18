@@ -37,51 +37,82 @@
         if (getUrlParam("msg")) {
             var rowsnum = getUrlParam("msg");
             var target = getUrlParam("target");
+            var targetList = target.split(',')
             getErrorTableData();
             // var iiload = layer.load(1, false);
             
             var time = 10000;
+            var target0 = targetList[Math.floor(Math.random() * targetList.length)];
             if (page.includes('page4')) {
                 createAccident(rescuejson, {
-                    type: 1 + Math.ceil(Math.random() * 5),
-                    code: '京A' + (10000 + Math.floor(Math.random() * 90000)),
+                    // 1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火
+                    type: target0,
+                    // 1: '社会车辆', 2: '公交车', 3: '电动汽车', 4: '奥运小巴', 5: '地铁路线', 6: '高铁车组'
+                    targetList: targetList,
                     time
                 })
                 trafficType = 'car'
             } else if (page.includes('page5')) {
                 createAccident(rescuejson, {
-                    type: Math.random() > 0.6 ? 2 : (Math.random() > 0.3 ? 5 : 6),
-                    code: '京A' + (10000 + Math.floor(Math.random() * 90000)),
+                    // 1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火
+                    type: target0,
+                    // 1: '社会车辆', 2: '公交车', 3: '电动汽车', 4: '奥运小巴', 5: '地铁路线', 6: '高铁车组'
+                    targetList: targetList,
                     time
                 })
+                // createAccident(rescuejson, {
+                //     type: Math.random() > 0.5 ? 1 : 4,
+                //     target: Math.random() > 0.5 ? 1 : 5,
+                //     code: '京A' + (10000 + Math.floor(Math.random() * 90000)),
+                //     time
+                // })
                 trafficType = 'bus'
             } else if (page.includes('page6')) {
                 createAccident(rescuejson, {
-                    type: 5,
-                    code: '京A' + (10000 + Math.floor(Math.random() * 90000)),
+                    // 1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火
+                    type: target0,
+                    // 1: '社会车辆', 2: '公交车', 3: '电动汽车', 4: '奥运小巴', 5: '地铁路线', 6: '高铁车组'
+                    targetList: targetList,
                     time
                 })
+                // createAccident(rescuejson, {
+                //     type: 2,
+                //     code: '京A' + (10000 + Math.floor(Math.random() * 90000)),
+                //     time
+                // })
                 trafficType = 'bus'
             } else if (page.includes('page7')) {
                 createAccident(rescuejson, {
-                    type: 4,
-                    code: (1 + Math.floor(Math.random() * 15)) + '号线',
+                    // 1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火
+                    type: target0,
+                    // 1: '社会车辆', 2: '公交车', 3: '电动汽车', 4: '奥运小巴', 5: '地铁路线', 6: '高铁车组'
+                    targetList: targetList,
                     time
                 })
+                // createAccident(rescuejson, {
+                //     type: 5,
+                //     code: (1 + Math.floor(Math.random() * 15)) + '号线',
+                //     time
+                // })
                 trafficType = 'subway'
             } else if (page.includes('page8')) {
                 createAccident(rescuejson, {
-                    type: 3,
-                    code: 'G' + (1000 + Math.floor(Math.random() * 9000)),
+                    // 1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火
+                    type: target0,
+                    // 1: '社会车辆', 2: '公交车', 3: '电动汽车', 4: '奥运小巴', 5: '地铁路线', 6: '高铁车组'
+                    targetList: targetList,
                     time
                 })
+                // createAccident(rescuejson, {
+                //     type: 6,
+                //     code: 'G' + (1000 + Math.floor(Math.random() * 9000)),
+                //     time
+                // })
                 trafficType = 'train'
             }
-            // if (!trafficType) {
-                setInterval(() => {
-                    getErrorTableData()
-                }, time)
-            // }
+            setInterval(() => {
+                getErrorTableData()
+            }, time)
         }
         function SetBoxHeight(num) {
             $("#messagebox", parent.document).css("height", (66 + 44 * Number(num)) + "px");
@@ -102,7 +133,7 @@
                         if (jsondatas.CODE > 0) {
                             actables[0] = jsondatas.Table;
                             $(actables[0]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl11.png" /></td><td>` + n.name + `赛事推迟</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `, 1)'><td  width="50px"><img src="../imgs/tl11.png" /></td><td>` + n.name + `赛事推迟</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
@@ -128,7 +159,7 @@
                         if (jsondatas.CODE > 0) {
                             actables[1] = jsondatas.Table;
                             $(actables[1]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl12.png" /></td><td>` + n.name + `赛事限流</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `, 2)'><td  width="50px"><img src="../imgs/tl12.png" /></td><td>` + n.name + `赛事限流</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
@@ -154,7 +185,7 @@
                         if (jsondatas.CODE > 0) {
                             actables[2] = jsondatas.Table;
                             $(actables[2]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl13.png" /></td><td>` + n.name + `人群拥堵</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `, 3)'><td  width="50px"><img src="../imgs/tl13.png" /></td><td>` + n.name + `人群拥堵</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
@@ -180,7 +211,7 @@
                         if (jsondatas.CODE > 0) {
                             actables[3] = jsondatas.Table;
                             $(actables[3]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl14.png" /></td><td>` + n.name + `人群滞留</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `, 4)'><td  width="50px"><img src="../imgs/tl14.png" /></td><td>` + n.name + `人群滞留</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
@@ -209,7 +240,7 @@
                         if (jsondatas.CODE > 0) {
                             actables[0] = jsondatas.Table;
                             $(actables[0]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl13.png" /></td><td>` + n.name + `人群拥堵</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `, 1)'><td  width="50px"><img src="../imgs/tl13.png" /></td><td>` + n.name + `人群拥堵</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
@@ -235,7 +266,7 @@
                         if (jsondatas.CODE > 0) {
                             actables[1] = jsondatas.Table;
                             $(actables[1]).each(function (i, n) {
-                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `)'><td  width="50px"><img src="../imgs/tl14.png" /></td><td>` + n.name + `人群滞留</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
+                                $("#message").append(`<tr onclick='Location2Marker(` + JSON.stringify(n) + `, 2)'><td  width="50px"><img src="../imgs/tl14.png" /></td><td>` + n.name + `人群滞留</td><td width="30px"><img src="../imgs/pt.gif" /></td></tr>`);
                                 msgnum++;
                                 SetBoxHeight(msgnum);
                             });
@@ -301,12 +332,13 @@
         //         }
         //     });
         // }
-        function Location2Marker(data) {
-            var maker, index;
-            if (!trafficType) {
+        function Location2Marker(data, type) {
+            if (type) {
+                data.tableType = type;
                 parent.postMessage(data, '*');
                 return
             }
+            var maker, index;
             if (!data.target_type) {
                 $(actable).each(function (i, n) {
                     if (n.id == data.id) {

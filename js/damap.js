@@ -12,19 +12,19 @@ function createMarkersStyles() {
             image: new ol.style.Icon({
                 anchor: [0.5, 1],
                 // anchor: [0.75, 0.5],
-                scale: 0.5,
+                scale: 2/3,
                 src: '../imgs/carImgs/' + list[i] + '.png',
             }),
         }) 
     }
     // 其他图标
-    var list2 = ['accident', 'tl1', 'tl2', 'tl3', 'tl4','tl5', 'tl6', 'tl7', 'tl8','tl9', 'tl10','tl11', 'tl12', 'tl13', 'tl14']
+    var list2 = ['accident', 'tl1', 'tl2', 'tl3', 'tl4','tl5', 'tl6', 'tl7', 'tl8','tl9', 'tl10','tl11', 'tl12', 'tl13', 'tl14', 'l5']
     for (let i = 0; i < list2.length; i++) {
         markerStyles[list2[i]] = new ol.style.Style({
             image: new ol.style.Icon({
                 anchor: [0.5, 1],
                 // anchor: [0.75, 0.5],
-                scale: 0.5,
+                // scale: 0.5,
                 src: '../imgs/' + list2[i] + '.png',
             }),
         }) 
@@ -188,7 +188,7 @@ function loadmap(center1, resolutionpara, inilayers) {
             if (zoom < 10) {
                 scale = 0.001
             } else {
-                scale = zoom / 15 > 1 ? 1 : Math.pow(zoom / 15, 2)
+                scale = zoom / 15 > 1 ? 1 : Math.pow(zoom / 15, 1)
             }
             markerStyles[key].getImage().setScale(scale)
         }
@@ -227,7 +227,8 @@ function addMarker(params, map) {
     vectorLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
             features: [feature]//图层加进去
-        })
+        }),
+        zIndex: params.zIndex || 10
     });
     map.addLayer(vectorLayer);//将图层加入map
 }
@@ -262,11 +263,12 @@ function showAccidentPopup(res, map) {
     // var overlay = getOverlay();
     // overlay.setPosition(data.coordinate);
     // map.addOverlay(overlay);
+    let coordinate = ol.proj.transform(data.coordinate, 'EPSG:4326', 'EPSG:3857')
     if (map.getOverlays().C.length) {
-        map.getOverlays().C[0].setPosition(data.coordinate)
+        map.getOverlays().C[0].setPosition(coordinate)
     } else {
         var overlay = getOverlay();
-        overlay.setPosition(data.coordinate);
+        overlay.setPosition(coordinate);
         map.addOverlay(overlay);
     }
     $('#val1').val(data.data.val1)
@@ -274,8 +276,9 @@ function showAccidentPopup(res, map) {
     $('#val3').val(data.data.val3)
     $('#val4').val(data.data.val4)
     $('#val5').val(data.data.val5)
+    document.getElementById("popup").style.display = "block";
     addMarker(data, map)
-    map.getView().setCenter(ol.proj.transform(data.coordinate, 'EPSG:4326', 'EPSG:3857'))
+    map.getView().setCenter(coordinate)
     // 两种方法都可以
     //map.getView().setRsolution('50')
     map.getView().setZoom(15)
@@ -299,20 +302,13 @@ function popupShow(e, map, params) {
     let feature = map.forEachFeatureAtPixel(e.pixel, a => a);
     // console.log(feature)
     if (feature) {
-        if (feature.O.params && feature.O.params.hideMessage) return
-        if (map.getOverlays().C.length) {
-            map.getOverlays().C[0].setPosition(coordinate)
-        } else {
-            var overlay = getOverlay();
-            overlay.setPosition(coordinate);
-            map.addOverlay(overlay);
-        }
+        if ((feature.O.params && feature.O.params.hideMessage) || !feature.O.params) return
         var showType = feature.O.params.showType;
         var driverMessage = $('#driverMessage')
         var accidentMessage = $('#accidentMessage')
         var rescueMessage = $('#rescueMessage');
         isShowPopup = feature.O.params.id
-        if (showType === 'accident' || !showType) {
+        if (showType === 'accident') {
             $('#val1').val(feature.O.params.val1)
             $('#val2').val(feature.O.params.val2)
             $('#val3').val(feature.O.params.val3)
@@ -345,6 +341,19 @@ function popupShow(e, map, params) {
             if (driverMessage) driverMessage.show()
             if (accidentMessage) accidentMessage.hide()
             if (rescueMessage) rescueMessage.hide()
+        } else {
+            // if (driverMessage) driverMessage.hide()
+            // if (accidentMessage) accidentMessage.hide()
+            // if (rescueMessage) rescueMessage.hide()
+            // document.getElementById("popup").style.display = "none";
+            return
+        }
+        if (map.getOverlays().C.length) {
+            map.getOverlays().C[0].setPosition(coordinate)
+        } else {
+            var overlay = getOverlay();
+            overlay.setPosition(coordinate);
+            map.addOverlay(overlay);
         }
         document.getElementById("popup").style.display = "block";
         
@@ -754,13 +763,19 @@ function createHeatmap (heatData) {
     map.addLayer(vector)
 }
 
-function updateAccident(params) {
+function updateData(tabIndex, params) {
+    // 1 其他事故 .2赛事推迟3赛事限流4人群拥堵5人群滞留
+    var tableNames = ['traffic_accident','event_delay', 'event_limit', 'traffic_jam', 'traffic_delay'];
+    let message = ''
+    for (let key in params) {
+        message += ((message ? ',': '') + key + ',|' + params[key] + '|')
+    }
     $.ajax({
         cache: false,
         async: false,
         contentType: "application/x-www-form-urlencoded; charset=utf-8",
         url: getRootPath() + "/Service/AddAccident.ashx", //调用WebService的地址和方法名称组合
-        data: params,
+        data: {tableName: tableNames[tabIndex], message},
         dataType: "json",
         success: function (result) { 
             // console.log(result)
@@ -773,51 +788,87 @@ function updateAccident(params) {
 function createAccident(rescuejson, accidentCarData) {
     var data = rescuejson.features;
     var i = 0;
-    var accidentCarType  = {
-        1: '社会车辆',
-        2: '公交车',
-        3: '电动汽车',
-        4: '奥运小巴',
-        5: '地铁路线',
-        6: '高铁车组'
-    }
     // 车类型对应的故障类型
+    // 1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火
     var CarErrorType = {
-        1: ['直行事故', '追尾事故', '左转弯事故', '超车事故', '窄道事故', '弯道事故', '坡道事故', '占用车道事故'],
-        2: ['公交车侧翻', '直行事故', '追尾事故', '左转弯事故','超车事故', '窄道事故', '弯道事故', '坡道事故', '占用车道事故'],
-        3: ['通信故障', '通信信号设备故障', '线路设备故障'],
-        4: ['直行事故', '追尾事故', '左转弯事故', '超车事故', '窄道事故', '弯道事故', '坡道事故', '占用车道事故'],
-        5: ['信号故障', '路线故障', '电力故障', '地面轨道故障'],
-        6: ['电力故障', '地面轨道故障', '占用车道事故']
+        1: ['车辆侧翻', '追尾事故', '车辆剐蹭'],
+        2: ['左转弯事故', '超车事故', '直行事故', '占用车道事故'],
+        3: ['信号故障', '路线故障', '地面轨道故障'],
+        4: ['电力故障', '信号故障'],
+        5: ['公交车侧翻', '追尾事故', '车辆剐蹭', '路线故障'],
+        6: ['车辆侧翻', '电力故障', '追尾事故', '车辆剐蹭', '电动车侧翻']
     }
-    var accidentType = [
-        '', '公交车侧翻', '直行事故', '追尾事故', '左转弯事故', 
-        '超车事故', '窄道事故', '弯道事故', '坡道事故', '占用车道事故', '信号故障', '路线故障', '电力故障', '地面轨道故障'
-    ]
+    // var targetType = {1: '社会车辆', 2: '公交车', 3: '电动汽车', 4: '奥运小巴', 5: '地铁路线', 6: '高铁车组'}
     var time = setInterval(function() {
         i++
-        var target = Math.floor(1 + Math.random() * 6)
-        var name = CarErrorType[target][Math.floor(Math.random() * CarErrorType[target].length)]
+        var targetList = accidentCarData.targetList
+        var target = targetList[Math.floor(Math.random() * targetList.length)];
+        var type = getType(target)
+        var code = setCode(target)
+        var name = CarErrorType[type][Math.floor(Math.random() * CarErrorType[type].length)]
         var accidentPoint = data[i].geometry.coordinates[0][Math.floor(data[i].geometry.coordinates[0].length / 2)]
+
         var obj = { 
             name: name, // 事故名称
             address: data[i].properties.XLMC.slice(0, -3), // 事故地址
-            type: accidentCarData.type, // 事故类型
+            // 1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火
+            type: type, // 事故类型
             message: data[i].properties.XLMC.slice(0, -3) + name,  // 描述
-            code: accidentCarData.code,
+            code: code,
+            addtime: rTime(120 * 1000 * 60 * 60 * 24 + new Date().getTime()),
             // code: '京A' + (10000 + Math.floor(Math.random() * 90000)), 
             xaxis: accidentPoint[0],
             yaxis: accidentPoint[1],
             // line: data[i].geometry.coordinates,
             target_type: data[i].properties.Id, // 救援路线
-            target: accidentCarData.type // 事故对象
+            // 1: '社会车辆', 2: '公交车', 3: '电动汽车', 4: '奥运小巴', 5: '地铁路线', 6: '高铁车组'
+            target: target // 事故对象
         }
         // console.log(accidentPoint)
-        updateAccident(obj)
+        updateData(0, obj)
         if (i === data.length - 1) {
             clearInterval(time)
         }
     }, accidentCarData.time || 10000)
+}
+
+function getType(v) {
+    if (v == 1 || v == 2) {
+        return Math.ceil(Math.random() * 2)
+    } else if (v == 3) {
+        return 6
+    } else if (v== 4) {
+        return 5
+    } else if (v == 5) {
+        return 4
+    } else {
+        return 3
+    }
+}
+function setCode(v) {
+    if (v == 1 || v == 2 || v == '3' || v== '4') {
+        return '京A' + (10000 + Math.floor(Math.random() * 90000))
+    } else if (v == 5) {
+        return Math.ceil(Math.random() * 15) + '号线'
+    } else {
+        return 'G' + (1000 + Math.floor(Math.random() * 9000))
+    }
+}
+
+function rTime(date) {//中国标准时间 格式转换成 2020-06-27 14:20:27
+    let dictTime = new Date(date);
+    var Y = dictTime.getFullYear();
+    var M = dictTime.getMonth() + 1;
+        M = M < 10 ? '0' + M : M;// 不够两位补充0
+    var D = dictTime.getDate();
+        D = D < 10 ? '0' + D : D;
+    var H = dictTime.getHours();
+        H = H < 10 ? '0' + H : H;
+    var Mi = dictTime.getMinutes();
+        Mi = Mi < 10 ? '0' + Mi : Mi;
+    var S = dictTime.getSeconds();
+        S = S < 10 ? '0' + S : S;
+    return Y + '-' + M + '-' + D + ' ' + H + ':' + Mi + ':' + S;
 }
 
 // 获取事故路线
