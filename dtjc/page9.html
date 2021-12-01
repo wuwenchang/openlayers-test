@@ -15,11 +15,6 @@
     <script type="text/javascript" src="../js/damap.js"></script>
     <link href="../css/dastyle.css" rel="stylesheet" />
     <title>体育场馆</title>
-    <style>
-        .ol-popup {
-            margin-top: -300px;
-        }
-    </style>
 </head>
 
 <body style="background-color: #00192e;">
@@ -107,7 +102,7 @@
                     data: {
                         val1: data.name,
                         val2: data.address,
-                        val3: data.remark,
+                        val3: data.event,
                         val4: data.remark1,
                         val5: timeFormat(data.startdate || data.starttime),
                         // val6: data.name1,
@@ -185,7 +180,7 @@
                             // }
                             let start = 0
                             let allClear = setInterval(() => {
-                                updateAllData(list[Math.floor(Math.random() * list.length)])
+                                updatePeopleData(list[Math.floor(Math.random() * list.length)])
                                 start++
                                 if (start > 99) {
                                     clearInterval(allClear)
@@ -223,8 +218,56 @@
                     }
                 }, 3000)
             }
+
+            getSports('event_sport', "1=1")
+            // 获取赛事
+            function getSports(tblname, wstr) {
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    cache: false,
+                    async: false,
+                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                    url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                    data: { tableName: tblname, whereSql: wstr, pageNum: 1, rowsNum: 1000 },
+                    success: function(myjson) {
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            var list = jsondatas.Table;
+                            let start = 0
+                            let allClear = setInterval(() => {
+                                updataSportData(list[Math.floor(Math.random() * list.length)])
+                                start++
+                                if (start > 99) {
+                                    clearInterval(allClear)
+                                }
+                            }, 9000)
+                        }
+                    }
+                })
+            }
+
+            function updataSportData(data) {
+                // 2赛事推迟
+                updateData(1, {
+                    sport_id: data.id,
+                    area: data.event,
+                    startdate: rTime(Math.ceil(Math.random() * 5) * 1000 * 60 * 60 * 24 + new Date(timeFormat(data.startdate)).getTime()),
+                    starttime: rTime(Math.ceil(Math.random() * 5) * 1000 * 60 * 60 * 24 + new Date(timeFormat(data.starttime)).getTime()),
+                    endtime: rTime(Math.ceil(Math.random() * 5) * 1000 * 60 * 60 * 24 + new Date(timeFormat(data.endtime)).getTime() + 4 * 60 * 60),
+                    remark: Math.random() >= 0.5 ? '恶劣天气' : '新冠疫情'
+                })
+
+                // 3赛事限流
+                updateData(2, {
+                    sport_id: data.id,
+                    planpnum: 500,
+                    realpnum: 550 + Math.ceil(Math.random() * 150),
+                    starttime: rTime(Math.ceil(Math.random() * 5) * 1000 * 60 * 60 + new Date(timeFormat(data.starttime)).getTime()),
+                    remark: Math.random() >= 0.5 ? '人群滞留' : '人群拥堵'
+                })
+            }
             
-            function updateAllData(data) {
+            function updatePeopleData(data) {
                 // 人群滞留
                 updateData(4, {
                     type_id: data.id,

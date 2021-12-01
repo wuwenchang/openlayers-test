@@ -15,7 +15,6 @@
 // }
 
 function rescueInit() {
-    // var rescuejson = dealJson(rescuejson)
     var vectorSource = new ol.source.Vector({ 
         features: (new ol.format.GeoJSON()).readFeatures(rescuejson, {
             dataProjection : 'EPSG:4326',

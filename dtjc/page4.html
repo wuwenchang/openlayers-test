@@ -146,7 +146,7 @@
 
             // 初始化的函数
             function init() {
-                var railwayJsonData = dealJson(roadjson)
+                var railwayJsonData = dealJson(roadjson, ['car', 'bus'])
                 for (let i = 0; i < railwayJsonData.length; i++) {
                     let properties = railwayJsonData[i][0].properties
                     let lines = railwayJsonData[i].map(item => {

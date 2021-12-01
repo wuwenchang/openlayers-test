@@ -72,10 +72,11 @@
     <script>
         window.onload = function () {
 
-            var center1 = [116.011, 40.15];
+            // var center = [116.011, 40.15];
+            var center = [116.397428, 39.90923];
             // var inilayers = ['dapoi', 'road', 'roadstatus'];
-            var inilayers = ['roadstatus']
-            var map = loadmap(center1, '150.74811314055756', inilayers);
+            var inilayers = ['roadstatus_gcj']
+            var map = loadmap(center, '50.74811314055756', inilayers);
             activemap = map;
             var params;
             //点击事件
@@ -153,38 +154,58 @@
             }
             init()
 
-            // 创建虚拟路线
-            function createMNLine(loadsNum, color) {
-                for (let i = 0; i < loadsNum; i++) {
-                    let num = Math.floor(Math.random() * roadstatus.features.length)
-                    let data = createGeoList(num)
-                    if (num < roadstatus.features.length - 5) {
-                        data.concat(
-                            createGeoList(num + 1), 
-                            createGeoList(num + 2), 
-                            createGeoList(num + 3), 
-                            createGeoList(num + 4)
-                        )
+            // // 创建虚拟路线
+            // function createMNLine(loadsNum, color) {
+            //     for (let i = 0; i < loadsNum; i++) {
+            //         let num = Math.floor(Math.random() * roadstatus.features.length)
+            //         let data = createGeoList(num)
+            //         if (num < roadstatus.features.length - 100) {
+            //             for(let j = 1; j < 100; j++) {
+            //                 data.concat(
+            //                     createGeoList(num + j)
+            //                 )
+            //             }
+                        
+            //         }
+            //          // 救援路线
+            //         let line = data.map(item => {
+            //             return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+            //         })
+            //         drawMainLine(line, {
+            //             color: color,
+            //             text: '',
+            //             id: new Date().getTime() + Math.random()
+            //         })
+            //     }
+            // }
+
+            function createRoandLine() {
+                let featuresDatas = rescuejson.features
+                for (let i = 0; i < featuresDatas.length; i++) {
+                    let line = featuresDatas[i].geometry.coordinates[0]
+                    let params = {
+                        data: {
+                            trafficIndex: Math.floor(line.length * 2 / 3)
+                        }
                     }
-                     // 救援路线
-                    let line = data.map(item => {
-                        return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
-                    })
-                    drawMainLine(line, {
-                        color: color,
-                        text: '',
-                        id: new Date().getTime() + Math.random()
-                    })
+                    let trafficObj = {
+                        line1Radius: 5,
+                        line2Radius: 2,
+                        times: 4
+                    }
+                    trafficRoute(params, line, trafficObj)
                 }
             }
+            createRoandLine()
 
             function createGeoList(num) {
-                let data = roadstatus.features[num].properties
-                return [[data.f_lng, data.f_lat], [data.n_lng, data.n_lat]]   
+                return roadstatus.features[num].geometry.coordinates[0]
             }
 
-            createMNLine(1000, 'yellow')
-            createMNLine(500, 'red')
+            // createMNLine(100, 'yellow')
+            // createMNLine(100, 'red')
+
+            
 
             // getData("roadnet", "", 2, 10);
             // function getData(tblname, wstr, pageNum, rowsNum) {

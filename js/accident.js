@@ -1,11 +1,8 @@
-﻿
-var typeid = 1;
+﻿var typeid = 1;
 var thtr = "";
 var actable;
 $(document).ready(function () {
-    for (var key in accidenttaget) {
-        $("#target").append("<option value=\"" + key + "\">" + accidenttaget[key] + "</option>");
-    }
+    GetChild("traffic_accident_target", "id|name|id<6", "target", "select", true);
     switch (getUrlParam("type")) {
         case "10": {
             typeid = 1;
@@ -98,23 +95,13 @@ $(document).ready(function () {
             $("#thtr th").eq(8).html("滞留时间");
         }; break;
     }
-    GetTable("traffic_accident A,traffic_accident_type B", " A.type=B.id and A.type=" + typeid + " order by addtime desc");
+    FindTable();
     $("#addbtn").click(function () {
         window.location.href = "editpage11.html?type=" + typeid;
     });
     $("#findbtn").click(FindTable);
     $("#target").change(FindTable);
 });
-
-function FindTable() {
-    var wherestr = FindStr();
-    if (wherestr != "") {
-        GetTable("traffic_accident A,traffic_accident_type B", wherestr + " A.type=B.id and A.type=" + typeid + " order by addtime desc");
-    }
-    else {
-        GetTable("traffic_accident A,traffic_accident_type B", " A.type=B.id and A.type=" + typeid + " order by addtime desc");
-    }
-}
 function addList(nowTable) {
     var tblcnt = nowTable[0].cnt;
     $("#listtable tr:not(:first)").remove();
@@ -126,7 +113,7 @@ function addList(nowTable) {
             tr.append("<td>" + n.id + "</td>");
             tr.append("<td>【" + n.xaxis + "," + n.yaxis + "】<img onclick=\"pointMap(" + n.type + "," + n.id + ")\"  src=\"../imgs/pt.png\" /></td>");
             tr.append("<td>" + n.name1 + "</td>");
-            tr.append("<td>" + accidenttaget[n.target] + "</td>");
+            tr.append("<td>" + n.name2 + "</td>");
             tr.append("<td>" + n.name + "</td>");
             tr.append("<td>" + n.code + "</td>");
             tr.append("<td>" + n.address + "</td>");
@@ -136,6 +123,16 @@ function addList(nowTable) {
         });
     }
     AddTableFoot(tblcnt);
+}
+function pageChange(jpn) {
+    if (PageNumber == jpn)
+        return;
+    PageNumber = jpn;
+    FindTable();
+}
+function FindTable() {
+    var wherestr = FindStr();
+    GetTable("traffic_accident A,traffic_accident_type B,traffic_accident_target C", wherestr + " A.type=B.id and A.target=C.id and A.type=" + typeid + " order by addtime desc");
 }
 function pointMap(type, id) {
     window.parent.accidentPointMap(type, id);

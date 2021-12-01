@@ -314,6 +314,15 @@ function popupShow(e, map, params) {
             $('#val3').val(feature.O.params.val3)
             $('#val4').val(feature.O.params.val4)
             $('#val5').val(feature.O.params.val5)
+            let val6 = $('#val6')
+            if (val6) val6.val(feature.O.params.val6)
+            let val7 = $('#val7')
+            if (val7) val7.val(feature.O.params.val7)
+            let val8 = $('#val8')
+            if (val8) val8.val(feature.O.params.val8)
+            let val9 = $('#val9')
+            if (val9) val9.val(feature.O.params.val9)
+            
             $('#sendid').val(feature.O.params.val7)
             if (driverMessage) driverMessage.hide()
             if (accidentMessage) {
@@ -490,7 +499,7 @@ function startTraffic(pointsList, params, lineNum) {
                 times: times - 1
             }, lineNum)
         }
-    }, 1000);
+    }, 10000);
 }
 // 开始动画
 function startAnimation(params) {
@@ -683,13 +692,15 @@ function trafficRoute(data, mainline, trafficObj) {
     // extensionPoint.push(line[line.length - 1])
     // extensionPoint.shift()
     // extensionPoint = allPoint.concat(extensionPoint)
-    initAnimation({
-        pointsList: line, // 线路点
-        properties: data, // 参数
-        carType: data.carType,  // 车辆类型
-        isDrawHistory: true, // 是否绘制轨迹
-        endIndex: allPoint.length - 1 - trafficObj.line1Radius * Math.pow(2, trafficObj.times) // 停止点
-    })
+    if(data.carType) {
+        initAnimation({
+            pointsList: line, // 线路点
+            properties: data, // 参数
+            carType: data.carType,  // 车辆类型
+            isDrawHistory: true, // 是否绘制轨迹
+            endIndex: allPoint.length - 1 - trafficObj.line1Radius * Math.pow(2, trafficObj.times) // 停止点
+        })
+    }
     // 交通事故
     startTraffic(extensionPoint, {
         pointIndex: allPoint.length - 1,
@@ -709,6 +720,26 @@ function dealJson(railwayjson) {
             lines.push([railwayjson.features[i]])
         } else {
             lines[lines.length - 1].push(railwayjson.features[i])
+        }
+    }
+    return lines
+}
+
+function getRescueFeatures(railwayjson, type) {
+    // 1: 公交车，2、地铁，3、高铁，4、大巴、5、私家车，6、赛事推迟，7、赛事限流，8、人群拥堵、9人群滞留
+    let carTypes = ['', 'bus', 'subway', 'train', 'bus', 'car']
+    let lines = []
+    // let textLines = []
+    for (let i = 0; i < railwayjson.features.length; i++) {
+        let item = railwayjson.features[i]
+        let arr = []
+        if (item.properties.type) {
+            arr = item.properties.type.split('|')
+        } else {
+            arr = ['bus', 'car']
+        }
+        if (arr.includes(carTypes[type])) {
+            lines.push(railwayjson.features[i])
         }
     }
     return lines
@@ -786,23 +817,24 @@ function updateData(tabIndex, params) {
 }
 
 function createAccident(rescuejson, accidentCarData) {
-    var data = rescuejson.features;
+
     var i = 0;
     // 车类型对应的故障类型
-    // 1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火
+    // 1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火 7、赛事推迟，8、赛事限流，9、人群拥堵，10、人群滞留
     var CarErrorType = {
         1: ['车辆侧翻', '追尾事故', '车辆剐蹭'],
         2: ['左转弯事故', '超车事故', '直行事故', '占用车道事故'],
         3: ['信号故障', '路线故障', '地面轨道故障'],
-        4: ['电力故障', '信号故障'],
+        4: ['电力故障', '信号故障', '信号灯故障'],
         5: ['公交车侧翻', '追尾事故', '车辆剐蹭', '路线故障'],
         6: ['车辆侧翻', '电力故障', '追尾事故', '车辆剐蹭', '电动车侧翻']
     }
-    // var targetType = {1: '社会车辆', 2: '公交车', 3: '电动汽车', 4: '奥运小巴', 5: '地铁路线', 6: '高铁车组'}
+    // 1: 公交车，2、地铁，3、高铁，4、大巴、5、私家车，6、赛事推迟，7、赛事限流，8、人群拥堵、9人群滞留
     var time = setInterval(function() {
         i++
         var targetList = accidentCarData.targetList
         var target = targetList[Math.floor(Math.random() * targetList.length)];
+        var data = getRescueFeatures(rescuejson, target);
         var type = getType(target)
         var code = setCode(target)
         var name = CarErrorType[type][Math.floor(Math.random() * CarErrorType[type].length)]
@@ -832,23 +864,35 @@ function createAccident(rescuejson, accidentCarData) {
     }, accidentCarData.time || 10000)
 }
 
+// type:  1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火 7、赛事推迟，8、赛事限流，9、人群拥堵，10、人群滞留
+// target: 1: 公交车，2、地铁，3、高铁，4、大巴、5、私家车，6、赛事推迟，7、赛事限流，8、人群拥堵、9人群滞留
 function getType(v) {
-    if (v == 1 || v == 2) {
-        return Math.ceil(Math.random() * 2)
-    } else if (v == 3) {
-        return 6
-    } else if (v== 4) {
-        return 5
-    } else if (v == 5) {
-        return 4
+    if (v == 1) { // 公交车
+        // 1、交通事故，2、交通违法，5、公交车事故
+        var list = [1, 5]
+        return list[Math.floor(Math.random() * list.length)]
+    } else if (v == 2) { // 地铁
+        // 4、城轨故障
+        return 4 
+    } else if (v == 3) { // 高铁
+        // 3、铁路故障
+        return 3
+    } else if (v== 4) { // 大巴
+        // 1、交通事故，2、交通违法
+        var list = [1, 2]
+        return list[Math.floor(Math.random() * list.length)]
+    } else  if (v == 5) {
+        // 1、交通事故，2、交通违法，5、电动车辆起火
+        var list = [2, 6]
+        return list[Math.floor(Math.random() * list.length)]
     } else {
         return 3
     }
 }
 function setCode(v) {
-    if (v == 1 || v == 2 || v == '3' || v== '4') {
+    if (v == 1 || v == 4 || v == 5) {
         return '京A' + (10000 + Math.floor(Math.random() * 90000))
-    } else if (v == 5) {
+    } else if (v == 2) {
         return Math.ceil(Math.random() * 15) + '号线'
     } else {
         return 'G' + (1000 + Math.floor(Math.random() * 9000))
@@ -898,7 +942,6 @@ $('#submit').click(function () {
         line = getAccidentLine(rescuejson.features, data.target_type).geometry.coordinates[0].map(item => {
             return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
         })
-        console.log(line.length)
         line = line.slice(0, Math.floor(line.length / 2) + 1)
     } else if (data.index) {
         line = getLineData(data.index).line.map(item => {
