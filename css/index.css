@@ -174,62 +174,27 @@ input, select, textarea {
                 }
             .allpage .body {
                 width: calc(100% - 200px);
-                background-color: #fff;
                 height: calc(100% - 50px);
                 float:right;
             }
                 .allpage .body .tree {
-                    border-bottom: 1px solid #dddddd;
+                    background-color: rgba(18,65,154,1);
+                    border-bottom: 1px solid rgba(18,65,154,0.7);
                     height: 40px;
                     width: 100%;
                     display: block;
-                    overflow-x:auto;
+                    overflow-x: auto;
                 }
                 .allpage .body .ifrbox {
                     width: 100%;
-                    height: calc(100% - 45px);
+                    height: calc(100% - 40px);
                     display: block;
-                    background-color: #f3f3f3;
+                    background-color: #00192e;
                 }
                     .allpage .body .ifrbox iframe {
                         width: 100%;
                         height: 100%;
                         overflow-y: auto;
-                    }
-                .allpage .body .tree a {
-                    color: #222222;
-                    line-height: 30px;
-                    margin: 4px 0px 0px 10px;
-                    border-radius: 10px;
-                    padding: 0px 10px;
-                    display: inline-block;
-                    border: 1px solid #f3f3f3;
-                }
-                    .allpage .body .tree a::before
-                    {
-                        content:"";
-                        width:10px;
-                        height:10px;
-                        display:inline-block;
-                        background-color:#dddddd;
-                        border-radius:10px;
-                        margin-right:5px;
-                    }
-                    .allpage .body .tree a.active::before {
-                        background-color: #008eff;
-                    }
-                        .allpage .body .tree a span {
-                            margin-left: 10px;
-                            border-radius: 10px;
-                            width: 20px;
-                            height: 20px;
-                            line-height: 20px;
-                            text-align: center;
-                            display: inline-block;
-                        }
-                    .allpage .body .tree a span:hover {
-                        color: #e14c4c;
-                        font-weight:bold;
                     }
 .mappage {
     width: 100%;
@@ -378,7 +343,7 @@ input, select, textarea {
                 overflow-y: auto;
             }
 
-        .mappage .body .tree a {
+        .body .tree a {
             color: #fff;
             line-height: 30px;
             margin: 4px 0px 0px 10px;
@@ -388,7 +353,7 @@ input, select, textarea {
             border: 1px solid #fff;
         }
 
-            .mappage .body .tree a::before {
+            .body .tree a::before {
                 content: "";
                 width: 10px;
                 height: 10px;
@@ -398,11 +363,11 @@ input, select, textarea {
                 margin-right: 5px;
             }
 
-            .mappage .body .tree a.active::before {
+            .body .tree a.active::before {
                 background-color: #008eff;
             }
 
-            .mappage .body .tree a span {
+            .body .tree a span {
                 margin-left: 10px;
                 border-radius: 10px;
                 width: 20px;
@@ -412,7 +377,7 @@ input, select, textarea {
                 display: inline-block;
             }
 
-                .mappage .body .tree a span:hover {
+                 .body .tree a span:hover {
                     color: #e14c4c;
                     font-weight: bold;
                 }

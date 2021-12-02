@@ -764,6 +764,7 @@ function beginToSimulate(data, map) {
             val4: data.maker.message,
             val5: timeFormat(data.maker.addtime),
             val6: data.maker.name1,
+            val7: data.maker.id,
             target_type: data.maker.target_type,
             index: data.trafficData.index,
             id: data.data.id,

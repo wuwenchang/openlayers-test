@@ -60,12 +60,12 @@ input, select, textarea {
 ::-webkit-scrollbar-corner {
     background: #111114;
 }
-.editpage ,.editpw {
+.editpage, .editpw {
     margin: 10px;
     width: calc(100% - 20px);
-    background-color: #fff;
-    border: 1px solid #dddddd;
+    background-color: #132342;
     padding: 20px 0px;
+    color:#fff;
 }
     .editpw
     {
@@ -103,12 +103,14 @@ input, select, textarea {
         text-align:right;
         padding-right:10px;
     }
-    .editpage table td input, .editpage table td select {
-        border: 1px solid #dddddd;
-        height: 30px;
-        width: 80%;
-        text-indent:10px;
-    }
+.editpage table td input, .editpage table td select {
+    border: 1px solid #000;
+    background-color: #00192e;
+    height: 30px;
+    width: 80%;
+    text-indent: 10px;
+    color:#fff;
+}
         .editpage table td select
         {
             height:32px;
