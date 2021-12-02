@@ -151,9 +151,7 @@
                 }; break;
             }
             GetChild("traffic_accident_type", "id|name", "type", "select");
-            for (var key in accidenttaget) {
-                $("#target").append("<option value=\"" + key + "\">" + accidenttaget[key] + "</option>");
-            }
+            GetChild("traffic_accident_target", "id|name|id<6", "target", "select");
             $("#type").val(getUrlParam("type"));
             $("#OKbtn").click(function () {
                 if (getUrlParam("eid")) {

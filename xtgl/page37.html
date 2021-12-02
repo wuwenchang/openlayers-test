@@ -12,6 +12,7 @@
 <body>
     <div class="allbody">
         <div class="top" id="findlist">
+            <label>救援类型<select id="type" ></select></label>
             <label>方案名称<input type="text" id="name" /></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
@@ -32,6 +33,7 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
+                GetChild("traffic_accident_target", "id|name|id<6", "type", "select", true);
                 FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
@@ -43,7 +45,7 @@
                             tr.append("<td>" + n.id + "</td>");
                             tr.append("<td>【" + n.xaxis + "," + n.yaxis + "】</td>");
                             tr.append("<td>" + n.name + "</td>");
-                            tr.append("<td>" + transporttype[n.type] + "救援</td>");
+                            tr.append("<td>" + n.name1 + "救援</td>");
                             tr.append("<td>" + n.respondtime + "</td>");
                             tr.append("<td>" + n.resumetime + "</td>");
                             tr.append("<td>" + n.address + "</td>");
@@ -59,9 +61,10 @@
                     FindTable();
                 }
                 $("#findbtn").click(FindTable);
+                $(".top select").change(FindTable);
                 function FindTable() {
                     var wherestr = FindStr();
-                    GetTable("traffic_rescue", wherestr+"1=1 order by respondtime");
+                    GetTable("traffic_rescue A,traffic_accident_target B", wherestr+"A.type=B.id order by respondtime desc");
                 }
             </script>
         </div>

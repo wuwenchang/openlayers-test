@@ -43,9 +43,7 @@
         </table>
         <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
         <script>
-            for (var key in transporttype) {
-                $("#type").append("<option value=\"" + key + "\">" + transporttype[key] + "救援</option>");
-            }
+            GetChild("traffic_accident_target", "id|name|id<6", "type", "select");
             $("#OKbtn").click(function () {
                 if (getUrlParam("eid")) {
                     SetTable('traffic_rescue', "id=" + getUrlParam("eid"));

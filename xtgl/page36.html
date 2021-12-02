@@ -12,7 +12,7 @@
 <body>
     <div class="allbody">
         <div class="top" id="findlist">
-            <label>交通方式<select id="type"><option value="all">---全部---</option></select></label>
+            <label>交通方式<select id="type"></select></label>
             <label>车次<input type="text" id="code" /></label>
             <label>司机<input type="text" id="driver" /></label>
             <label>联系电话<input type="text" id="tel" /></label>
@@ -38,9 +38,7 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                for (var key in transporttype) {
-                    $("#type").append("<option value=\"" + key + "\">" + transporttype[key] + "</option>");
-                }
+                GetChild("traffic_accident_target", "id|name|id<6", "type", "select", true);
                 FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
@@ -50,7 +48,7 @@
                             var tr = $("<tr></tr>")
                             $("#listtable").append(tr);
                             tr.append("<td>" + n.id + "</td>");
-                            tr.append("<td>" + transporttype[n.type] + "</td>");
+                            tr.append("<td>" + n.name + "</td>");
                             tr.append("<td>" + n.code + "</td>");
                             tr.append("<td>" + n.driver + "</td>");
                             tr.append("<td>" + n.tel + "</td>");
@@ -73,7 +71,7 @@
                 $(".top select").change(FindTable);
                 function FindTable() {
                     var wherestr = FindStr();
-                    GetTable("traffic_transport", wherestr+"1=1 order by starttime");
+                    GetTable("traffic_transport A,traffic_accident_target B", wherestr +"A.type=B.id order by starttime desc");
                 }
             </script>
         </div>

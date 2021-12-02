@@ -41,7 +41,7 @@
                             var tr = $("<tr></tr>")
                             $("#listtable").append(tr);
                             tr.append("<td>" + n.id + "</td>");
-                            tr.append("<td>【" + n.xaxis + "," + n.yaxis + "】<img onclick=\"pointMap(10," + n.id + ")\"  src=\"../imgs/pt.png\" /></td>");
+                            tr.append("<td>" + (n.type == 1 ? "【" + n.xaxis + "," + n.yaxis + "】" : "【" + n.xaxis1 + "," + n.yaxis1 + "】")+"<img onclick=\"pointMap(10," + n.id + ")\"  src=\"../imgs/pt.png\" /></td>");
                             tr.append("<td>" + (n.type == 1 ? n.name : n.name1) + "</td>");
                             tr.append("<td>" + n.address + "</td>");
                             tr.append("<td>" + timeFormat(n.starttime) + "</td>");

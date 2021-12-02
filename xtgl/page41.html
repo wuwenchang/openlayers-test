@@ -12,7 +12,7 @@
 <body>
     <div class="allbody">
         <div class="top" id="findlist">
-            <label>类型<select id="type"><option value="all">---全部---</option></select></label>
+            <label>类型<select id="type"></select></label>
             <label>事故描述<input id="message" type="text" /></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
@@ -29,9 +29,7 @@
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
-                for (var key in transporttype) {
-                    $("#type").append("<option value=\"" + key + "\">" + transporttype[key] + "</option>");
-                }
+                GetChild("traffic_accident_target", "id|name|id<6", "type", "select", true);
                 FindTable();
                 function addList(nowTable) {
                     var tblcnt = nowTable[0].cnt;
@@ -41,7 +39,7 @@
                             var tr = $("<tr></tr>")
                             $("#listtable").append(tr);
                             tr.append("<td>" + n.id + "</td>");
-                            tr.append("<td>" + transporttype[n.type] + "</td>");
+                            tr.append("<td>" + n.name + "</td>");
                             tr.append("<td>" + n.message + "</td>");
                             tr.append("<td><a href=\"editpage41.html?eid=" + n.id +"\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('traffic_accident_normal'," + n.id + ")\" class=\"btn4\">删除</a></td>");
                         });
@@ -58,7 +56,7 @@
                 $(".top select").change(FindTable);
                 function FindTable() {
                     var wherestr = FindStr();
-                    GetTable("traffic_accident_normal", wherestr+"1=1");
+                    GetTable("traffic_accident_normal A,traffic_accident_target B", wherestr+"A.type=B.id");
                 }
             </script>
         </div>
