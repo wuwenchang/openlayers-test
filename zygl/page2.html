@@ -286,7 +286,6 @@
             $('#getProcessDetail').on('click', function() {
                 var accidentMessage = $('#accidentMessage')
                 var data = JSON.parse(accidentMessage.attr('data'))
-                console.log(data)
                 getChart(data.val10)
                 $('#processDetail').removeClass('hide')
                 $('#accidentMessage').hide()

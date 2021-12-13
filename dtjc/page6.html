@@ -100,8 +100,6 @@
             var messageIds = [];
             window.addEventListener('message', function (res) {
                 $(".footer").show();
-                // params = res;
-                // showAccidentPopup(res, map);
                 var data = res.data
                 if (messageIds.includes(data.id)) {
                     map.getView().setCenter(ol.proj.transform(data.line[data.data.trafficIndex], 'EPSG:4326', 'EPSG:3857'))
