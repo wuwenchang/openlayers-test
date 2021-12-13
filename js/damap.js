@@ -314,6 +314,11 @@ function showAccidentPopup(res, map) {
     $('#val3').val(data.data.val3)
     $('#val4').val(data.data.val4)
     $('#val5').val(data.data.val5)
+    $('#val6').val(data.data.val6)
+    $('#val7').val(data.data.val7)
+    $('#val8').val(data.data.val8)
+    $('#val9').val(data.data.val9)
+    $('#val10').val(data.data.val10)
     document.getElementById("popup").style.display = "block";
     addMarker(data, map)
     map.getView().setCenter(coordinate)
