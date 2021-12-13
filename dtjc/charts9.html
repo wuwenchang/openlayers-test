@@ -77,13 +77,15 @@
                         var chartlist1 = new Array();
                         chartlist1[0] = ["时间段", "进场人数","离场人数"];
                         var chartlist2 = new Array();
+                        var chartlist2_1 = new Array();
                         chartlist2[0] = ["赛事", "进度"];
                         var chartlist3 = new Array();
                         chartlist3[0] = ["时间段", "推迟日期","推迟时间","结束时间"];
                         var chartlist4 = new Array();
                         chartlist4[0] = ["时间段", "限流时间","限流人数","实际人数"];
                         $.each(mytbl1, function (i, n) {
-                            chartlist2[i + 1] = [n.event, Math.floor(Math.random() * 100)];
+                            chartlist2[i + 1] = [n.event + i, n.progress];
+                            chartlist2_1[i] = [n.content + "<br />【" + timeFormatSmall(n.startdate) + " " + n.starttimestr + "】"];
                         });
                         $.each(mytbl2, function (i, n) {
                             chartlist1[i + 1] = [n.atime + "-" + n.ltime, n.arrivepnum, n.leavepnum];
@@ -171,6 +173,10 @@
                         option2 = {
                             backgroundColor: '#162d59',
                             tooltip: {
+                                formatter: function (params) {
+                                   // console.log(params);
+                                    return chartlist2_1[params.dataIndex] +"<br />比赛进度：" + params.value[1] + '%';
+                                }
                             },
                             title: {
                                 text: '赛事进度',

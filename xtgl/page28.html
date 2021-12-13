@@ -22,7 +22,10 @@
             <table id="listtable">
                 <tr>
                     <th>编号</th>
-                    <th>赛事</th>
+                    <th>比赛场馆</th>
+                    <th>体育赛事</th>
+                    <th>比赛时间</th>
+                    <th>比赛内容</th>
                     <th>比赛进度</th>
                     <th>比赛状态</th>
                     <th style="width:200px;">操作</th>
@@ -38,7 +41,10 @@
                             var tr = $("<tr></tr>")
                             $("#listtable").append(tr);
                             tr.append("<td>" + n.id + "</td>");
+                            tr.append("<td>" + n.name + "</td>");
                             tr.append("<td>" + n.event + "</td>");
+                            tr.append("<td>" + timeFormatSmall(n.startdate) +" "+ n.starttimestr + "</td>");
+                            tr.append("<td>" + n.content + "</td>");
                             tr.append("<td>" + n.progress + "</td>");
                             tr.append("<td>" + (n.state == 0 ? "等待中" : "进行中") + "</td>");
                             tr.append("<td><a href=\"editpage28.html?eid=" + n.id +"\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('event_progress'," + n.id + ")\" class=\"btn4\">删除</a></td>");
@@ -55,7 +61,7 @@
                 $("#findbtn").click(FindTable);
                 function FindTable() {
                     var wherestr = FindStr();
-                    GetTable("event_progress A,event_sport B", wherestr+ "A.sport_id=B.id");
+                    GetTable("event_progress A,event_sport B,event_gym C", wherestr+ "A.sport_id=B.id and B.gym_id=C.id");
                 }
             </script>
         </div>

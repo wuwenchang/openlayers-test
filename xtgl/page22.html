@@ -12,18 +12,19 @@
 <body>
     <div class="allbody">
         <div class="top" id="findlist">
-            <label>cell_connect<input id="cell_connect" type="text" /></label>
+            <label>编号<input id="cell_connect" type="text" /></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
-                <a href="editpage24_1.html" target="_self">新增</a>
+                <a  href="editpage22.html" target="_self">新增</a>
             </div>
         </div>
         <div class="body">
             <table id="listtable">
                 <tr>
-                    <th>cell_connect</th>
-                    <th>A00:30:00</th>
-                    <th>A22:00:00</th>
+                    <th>ID</th>
+                    <th>名称</th>
+                    <th>权限</th>
+                    <th style="width:300px;">操作</th>
                 </tr>
             </table><div id="listtag" class="tbl_footer"></div>
             <script>
@@ -35,9 +36,11 @@
                         $(nowTable).each(function (i, n) {
                             var tr = $("<tr></tr>")
                             $("#listtable").append(tr);
-                            tr.append("<td>" + n.cell_connect + "</td>");
-                            tr.append("<td>" + n["A00:30:00"] + "</td>");
-                            tr.append("<td>" + n["A22:00:00"] + "</td>");
+                            tr.append("<td>" + n.id + "</td>");
+                            tr.append("<td>" + n.name + "</td>");
+                            tr.append("<td>" + n.role + "</td>");
+                            tr.append("<td><a href=\"editpage22.html?eid=" + n.id + "\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('sys_role'," + n.id + ")\" class=\"btn4\">删除</a></td>");
+
                         });
                     }
                     AddTableFoot(tblcnt);
@@ -51,7 +54,7 @@
                 $("#findbtn").click(FindTable);
                 function FindTable() {
                     var wherestr = FindStr();
-                    GetTable("roadstatus", wherestr+"1=1");
+                    GetTable("sys_role", wherestr+"1=1");
                 }
             </script>
         </div>

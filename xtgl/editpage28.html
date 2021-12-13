@@ -32,7 +32,7 @@
         </table>
         <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
         <script>
-            GetChild("event_sport", "id|event", "sport_id", "select");
+            getsport();
             $("#OKbtn").click(function () {
                 if (getUrlParam("eid")) {
                     SetTable('event_progress', "id=" + getUrlParam("eid"));
@@ -44,7 +44,39 @@
             setTimeout(function () {
                 if (getUrlParam("eid")) {
                     EditTable("event_progress", getUrlParam("eid"));
-                }}, 200);
+                }
+            }, 200);
+            function getsport() {
+
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    contentType: "application/json; charset=utf-8",
+                    url: getRootPath() + "/Service/MyWebService.asmx/GetTable", //调用WebService的地址和方法名称组合
+                    data: "{tableName:'event_sport A,event_gym B',whereSql:'A.gym_id=B.id'}",
+                    dataType: "json",
+                    async: false,
+                    success: function (result) {
+                        var myjson = result.d;
+                       // console.log(myjson);
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            var mytbl = jsondatas.Table;
+                            
+                            $("#sport_id").empty();
+                            $.each(mytbl, function (i, n) {
+                                $("#sport_id").append("<option value=\"" + n.id + "\">" + n.content + "【"+n.name +" "+ n.event+" " + timeFormatSmall(n.startdate)+ " " + n.starttimestr + "】</option>");
+                            });
+                        }
+                        else {
+                            $("#sport_id").empty();
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        //通常情况下textStatus和errorThrown只有其中一个包含信息
+                        alert(XMLHttpRequest.status + "," + XMLHttpRequest.readyState + textStatus);
+                    }
+                });
+            } 
         </script>
     </div>
 </body>

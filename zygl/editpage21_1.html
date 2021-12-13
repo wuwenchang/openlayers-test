@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../js/layer/layer.js"></script>
+    <script type="text/javascript" src="../js/normal.js"></script>
+    <script type="text/javascript" src="../js/tables.js"></script>
+    <link href="../css/edit.css" rel="stylesheet" />
+    <title></title>
+</head>
+<body>
+    <div class="editpage editpw">
+        <table id="edittbl">
+            <tr>
+                <td>旧密码</td>
+                <td><input type="password" id="psword1" /></td>
+            </tr>
+            <tr>
+                <td>新密码</td>
+                <td><input type="password" id="psword2" /></td>
+            </tr>
+            <tr>
+                <td>新密码确认</td>
+                <td><input type="password" id="psword" /></td>
+            </tr>
+        </table>
+        <div class="btns"><a id="OKbtn">确认</a><a onclick="closePw();">取消</a></div>
+        <script>
+            $("#OKbtn").click(function () {
+                if (getUrlParam("eid")) {
+                    SetPw('users', "id=" + getUrlParam("eid"));
+                }
+            });
+            function SetPw() {
+                var pw1 = trim($("#psword1").val());
+                var pw2 = trim($("#psword2").val());
+                var pw3 = trim($("#psword").val());
+                if (pw1 == "") {
+                    layer.msg("旧密码不能为空!", { icon: 2 });
+                    return;
+                }
+                if (pw2 == "") {
+                    layer.msg("新密码不能为空!", { icon: 2 });
+                    return;
+                }
+                if (pw1 == pw2) {
+                    layer.msg("新旧密码不能相同,请重新输入!", { icon: 2 });
+                    return;
+                }
+                if (pw3 == "") {
+                    layer.msg("新密码确认不能为空!", { icon: 2 });
+                    return;
+                }
+                if (pw2 != pw3) {
+                    layer.msg("两次新密码输入不一致,请重新输入!", { icon: 2 });
+                    return;
+                }
+                var iiload = layer.load(1, false);
+                $.ajax({
+                    type: "POST",  //访问WebService使用post方式请求
+                    contentType: "application/json; charset=utf-8",
+                    url: getRootPath() + "/Service/MyWebService.asmx/SetPassWord", //调用WebService的地址和方法名称组合
+                    data: "{userID:'" + getUrlParam("eid") + "',oldPW:'" + pw1 + "',newPW:'" + pw2 + "'}",
+                    dataType: "json",
+                    success: function (result) {
+                        var myjson = result.d;
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            parent.changePw();
+                        }
+                        else {
+                            layer.msg(jsondatas.MSG, { icon: 2 });
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert(XMLHttpRequest.status + "," + XMLHttpRequest.readyState + textStatus);
+                    },
+                    complete: function () {
+                        layer.close(iiload);
+                    }
+                });
+            }
+            function closePw() {
+                parent.closePw();
+            }
+        </script>
+    </div>
+</body>
+</html>
