@@ -11,7 +11,7 @@
     <script src="../json/ol.js"></script>
     <link href="../css/index.css" rel="stylesheet" />
     <script src="../json/roadjson.js"></script>
-    <script src="../json/roadstatus.js"></script>
+    <!-- <script src="../json/roadstatus.js"></script> -->
     <script src="../json/rescuejson.js"></script>
     <link href="../css/dastyle.css" rel="stylesheet" />
     <title>道路路况</title>
@@ -22,6 +22,7 @@
         <img src="../imgs/bmax.png" />
     </a>
     <a id="showct" onclick="showChart('5');" class="show"><img src="../imgs/chart.png" /></a>
+    <a id="roadGrid" class="show"><img src="../imgs/checkbox.jpg" /></a>
     <div class="messagebox" id="messagebox">
         <iframe src="messagebox.html?msg=3&target=1,5" scrolling="no" frameborder="0"></iframe>
     </div>
@@ -71,7 +72,6 @@
     <script type="text/javascript" src="../js/damap.js"></script>
     <script>
         window.onload = function () {
-
             // var center = [116.011, 40.15];
             var center = [116.397428, 39.90923];
             // var inilayers = ['dapoi', 'road', 'roadstatus'];
@@ -198,10 +198,9 @@
             }
             createRoandLine()
 
-            function createGeoList(num) {
-                return roadstatus.features[num].geometry.coordinates[0]
-            }
-
+            // function createGeoList(num) {
+            //     return roadstatus.features[num].geometry.coordinates[0]
+            // }
             // createMNLine(100, 'yellow')
             // createMNLine(100, 'red')
 

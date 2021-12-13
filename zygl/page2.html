@@ -10,9 +10,16 @@
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/build/ol.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/css/ol.css">
     <link href="../css/index.css" rel="stylesheet" />
+    <script type="text/javascript" src="../js/echarts.min.js"></script>
     <script type="text/javascript" src="../js/damap.js"></script>
     <link href="../css/dastyle.css" rel="stylesheet" />
     <title></title>
+    <style>
+        #con2 {
+            width: 100%;
+            height: 200px;
+        }
+    </style>
 </head>
 <body style="background-color:#00192e;">
     <a id="bemax" class="max">
@@ -52,6 +59,14 @@
                 <div>
                     <span>备注：</span><input type="text" id="val9">
                 </div>
+                <div class="footer">
+                    <button id="getProcessDetail">
+                        <img src="../imgs/l7.png" />查看赛事列表
+                    </button>
+                </div>
+            </div>
+            <div class="popup-content hide" id="processDetail">
+                <div id="con2"></div>
             </div>
         </div>
     </div>
@@ -74,6 +89,140 @@
                 popupShow(e, map);
             });
             getData("event_gym", "1=1");
+            // getChart()
+            function getChart(v) {
+                var iiload = layer.load(1, false);
+                $.ajax({
+                    type: "get",  //访问WebService使用post方式请求
+                    contentType: "application/json; charset=utf-8",
+                    url: getRootPath() + "/Service/GetProgress.ashx", //调用WebService的地址和方法名称组合
+                    data: {gym_id: v},
+                    // dataType: "json",
+                    success: function (result) {
+                        var myjson = result;
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            var mytbl1 = jsondatas.Table;
+                            // var mytbl2 = jsondatas.Table1;
+                            console.log(mytbl1)
+                            // var mytbl3 = jsondatas.Table2;
+                            // var mytbl4 = jsondatas.Table3;
+                            // var mytbl5 = jsondatas.Table4;
+                            // var mytbl6 = jsondatas.Table5;
+                            // var chartlist1 = new Array();
+                            // chartlist1[0] = ["时间段", "进场人数","离场人数"];
+                            var chartlist2 = new Array();
+                            // chartlist2[0] = ["赛事", "进度"];
+                            $.each(mytbl1, function (i, n) {
+                                chartlist2[i] = [n.event, n.progress];
+                            });
+                            // $.each(mytbl2, function (i, n) {
+                            //     chartlist1[i + 1] = [n.atime + "-" + n.ltime, n.arrivepnum, n.leavepnum];
+                            // });
+                            var dom2 = document.getElementById("con2");
+                            var myChart2 = echarts.init(dom2, 'dark');
+                            var option2 = {
+                                backgroundColor: '#162d59',
+                                tooltip: {
+                                },
+                                title: {
+                                    text: '赛事进度',
+                                    left: '10px',
+                                    top: '10px',
+                                    textStyle: {
+                                        fontSize: 14, //大小
+                                    }
+                                },
+                                grid: {
+                                    x: 60,
+                                    y: 0,
+                                    x2: 5,
+                                    y2: 5
+                                },
+                                dataset: {
+                                    source: chartlist2
+                                },
+                                xAxis: {
+                                    type: 'value',
+                                    max: 100,
+                                    splitLine: {
+                                        show: false
+                                    },
+                                    axisTick: {
+                                        show: false
+                                    },
+                                    axisLine: {
+                                        show: false
+                                    },
+                                    axisLabel: {
+                                        show: false,
+
+                                    }
+                                },
+                                yAxis: {
+                                    type: 'category',
+                                    splitLine: {
+                                        show: false
+                                    },
+                                    axisTick: {
+                                        show: false
+                                    },
+                                    axisLine: {
+                                        show: false
+                                    }
+                                },
+                                series: [
+                                    {
+                                        type: 'bar',
+                                        stack: 'chart',
+                                        barWidth: '20px',
+                                        label: {
+                                            show: true,
+                                            position: 'right',
+                                            formatter: function (params) {
+                                                return params.value[1] + '%';
+                                            }
+                                        },
+                                        showBackground: true,
+                                        backgroundStyle: {
+                                            color: ["#233c6b"],
+                                        },
+                                        itemStyle: {
+                                            color: function (param) {
+                                                return getcolor(param.value[1]) || '#5470c6';
+                                            }
+                                        },
+                                    }
+                                ]
+                            };
+                            var getcolor = function (value) {
+                                if (value <= 100 && value > 80)
+                                    return "#ff9090";
+                                else if (value <= 80 && value > 60)
+                                    return "#ffbc90";
+                                else if (value <= 60 && value > 40)
+                                    return "#fbff90";
+                                else if (value <= 40 && value > 20)
+                                    return "#99fbb2";
+                                else
+                                    return "#64d2ff";
+                            }
+                            option2 && myChart2.setOption(option2);
+
+                        }
+                        else {
+                            console.log(jsondatas.MSG, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        console.log("系统错误", { icon: 2 });
+                    },
+                    complete: function () {
+                        layer.close(iiload);
+                    }
+                });
+            }
+    
             function getData(tblname, wstr) {
                 $.ajax({
                     type: "POST",  //访问WebService使用post方式请求
@@ -100,6 +249,7 @@
                                         val7: item.parking,
                                         val8: item.busstop,
                                         val9: item.remark,
+                                        val10: item.id,
                                         // target_type: item.target_type,
                                         // index: data.trafficData.index,
                                         // id: data.data.id,
@@ -133,7 +283,15 @@
                     }
                 });
             }
+            $('#getProcessDetail').on('click', function() {
+                var accidentMessage = $('#accidentMessage')
+                var data = JSON.parse(accidentMessage.attr('data'))
+                console.log(data)
+                getChart(data.val10)
+                $('#processDetail').removeClass('hide')
+                $('#accidentMessage').hide()
 
+            })
         };
     </script>
 </body>

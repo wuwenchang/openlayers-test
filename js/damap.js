@@ -3,6 +3,10 @@ var isShowPopup = false
 var allCarMarker = []; // 所有交通方式数组，geoMarker, id, refreshTime
 var markerStyles = {} // 图标类型库
 var hadMNRoadsIds = [];
+var roadLayers = []
+var fristLoadRoadLayer = true
+
+var roadGridStatus = false
 
 function createMarkersStyles() {
     // 车图标
@@ -18,7 +22,7 @@ function createMarkersStyles() {
         }) 
     }
     // 其他图标
-    var list2 = ['accident', 'tl1', 'tl2', 'tl3', 'tl4','tl5', 'tl6', 'tl7', 'tl8','tl9', 'tl10','tl11', 'tl12', 'tl13', 'tl14', 'l5']
+    var list2 = ['accident', 'tl1', 'tl2', 'tl3', 'tl4','tl5', 'tl6', 'tl7', 'tl8','tl9', 'tl10','tl11', 'tl12', 'tl13', 'tl14', 'l5', 'start', 'l7']
     for (let i = 0; i < list2.length; i++) {
         markerStyles[list2[i]] = new ol.style.Style({
             image: new ol.style.Icon({
@@ -29,6 +33,19 @@ function createMarkersStyles() {
             }),
         }) 
     }
+    // 其他图标
+    // var list2 = [ 'start']
+    // for (let i = 0; i < list2.length; i++) {
+    //     markerStyles[list2[i]] = new ol.style.Style({
+    //         image: new ol.style.Icon({
+    //             anchor: [0.5, 1],
+    //             // anchor: [0.75, 0.5],
+    //             // scale: 0.5,
+    //             src: '../imgs/' + list2[i] + '.jpg',
+    //         }),
+    //     }) 
+    // }
+
 }
 
 function addacpoint(id) {
@@ -170,7 +187,7 @@ function loadmap(center1, resolutionpara, inilayers) {
     if (inilayers) {
         for (var i = 0; i < inilayers.length; i++) {
             var dalayer = loadTileWMS(inilayers[i]);
-            map.addLayer(dalayer);//将图层加入map
+            roadLayers.push(dalayer)
         }
     }
     locationMap = map;
@@ -196,6 +213,27 @@ function loadmap(center1, resolutionpara, inilayers) {
     return map;
 }
 
+// 显示隐藏图层
+$('#roadGrid').on('click', function() {
+    if (fristLoadRoadLayer) {
+        fristLoadRoadLayer = false
+        for (let i = 0; i < roadLayers.length; i++) {
+            map.addLayer(roadLayers[i]);//将图层加入map
+        }
+        return
+    }
+    if (roadGridStatus) {
+        for (let i = 0; i < roadLayers.length; i++) {
+            roadLayers[i].setVisible(true)
+        }
+    } else {
+        for (let i = 0; i < roadLayers.length; i++) {
+            roadLayers[i].setVisible(false)
+        }
+    }
+    roadGridStatus = !roadGridStatus
+})
+
 function loadTileWMS(layer) {
     var daurl = 'http://114.215.130.203:8080/geoserver/bjda/wms';
     var dalayer = new ol.layer.Tile({
@@ -209,7 +247,7 @@ function loadTileWMS(layer) {
 }
 
 /***** start *******/
-var vectorLayer = null;
+// var vectorLayer = null;
 // 添加图标事件
 function addMarker(params, map) {
     let coordinate = ol.proj.transform(params.coordinate, 'EPSG:4326', 'EPSG:3857')
@@ -224,7 +262,7 @@ function addMarker(params, map) {
     // feature.setStyle(iconStyle);//图层设置 样式
     feature.setStyle(markerStyles[params.stylepng])
     // vectorLayer == null ? null : map.removeLayer(vectorLayer);
-    vectorLayer = new ol.layer.Vector({
+    var vectorLayer = new ol.layer.Vector({
         source: new ol.source.Vector({
             features: [feature]//图层加进去
         }),
@@ -307,6 +345,8 @@ function popupShow(e, map, params) {
         var driverMessage = $('#driverMessage')
         var accidentMessage = $('#accidentMessage')
         var rescueMessage = $('#rescueMessage');
+        var processDetail = $('#processDetail')
+        if (processDetail && processDetail.length) processDetail.addClass('hide')
         isShowPopup = feature.O.params.id
         if (showType === 'accident') {
             $('#val1').val(feature.O.params.val1)
@@ -350,11 +390,13 @@ function popupShow(e, map, params) {
             if (driverMessage) driverMessage.show()
             if (accidentMessage) accidentMessage.hide()
             if (rescueMessage) rescueMessage.hide()
-        } else {
-            // if (driverMessage) driverMessage.hide()
-            // if (accidentMessage) accidentMessage.hide()
-            // if (rescueMessage) rescueMessage.hide()
+        } else if (showType !== 'hide') {
+            if (driverMessage) driverMessage.hide()
+            if (accidentMessage) accidentMessage.show()
+            if (rescueMessage) rescueMessage.hide()
             // document.getElementById("popup").style.display = "none";
+            // 
+        } else {
             return
         }
         if (map.getOverlays().C.length) {
@@ -406,6 +448,7 @@ function addSEMarker(params) {
     // let coordinate = ol.proj.transform(params.coordinate, 'EPSG:4326', 'EPSG:3857')
     var feature = new ol.Feature({
         type: params.isStart ? 'startImg' : 'endImg',
+        params: params.data,
         geometry: new ol.geom.Point(params.coordinate)
     });
     var iconStyle = new ol.style.Style({
@@ -642,17 +685,18 @@ function initAnimation (params) {
         startAnimation({...params, carMarker})
         if (showStartEnd) {
             // 起始点
-            addSEMarker({
-                coordinate: pointsList[0],
-                isStart: true,
-                id: 'startImg'
-            })
+            // addSEMarker({
+            //     coordinate: pointsList[0],
+            //     data: params.properties,
+            //     isStart: true,
+            //     id: 'startImg'
+            // })
             // 终点
-            addSEMarker({
-                coordinate: pointsList[pointsList.length - 1],
-                isStart: false,
-                id: 'endImg'
-            })
+        //     addSEMarker({
+        //         coordinate: pointsList[pointsList.length - 1],
+        //         isStart: false,
+        //         id: 'endImg'
+        //     })
         }
     }, 1000);
 }
@@ -749,11 +793,13 @@ function beginToSimulate(data, map) {
     // 救援点
     addMarker({
         data: {
+            val3: '小货车',
+            val2: 20 + Math.floor(Math.random() * 16) + '辆',
             val: data.data.rescueName,
             showType: 'rescue'
         },
         coordinate: data.line[0],
-        stylepng: 'redCross'
+        stylepng: 'start'
     }, map)
     //事故点
     addMarker({
@@ -818,7 +864,6 @@ function updateData(tabIndex, params) {
 }
 
 function createAccident(rescuejson, accidentCarData) {
-
     var i = 0;
     // 车类型对应的故障类型
     // 1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火 7、赛事推迟，8、赛事限流，9、人群拥堵，10、人群滞留

@@ -45,7 +45,13 @@
         <p><img src="../imgs/s2.png" /><span>图例</span></p>
         <div class="msgbox">
             <ul>
+                <li><img src="../imgs/tl4.png" /><span>火车站</span></li>
+                <li><img src="../imgs/tl3.png" /><span>机场</span></li>
+                <li><img src="../imgs/tl7.png" /><span>地铁站</span></li>
+                <li><img src="../imgs/tl9.png" /><span>汽车站</span></li>
+                <li><img src="../imgs/tl6.png" /><span>停车场</span></li>
                 <li><img src="../imgs/l5.png" /><span>交通枢纽</span></li>
+                <!-- <li><img src="../imgs/tl1.png" /><span>换乘枢纽</span></li> -->
                 <!-- <li><img src="../imgs/tl1.png" /><span>高速</span></li>
                 <li><img src="../imgs/tl2.png" /><span>铁路</span></li>
                 <li><img src="../imgs/tl3.png" /><span>机场</span></li>
@@ -76,6 +82,8 @@
                         var jsondatas = eval("(" + myjson + ")");
                         if (jsondatas.CODE > 0) {
                             var list = jsondatas.Table;
+                            let remarks = ['火车站', '机场', '地铁站', '汽车站', '停车场', '换乘枢纽']
+                            let remarkList = ['tl4', 'tl3', 'tl7', 'tl9', 'tl6', 'l5']
                             list.forEach(item => {
                                 // 动态添加赛事馆图标
                                 addMarker({
@@ -93,7 +101,7 @@
                                         showType: 'accident'
                                     },
                                     coordinate: [item.xaxis, item.yaxis],
-                                    stylepng: 'l5'
+                                    stylepng: remarkList[remarks.indexOf(item.remark) !== -1 ? remarks.indexOf(item.remark) : 5]
                                 }, map)
                             })
                             // let start = 0

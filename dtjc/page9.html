@@ -150,6 +150,7 @@
                         var jsondatas = eval("(" + myjson + ")");
                         if (jsondatas.CODE > 0) {
                             var list = jsondatas.Table;
+                            console.log(list)
                             let features = list.map(item => {
                                 // 动态添加赛事馆图标
                                 addMarker({

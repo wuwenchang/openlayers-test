@@ -27,6 +27,7 @@
         <img src="../imgs/bmax.png" />
     </a>
     <a id="showct" onclick="showChart('4');" class="show"><img src="../imgs/chart.png" /></a>
+    <a id="roadGrid" class="show"><img src="../imgs/checkbox.jpg" /></a>
     <!-- <a id="changeMap" class="show">切换地图</a> -->
     <div class="messagebox" id="messagebox" >
         <iframe src="messagebox.html?msg=5&target=1,5" scrolling="no" frameborder="0"></iframe>
@@ -53,15 +54,15 @@
                 </div>
                 <div id="latlon"></div>
                 <div class="footer">
-                    <button id="submit">
+                    <!-- <button id="submit">
                         <img src="../imgs/l7.png" />启动预案
-                    </button>
+                    </button> -->
                     <button id="sendmessage">
                         <img src="../imgs/l6.png" />发布消息
                     </button>
                 </div>
             </div>
-            <!-- <div class="popup-content" id="driverMessage">
+            <div class="popup-content" id="driverMessage">
                 <div>
                     <span>公 司：</span><input type="text" id="val11">
                 </div>
@@ -77,11 +78,22 @@
                 <div>
                     <span>车 辆：</span><input type="text" id="val15">
                 </div>
-            </div> -->
+            </div>
             <div class="popup-content" id="rescueMessage">
                 <!-- <input type="hidden" id="sendid" value="" /> -->
                 <div>
                     <span>名 称：</span><input type="text" id="val21">
+                </div>
+                <div>
+                    <span>类 型：</span><input type="text" id="val22">
+                </div>
+                <div>
+                    <span>车 辆：</span><input type="text" id="val23">
+                </div>
+                <div class="footer">
+                    <button id="submit">
+                        <img src="../imgs/l7.png" />启动应急方案
+                    </button>
                 </div>
             </div>
         </div>

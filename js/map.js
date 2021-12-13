@@ -51,6 +51,12 @@
      //关闭浮动窗口
     $("#popup-closer").click(function () {
         $("#popup-closer").blur();
+        var processDetail = $('#processDetail')
+        if (processDetail && processDetail.length && !processDetail[0].className.includes('hide')) {
+            processDetail.addClass('hide')
+            $('#accidentMessage').show()
+            return
+        }
         window.isShowPopup = ''
         document.getElementById("popup").style.display = "none";
     });
