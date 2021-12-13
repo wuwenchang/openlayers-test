@@ -29,7 +29,7 @@
     <div id="map">
         <div id="popup" class="ol-popup">
             <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-            <div class="popup-content">
+            <div class="popup-content" id="accidentMessage">
                 <input type="hidden" id="sendid" value="" />
                 <div>
                     <span>名 称：</span><input type="text" id="val1">
@@ -54,6 +54,17 @@
                     <button id="sendmessage">
                         <img src="../imgs/l6.png" />发布消息
                     </button> -->
+                </div>
+            </div>
+            <div class="popup-content" id="rescueMessage">
+                <div>
+                    <span>名 称：</span><input type="text" id="val21">
+                </div>
+                <div>
+                    <span>地 点：</span><input type="text" id="val22">
+                </div>
+                <div>
+                    <span>枢 纽：</span><input type="text" id="val23">
                 </div>
             </div>
         </div>
@@ -88,7 +99,6 @@
                 // params = res;
                 // showAccidentPopup(res, map);
                 var data = res.data;
-                console.log(data)
                 let params = {
                     data: {
                         val1: data.name,
@@ -106,6 +116,8 @@
                     zIndex: 100,
                     stylepng: 'l5'
                 }
+                $('#accidentMessage').show();
+                $('#rescueMessage').hide()
                 //事故点
                 addMarker(params, map)
                 Object.assign(data, params);
@@ -145,17 +157,15 @@
                                 // 动态添加赛事馆图标
                                 addMarker({
                                     data: {
-                                        val1: item.name,
+                                        val: item.name,
                                         val2: item.address,
                                         val3: item.remark,
-                                        val4: '',
-                                        val5: '',
                                         // val5: timeFormat(item.addtime),
                                         // val6: item.name1,
                                         // target_type: item.target_type,
                                         // index: data.trafficData.index,
                                         // id: data.data.id,
-                                        showType: 'hide'
+                                        showType: 'rescue'
                                     },
                                     coordinate: [item.xaxis, item.yaxis],
                                     stylepng: remarkList[remarks.indexOf(item.remark) !== -1 ? remarks.indexOf(item.remark) : 5]

@@ -55,7 +55,7 @@
                     </button> -->
                 </div>
             </div>
-            <!-- <div class="popup-content" id="rescue">
+            <div class="popup-content" id="rescueMessage">
                 <div>
                     <span>名 称：</span><input type="text" id="val21">
                 </div>
@@ -65,13 +65,7 @@
                 <div>
                     <span>赛 事：</span><input type="text" id="val23">
                 </div>
-                <div>
-                    <span>负 责：</span><input type="text" id="val24">
-                </div>
-                <div>
-                    <span>电 话：</span><input type="text" id="val25">
-                </div>
-            </div> -->
+            </div>
         </div>
     </div>
     <div id="legend" class="allmsg allmsg1">
@@ -119,6 +113,8 @@
                 addMarker(params, map)
                 Object.assign(data, params);
                 showAccidentPopup(res, map);
+                $('#accidentMessage').show();
+                $('#rescueMessage').hide()
             })
             var list = [];
 
@@ -155,17 +151,17 @@
                                 // 动态添加赛事馆图标
                                 addMarker({
                                     data: {
-                                        val1: item.remark,
+                                        val: item.remark,
                                         val2: item.address,
                                         val3: item.name,
-                                        val4: '',
-                                        val5: '',
+                                        // val4: '',
+                                        // val5: '',
                                         // val5: timeFormat(item.addtime),
                                         // val6: item.name1,
                                         // target_type: item.target_type,
                                         // index: data.trafficData.index,
                                         // id: data.data.id,
-                                        showType: 'hide'
+                                        showType: 'rescue'
                                     },
                                     coordinate: [item.xaxis, item.yaxis],
                                     stylepng: 'tl5'

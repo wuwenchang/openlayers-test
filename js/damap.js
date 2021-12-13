@@ -381,6 +381,7 @@ function popupShow(e, map, params) {
             if (driverMessage) driverMessage.hide()
             if (accidentMessage) accidentMessage.hide()
             if (rescueMessage) rescueMessage.show()
+            rescueMessage.attr('data', JSON.stringify(feature.O.params))
         } else if (showType === 'car') {
             // $('#val11').val(feature.O.params.val1)
             // $('#val12').val(feature.O.params.val2)
@@ -790,32 +791,25 @@ function getRescueFeatures(railwayjson, type) {
 }
 
 function beginToSimulate(data, map) {
-    // 救援点
-    addMarker({
-        data: {
-            val3: '小货车',
-            val2: 20 + Math.floor(Math.random() * 16) + '辆',
-            val: data.data.rescueName,
-            showType: 'rescue'
-        },
-        coordinate: data.line[0],
-        stylepng: 'start'
-    }, map)
+    let propsData = {
+        val1: data.maker.name,
+        val2: data.maker.address,
+        val3: data.maker.code,
+        val4: data.maker.message,
+        val5: timeFormat(data.maker.addtime),
+        val6: data.maker.name1,
+        val7: data.maker.id,
+        target_type: data.maker.target_type,
+        index: data.trafficData.index,
+        id: data.data.id,
+        rescueName: data.data.rescueName,
+        rescuePoint: data.line[0],
+        showType: 'accident'
+    }
+    
     //事故点
     addMarker({
-        data: {
-            val1: data.maker.name,
-            val2: data.maker.address,
-            val3: data.maker.code,
-            val4: data.maker.message,
-            val5: timeFormat(data.maker.addtime),
-            val6: data.maker.name1,
-            val7: data.maker.id,
-            target_type: data.maker.target_type,
-            index: data.trafficData.index,
-            id: data.data.id,
-            showType: 'accident'
-        },
+        data: propsData,
         coordinate: data.line[data.data.trafficIndex],
         stylepng: 'accident'
     }, map)
@@ -970,18 +964,37 @@ function getAccidentLine(lines, type) {
     }
 }
 
-// 模拟呼叫救援
-var hadRescue = []
 $('#submit').click(function () {
     var accidentMessage = $('#accidentMessage')
     var data = JSON.parse(accidentMessage.attr('data'))
+    // 救援点
+    addMarker({
+        data: {
+            val3: '小货车',
+            val2: 20 + Math.floor(Math.random() * 16) + '辆',
+            val: data.rescueName,
+            propsData: data,
+            showType: 'rescue',
+        },
+        coordinate: data.rescuePoint,
+        stylepng: 'start'
+    }, map)
+    $('#popup').hide()
+    map.getView().setCenter(ol.proj.transform(data.rescuePoint, 'EPSG:4326', 'EPSG:3857'))
+})
+
+// 模拟呼叫救援
+var hadRescue = []
+$('#startRescue').on('click', function() {
+    var rescueMessage = $('#rescueMessage')
+    var data = JSON.parse(rescueMessage.attr('data')).propsData;
     if (hadRescue.includes(data.id)) {
         return
     }
     hadRescue.push(data.id)
     data.id += 'rescue'
     isShowPopup = false;
-    accidentMessage.attr('data', JSON.stringify(data))
+    // rescueMessage.attr('data', JSON.stringify(data))
     $('#popup').hide()
     var line = []
     if (data.target_type) {

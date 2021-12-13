@@ -648,6 +648,16 @@ input, select, textarea {
     top: 100px;
     z-index: 99;
 }
+#roadGrid {
+    background-color: #162d5a;
+    width: 25px;
+    height: 25px;
+    display: block;
+    position: absolute;
+    right: 85px;
+    top: 100px;
+    z-index: 99;
+}
 .editmenu {
     background-color: rgba(19,35,66,0.8);
     display: block;
