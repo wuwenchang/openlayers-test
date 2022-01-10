@@ -54,7 +54,8 @@
         var processDetail = $('#processDetail')
         if (processDetail && processDetail.length && !processDetail[0].className.includes('hide')) {
             processDetail.addClass('hide')
-            $('#accidentMessage').show()
+            $('#driverMessage').show()
+            $('#accidentMessage').hide()
             return
         }
         window.isShowPopup = ''

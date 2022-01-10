@@ -13,7 +13,6 @@
         href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/css/ol.css">
     <link href="../css/index.css" rel="stylesheet" />
     <script src="../json/railwayjson.js"></script>
-    <script type="text/javascript" src="../js/damap.js"></script>
     <link href="../css/dastyle.css" rel="stylesheet" />
     <title>交通枢纽</title>
 </head>
@@ -29,6 +28,31 @@
     <div id="map">
         <div id="popup" class="ol-popup">
             <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+            <div class="popup-content" id="driverMessage">
+                <div>
+                    <span>名 称：</span><input type="text" id="val11">
+                </div>
+                <div>
+                    <span>地 点：</span><input type="text" id="val12">
+                </div>
+                <div>
+                    <span>枢 纽：</span><input type="text" id="val13">
+                </div>
+                <!-- <div>
+                    <span>信 息：</span><input type="text" id="val14">
+                </div>
+                <div>
+                    <span>时 间：</span><input type="text" id="val15">
+                </div> -->
+                <div class="footer">
+                    <!-- <button id="submit">
+                        <img src="../imgs/l7.png" />启动预案
+                    </button>
+                    <button id="sendmessage">
+                        <img src="../imgs/l6.png" />发布消息
+                    </button> -->
+                </div>
+            </div>
             <div class="popup-content" id="accidentMessage">
                 <input type="hidden" id="sendid" value="" />
                 <div>
@@ -46,14 +70,13 @@
                 <div>
                     <span>时 间：</span><input type="text" id="val5">
                 </div>
-                <div id="latlon"></div>
                 <div class="footer">
-                    <!-- <button id="submit">
+                    <button id="submit">
                         <img src="../imgs/l7.png" />启动预案
                     </button>
                     <button id="sendmessage">
                         <img src="../imgs/l6.png" />发布消息
-                    </button> -->
+                    </button>
                 </div>
             </div>
             <div class="popup-content" id="rescueMessage">
@@ -61,10 +84,24 @@
                     <span>名 称：</span><input type="text" id="val21">
                 </div>
                 <div>
-                    <span>地 点：</span><input type="text" id="val22">
+                    <span>类 型：</span><input type="text" id="val22">
                 </div>
                 <div>
-                    <span>枢 纽：</span><input type="text" id="val23">
+                    <span>车 辆：</span><input type="text" id="val23">
+                </div>
+                <div>
+                    <span>公交站：</span><input type="text" id="val24">
+                </div>
+                <div>
+                    <span>缓解时长：</span><input type="text" id="val25">
+                </div>
+                <div>
+                    <span>预计到达：</span><input type="text" id="val26">
+                </div>
+                <div class="footer">
+                    <button id="startRescue">
+                        <img src="../imgs/l7.png" />启动救援方案
+                    </button>
                 </div>
             </div>
         </div>
@@ -82,6 +119,7 @@
             </ul>
         </div>
     </div>
+    <script type="text/javascript" src="../js/damap.js"></script>
     <script>
         window.onload = function () {
             var center1 = [116.397428, 39.90923];
@@ -96,8 +134,6 @@
 
             window.addEventListener('message', function (res) {
                 $(".footer").show();
-                // params = res;
-                // showAccidentPopup(res, map);
                 var data = res.data;
                 let params = {
                     data: {
@@ -106,22 +142,23 @@
                         val3: data.remark1,
                         val4: data.remark,
                         val5: timeFormat(data.starttime),
-                        // val6: data.name1,
-                        // target_type: data.target_type,
-                        // index: data.trafficData.index,
-                        // id: data.data.id,
+                        sendIdVal: data.id,
+                        coordinate: [data.xaxis, data.yaxis],
                         showType: 'accident'
                     },
                     coordinate: [data.xaxis, data.yaxis],
-                    zIndex: 100,
+                    zIndex: 1,
                     stylepng: 'l5'
                 }
-                $('#accidentMessage').show();
-                $('#rescueMessage').hide()
                 //事故点
                 addMarker(params, map)
                 Object.assign(data, params);
                 showAccidentPopup(res, map);
+                var accidentMessage = $('#accidentMessage')
+                accidentMessage.attr('data', JSON.stringify(params.data))
+                accidentMessage.show();
+                $('#driverMessage').hide()
+                $('#rescueMessage').hide()
             })
             var headVectorSource = new ol.source.Vector({
                 features: (new ol.format.GeoJSON()).readFeatures({
@@ -157,15 +194,15 @@
                                 // 动态添加赛事馆图标
                                 addMarker({
                                     data: {
-                                        val: item.name,
-                                        val2: item.address,
-                                        val3: item.remark,
+                                        val11: item.name,
+                                        val12: item.address,
+                                        val13: item.remark,
                                         // val5: timeFormat(item.addtime),
                                         // val6: item.name1,
                                         // target_type: item.target_type,
                                         // index: data.trafficData.index,
                                         // id: data.data.id,
-                                        showType: 'rescue'
+                                        showType: 'car'
                                     },
                                     coordinate: [item.xaxis, item.yaxis],
                                     stylepng: remarkList[remarks.indexOf(item.remark) !== -1 ? remarks.indexOf(item.remark) : 5]

@@ -115,7 +115,7 @@ function locationbyMark(maker, isHistory) {
             val4: maker.message,
             val5: timeFormat(maker.addtime),
             val6: maker.name1,
-            val7: maker.id
+            sendIdVal: maker.id
         },
         stylepng: stylepng,
         activeSrc: activeSrc
@@ -320,6 +320,9 @@ function showAccidentPopup(res, map) {
     $('#val9').val(data.data.val9)
     $('#val10').val(data.data.val10)
     document.getElementById("popup").style.display = "block";
+    $('#driverMessage').show()
+    $('#accidentMessage').hide()
+    $('#rescueMessage').hide()
     addMarker(data, map)
     map.getView().setCenter(coordinate)
     // 两种方法都可以
@@ -340,10 +343,8 @@ function getOverlay() {
 
 
 function popupShow(e, map, params) {
-    // console.log(params);
     var coordinate = e.coordinate;
     let feature = map.forEachFeatureAtPixel(e.pixel, a => a);
-    // console.log(feature)
     if (feature) {
         if ((feature.O.params && feature.O.params.hideMessage) || !feature.O.params) return
         var showType = feature.O.params.showType;
@@ -368,7 +369,7 @@ function popupShow(e, map, params) {
             let val9 = $('#val9')
             if (val9) val9.val(feature.O.params.val9)
             
-            $('#sendid').val(feature.O.params.val7)
+            $('#sendid').val(feature.O.params.sendIdVal)
             if (driverMessage) driverMessage.hide()
             if (accidentMessage) {
                 accidentMessage.show()
@@ -382,18 +383,26 @@ function popupShow(e, map, params) {
                 $('#val23').val(feature.O.params.val3)
                 $('#val24').val(feature.O.params.val4)
                 $('#val25').val(feature.O.params.val5)
+                $('#val26').val(feature.O.params.val6)
             }
             if (driverMessage) driverMessage.hide()
             if (accidentMessage) accidentMessage.hide()
             if (rescueMessage) rescueMessage.show()
             rescueMessage.attr('data', JSON.stringify(feature.O.params))
         } else if (showType === 'car') {
-            // $('#val11').val(feature.O.params.val1)
-            // $('#val12').val(feature.O.params.val2)
-            // $('#val13').val(feature.O.params.val3)
-            // $('#val14').val(feature.O.params.val4)
-            // $('#val15').val(feature.O.params.val5)
-            if (driverMessage) driverMessage.show()
+            $('#val11').val(feature.O.params.val11)
+            $('#val12').val(feature.O.params.val12)
+            $('#val13').val(feature.O.params.val13)
+            $('#val14').val(feature.O.params.val14)
+            $('#val15').val(feature.O.params.val15)
+            $('#val16').val(feature.O.params.val16)
+            $('#val17').val(feature.O.params.val17)
+            $('#val18').val(feature.O.params.val18)
+            $('#val19').val(feature.O.params.val19)
+            if (driverMessage) {
+                driverMessage.show()
+                driverMessage.attr('data', JSON.stringify(feature.O.params))
+            }
             if (accidentMessage) accidentMessage.hide()
             if (rescueMessage) rescueMessage.hide()
         } else if (showType !== 'hide') {
@@ -599,9 +608,9 @@ function startAnimation(params) {
                 // 添加轨迹点位
                 roadLine2.appendCoordinate(allPoint[pointIndex])
             }
-            if (isShowPopup === properties.id && !properties.hideMessage && map.getOverlays().C.length) {
-                map.getOverlays().C[0].setPosition(allPoint[pointIndex])
-            }
+            // if (isShowPopup === properties.id && !properties.hideMessage && map.getOverlays().C.length) {
+            //     map.getOverlays().C[0].setPosition(allPoint[pointIndex])
+            // }
             if (pointIndex >= allPoint.length - 1) {
                 clearInterval(startMove)
             }
@@ -630,7 +639,7 @@ function createMinLine(cur, next, v) {
 function createGeoMarker(pointsList, properties, carType) {
     let id = carType + 'geoMarker' + Math.floor(Math.random() * 10000);
     const geoMarker = new ol.Feature({
-        params: properties,
+        // params: properties,
         geometry: new ol.geom.Point(pointsList[0])
     });
     const arrowLayer = new ol.layer.Vector({
@@ -803,7 +812,7 @@ function beginToSimulate(data, map) {
         val4: data.maker.message,
         val5: timeFormat(data.maker.addtime),
         val6: data.maker.name1,
-        val7: data.maker.id,
+        sendIdVal: data.maker.id,
         target_type: data.maker.target_type,
         index: data.trafficData.index,
         id: data.data.id,
@@ -854,8 +863,7 @@ function updateData(tabIndex, params) {
         url: getRootPath() + "/Service/AddAccident.ashx", //调用WebService的地址和方法名称组合
         data: {tableName: tableNames[tabIndex], message},
         dataType: "json",
-        success: function (result) { 
-            // console.log(result)
+        success: function (result) {
             var jsondatas = eval("(" + result + ")");
             console.log(jsondatas)
         }
@@ -971,13 +979,23 @@ function getAccidentLine(lines, type) {
 
 $('#submit').click(function () {
     var accidentMessage = $('#accidentMessage')
-    var data = JSON.parse(accidentMessage.attr('data'))
+    var data = data = JSON.parse(accidentMessage.attr('data'));
+    if (window.location.href.includes('page9') || window.location.href.includes('page10')) {
+        Object.assign(data, {
+            rescueName: data.val1 + '救援点',
+            id: data.sendIdVal + 'rescue',
+            rescuePoint: [data.coordinate[0] - 0.006 + 0.004 * Math.random(), data.coordinate[1] - 0.006 + 0.004 * Math.random()]
+        })
+    }
     // 救援点
     addMarker({
         data: {
-            val3: '小货车',
-            val2: 20 + Math.floor(Math.random() * 16) + '辆',
             val: data.rescueName,
+            val2: 1 + Math.floor(Math.random() * 19) + '辆',
+            val3: '公共汽车',
+            val4: data.rescueName.slice(0, -3) + '公交站',
+            val5: 15 + Math.ceil(Math.random() * 25) + '分钟',
+            val6: 20 + Math.ceil(Math.random() * 50) + '分钟',
             propsData: data,
             showType: 'rescue',
         },
@@ -1009,6 +1027,10 @@ $('#startRescue').on('click', function() {
         line = line.slice(0, Math.floor(line.length / 2) + 1)
     } else if (data.index) {
         line = getLineData(data.index).line.map(item => {
+            return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+        })
+    } else {
+        line = [data.rescuePoint, data.coordinate].map(item => {
             return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
         })
     }

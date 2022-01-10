@@ -11,60 +11,114 @@
     <link src="../json/ol.css" />
     <script src="../json/ol.js"></script>
     <link href="../css/index.css" rel="stylesheet" />
-    <script src="../json/railwayjson.js"></script>
-    <script type="text/javascript" src="../js/damap.js"></script>
+    <script type="text/javascript" src="../js/echarts.min.js"></script>
     <link href="../css/dastyle.css" rel="stylesheet" />
     <title>体育场馆</title>
+    <style>
+        #con2 {
+            width: 100%;
+            height: 200px;
+        }
+    </style>
 </head>
-
-<body style="background-color: #00192e;">
+<body style="background-color:#00192e;">
     <a id="bemax" class="max">
         <img src="../imgs/bmax.png" />
     </a>
-    <a id="showct" onclick="showChart('9');" class="show"><img src="../imgs/chart.png" /></a>
-
+    <a id="showct" onclick="showChart(2);" class="show"><img src="../imgs/chart.png" /></a>
     <div class="messagebox"  id="messagebox" >
         <iframe src="messagebox.html?msg=4&target=29" scrolling="no" frameborder="0"></iframe>
     </div>
     <div id="map">
         <div id="popup" class="ol-popup">
             <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-            <div class="popup-content" id="accidentMessage">
+            <div class="popup-content" id="driverMessage">
                 <input type="hidden" id="sendid" value="" />
                 <div>
-                    <span>名 称：</span><input type="text" id="val1">
+                    <span>场 馆：</span><input type="text" id="val11">
+                    <!-- <span>名 称：</span><input type="text" id="val1"> -->
+                </div>
+                <div>
+                    <span>地 点：</span><input type="text" id="val12">
+                </div>
+                <!-- <div>
+                    <span>场 馆：</span><input type="text" id="val3">
+                </div> -->
+                <div>
+                    <span>座席数：</span><input type="text" id="val13">
+                </div>
+                <div>
+                    <span>场地面积：</span><input type="text" id="val14">
+                </div>
+                <div>
+                    <span>洗手间：</span><input type="text" id="val15">
+                </div>
+                <div>
+                    <span>停车位：</span><input type="text" id="val16">
+                </div>
+                <div>
+                    <span>公交站点：</span><input type="text" id="val17">
+                </div>
+                <div>
+                    <span>备注：</span><input type="text" id="val18">
+                </div>
+                <div class="footer">
+                    <button id="getProcessDetail">
+                        <img src="../imgs/l7.png" />查看赛事列表
+                    </button>
+                </div>
+            </div>
+            <div class="popup-content" id="accidentMessage">
+                <div>
+                    <span>场 馆：</span><input type="text" id="val1">
                 </div>
                 <div>
                     <span>地 点：</span><input type="text" id="val2">
                 </div>
                 <div>
-                    <span>场 馆：</span><input type="text" id="val3">
+                    <span>时 间：</span><input type="text" id="val3">
                 </div>
                 <div>
-                    <span>信 息：</span><input type="text" id="val4">
-                </div>
-                <div>
-                    <span>时 间：</span><input type="text" id="val5">
+                    <span>事 件：</span><input type="text" id="val4">
                 </div>
                 <div class="footer">
-                    <!-- <button id="submit">
+                    <button id="submit">
                         <img src="../imgs/l7.png" />启动预案
-                    </button> -->
-                    <!-- <button id="sendmessage">
+                    </button>
+                    <button id="sendmessage">
                         <img src="../imgs/l6.png" />发布消息
-                    </button> -->
+                    </button>
                 </div>
             </div>
             <div class="popup-content" id="rescueMessage">
+                <!-- <input type="hidden" id="sendid" value="" /> -->
                 <div>
                     <span>名 称：</span><input type="text" id="val21">
                 </div>
                 <div>
-                    <span>地 点：</span><input type="text" id="val22">
+                    <span>类 型：</span><input type="text" id="val22">
                 </div>
                 <div>
-                    <span>赛 事：</span><input type="text" id="val23">
+                    <span>车 辆：</span><input type="text" id="val23">
                 </div>
+                <div>
+                    <span>公交站：</span><input type="text" id="val24">
+                </div>
+                <div>
+                    <span>缓解时长：</span><input type="text" id="val25">
+                </div>
+                <div>
+                    <span>预计到达：</span><input type="text" id="val26">
+                </div>
+                <div class="footer">
+                    <button id="startRescue">
+                        <img src="../imgs/l7.png" />启动救援方案
+                    </button>
+                </div>
+            </div>
+            <div class="popup-content hide" id="processDetail">
+                <div>赛事进度</div>
+                <div id="con2"></div>
             </div>
         </div>
     </div>
@@ -72,23 +126,153 @@
         <p><img src="../imgs/s2.png" /><span>图例</span></p>
         <div class="msgbox">
             <ul>
-                <li><img src="../imgs/tl5.png" /><span>体育场馆</span></li>
-            </ul>
+                <li><img src="../imgs/tl5.png" /><span>体育馆</span></li>
+           </ul>
         </div>
     </div>
+    <script type="text/javascript" src="../js/damap.js"></script>
     <script>
         window.onload = function () {
 
             var center1 = [116.011, 40.45];
-            // var inilayers = ['gymnasium'];
+            // var inilayers = ['gymnasium', 'road', 'railway'];
             var inilayers = [];
             var map = loadmap(center1, '250.74811314055756', inilayers);
-            var params;
-            //点击事件
             map.addEventListener('click', function (e) {
-                popupShow(e, map, params);
+                popupShow(e, map);
             });
+            function getChart(v) {
+                var iiload = layer.load(1, false);
+                $.ajax({
+                    type: "get",  //访问WebService使用post方式请求
+                    contentType: "application/json; charset=utf-8",
+                    url: getRootPath() + "/Service/GetProgress.ashx", //调用WebService的地址和方法名称组合
+                    data: {gym_id: v},
+                    // dataType: "json",
+                    success: function (result) {
+                        var myjson = result;
+                        var jsondatas = eval("(" + myjson + ")");
+                        if (jsondatas.CODE > 0) {
+                            var mytbl1 = jsondatas.Table;
+                            // var mytbl2 = jsondatas.Table1;
+                            console.log(mytbl1)
+                            // var mytbl3 = jsondatas.Table2;
+                            // var mytbl4 = jsondatas.Table3;
+                            // var mytbl5 = jsondatas.Table4;
+                            // var mytbl6 = jsondatas.Table5;
+                            // var chartlist1 = new Array();
+                            // chartlist1[0] = ["时间段", "进场人数","离场人数"];
+                            var chartlist2 = new Array();
+                            // chartlist2[0] = ["赛事", "进度"];
+                            $.each(mytbl1, function (i, n) {
+                                chartlist2[i] = [n.event, n.progress];
+                            });
+                            // $.each(mytbl2, function (i, n) {
+                            //     chartlist1[i + 1] = [n.atime + "-" + n.ltime, n.arrivepnum, n.leavepnum];
+                            // });
+                            var dom2 = document.getElementById("con2");
+                            var myChart2 = echarts.init(dom2, 'dark');
+                            var option2 = {
+                                backgroundColor: '#162d59',
+                                tooltip: {
+                                },
+                                // title: {
+                                //     text: '赛事进度',
+                                //     left: '10px',
+                                //     top: '0px',
+                                //     textStyle: {
+                                //         fontSize: 14, //大小
+                                //     }
+                                // },
+                                grid: {
+                                    x: 50,
+                                    y: 0,
+                                    x2: 5,
+                                    y2: 5
+                                },
+                                dataset: {
+                                    source: chartlist2
+                                },
+                                xAxis: {
+                                    type: 'value',
+                                    max: 100,
+                                    splitLine: {
+                                        show: false
+                                    },
+                                    axisTick: {
+                                        show: false
+                                    },
+                                    axisLine: {
+                                        show: false
+                                    },
+                                    axisLabel: {
+                                        show: false,
 
+                                    }
+                                },
+                                yAxis: {
+                                    type: 'category',
+                                    splitLine: {
+                                        show: false
+                                    },
+                                    axisTick: {
+                                        show: false
+                                    },
+                                    axisLine: {
+                                        show: false
+                                    }
+                                },
+                                series: [
+                                    {
+                                        type: 'bar',
+                                        stack: 'chart',
+                                        barWidth: '20px',
+                                        label: {
+                                            show: true,
+                                            position: 'right',
+                                            formatter: function (params) {
+                                                return params.value[1] + '%';
+                                            }
+                                        },
+                                        showBackground: true,
+                                        backgroundStyle: {
+                                            color: ["#233c6b"],
+                                        },
+                                        itemStyle: {
+                                            color: function (param) {
+                                                return getcolor(param.value[1]) || '#5470c6';
+                                            }
+                                        },
+                                    }
+                                ]
+                            };
+                            var getcolor = function (value) {
+                                if (value <= 100 && value > 80)
+                                    return "#ff9090";
+                                else if (value <= 80 && value > 60)
+                                    return "#ffbc90";
+                                else if (value <= 60 && value > 40)
+                                    return "#fbff90";
+                                else if (value <= 40 && value > 20)
+                                    return "#99fbb2";
+                                else
+                                    return "#64d2ff";
+                            }
+                            option2 && myChart2.setOption(option2);
+
+                        }
+                        else {
+                            console.log(jsondatas.MSG, { icon: 2 });
+                        }
+                    },
+                    error: function () {
+                        console.log("系统错误", { icon: 2 });
+                    },
+                    complete: function () {
+                        layer.close(iiload);
+                    }
+                });
+            }
             window.addEventListener('message', function (res) {
                 $(".footer").show();
                 var data = res.data;
@@ -96,24 +280,39 @@
                     data: {
                         val1: data.name,
                         val2: data.address,
-                        val3: data.event,
-                        val4: data.remark1,
-                        val5: timeFormat(data.startdate || data.starttime),
-                        // val6: data.name1,
-                        // target_type: data.target_type,
+                        val3: timeFormat(data.startdate || data.starttime),
+                        val4: data.event,
+                        sendIdVal: data.id,
+                        // val5: data.remark1,
+                        // showType: 'accident'
+                        // val1: data.name,
+                        // val2: data.address,
+                        // // val3: item.name,
+                        // val4: data.seat,
+                        // val5: data.area + '平方米',
+                        // val6: data.toilet,
+                        // val7: data.parking,
+                        // val8: data.busstop,
+                        // val9: data.remark,
+                        // val10: data.gym_id,
+                        coordinate: [data.xaxis, data.yaxis],
+                        // target_type: item.target_type,
                         // index: data.trafficData.index,
                         // id: data.data.id,
                         showType: 'accident'
                     },
                     coordinate: [data.xaxis, data.yaxis],
-                    zIndex: 100,
+                    zIndex: 1,
                     stylepng: 'tl5'
                 }
-                //事故点
-                addMarker(params, map)
+                // //事故点
+                // addMarker(params, map)
                 Object.assign(data, params);
                 showAccidentPopup(res, map);
-                $('#accidentMessage').show();
+                var accidentMessage = $('#accidentMessage')
+                accidentMessage.attr('data', JSON.stringify(params.data))
+                accidentMessage.show();
+                $('#driverMessage').hide()
                 $('#rescueMessage').hide()
             })
             var list = [];
@@ -146,22 +345,25 @@
                         var jsondatas = eval("(" + myjson + ")");
                         if (jsondatas.CODE > 0) {
                             var list = jsondatas.Table;
-                            console.log(list)
                             let features = list.map(item => {
                                 // 动态添加赛事馆图标
                                 addMarker({
                                     data: {
-                                        val: item.remark,
-                                        val2: item.address,
-                                        val3: item.name,
-                                        // val4: '',
-                                        // val5: '',
-                                        // val5: timeFormat(item.addtime),
-                                        // val6: item.name1,
+                                        val11: item.name,
+                                        val12: item.address,
+                                        // val3: item.name,
+                                        val13: item.seat,
+                                        val14: item.area + '平方米',
+                                        val15: item.toilet,
+                                        val16: item.parking,
+                                        val17: item.busstop,
+                                        val18: item.remark,
+                                        val19: item.id,
+                                        gym_id: item.id,
                                         // target_type: item.target_type,
                                         // index: data.trafficData.index,
                                         // id: data.data.id,
-                                        showType: 'rescue'
+                                        showType: 'car'
                                     },
                                     coordinate: [item.xaxis, item.yaxis],
                                     stylepng: 'tl5'
@@ -192,6 +394,15 @@
                 });
             }
 
+            $('#getProcessDetail').on('click', function() {
+                var driverMessage = $('#driverMessage')
+                var data = JSON.parse(driverMessage.attr('data'))
+                // console.log(data)
+                getChart(data.gym_id)
+                $('#processDetail').removeClass('hide')
+                $('#driverMessage').hide()
+                $('#accidentMessage').hide()
+            })
             function randomHeatmap(list) {
                 let start = 0
                 let allClear = setInterval(() => {
