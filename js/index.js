@@ -56,6 +56,9 @@ function accidentPointMap(type, id) {
     else if (type == 1) {
         $("#a_4").click();
         $("#ifr0").attr("src", "dtjc/page4.html?acid=" + id);
+    } else if (type == 11) {
+        $("#a_10").click();
+        $("#ifr6").attr("src", "dtjc/page10.html?acid=" + id);
     }
 }
 function menuclick(index) {
