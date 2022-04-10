@@ -23,6 +23,7 @@
     </a>
     <a id="showct" onclick="showChart('5');" class="show"><img src="../imgs/chart.png" /></a>
     <a id="roadGrid" class="show"><img src="../imgs/road.png" /></a>
+    <a id="gdRoad" class="show"><img src="../imgs/gd.jpg" /></a>
     <div class="messagebox" id="messagebox">
         <iframe src="messagebox.html?msg=3&target=1,5" scrolling="no" frameborder="0"></iframe>
     </div>
@@ -102,6 +103,7 @@
             var center = [116.397428, 39.90923];
             // var inilayers = ['dapoi', 'road', 'roadstatus'];
             var inilayers = ['roadstatus_gcj']
+            // var inilayers = []
             var map = loadmap(center, '50.74811314055756', inilayers);
             activemap = map;
             var params;
