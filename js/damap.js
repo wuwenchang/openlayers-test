@@ -6,6 +6,10 @@ var hadMNRoadsIds = [];
 var roadLayers = []
 var fristLoadRoadLayer = true
 
+// 高德地图
+var gdRoadState = true;
+var gdLayer;
+
 var roadGridStatus = false
 
 function createMarkersStyles() {
@@ -16,13 +20,13 @@ function createMarkersStyles() {
             image: new ol.style.Icon({
                 anchor: [0.5, 1],
                 // anchor: [0.75, 0.5],
-                scale: 2/3,
+                scale: 2 / 3,
                 src: '../imgs/carImgs/' + list[i] + '.png',
             }),
-        }) 
+        })
     }
     // 其他图标
-    var list2 = ['accident', 'tl1', 'tl2', 'tl3', 'tl4','tl5', 'tl6', 'tl7', 'tl8','tl9', 'tl10','tl11', 'tl12', 'tl13', 'tl14', 'l5', 'start', 'l7']
+    var list2 = ['accident', 'tl1', 'tl2', 'tl3', 'tl4', 'tl5', 'tl6', 'tl7', 'tl8', 'tl9', 'tl10', 'tl11', 'tl12', 'tl13', 'tl14', 'l5', 'start', 'l7']
     for (let i = 0; i < list2.length; i++) {
         markerStyles[list2[i]] = new ol.style.Style({
             image: new ol.style.Icon({
@@ -31,7 +35,7 @@ function createMarkersStyles() {
                 // scale: 0.5,
                 src: '../imgs/' + list2[i] + '.png',
             }),
-        }) 
+        })
     }
     // 其他图标
     // var list2 = [ 'start']
@@ -49,6 +53,48 @@ function createMarkersStyles() {
 }
 
 function addacpoint(id) {
+    if (location.href.includes('page9') || location.href.includes('page10')) {
+        let data = JSON.parse(window.parent.localStorage.getItem('trafficEvent'))
+        let params = {
+            data: {
+                val1: data.name,
+                val2: data.address,
+                val3: timeFormat(data.startdate || data.starttime),
+                val4: data.remark,
+                sendIdVal: data.id,
+                coordinate: [data.xaxis, data.yaxis],
+                showType: 'accident'
+            },
+            coordinate: [data.xaxis, data.yaxis],
+            zIndex: 1,
+            stylepng: 'tl5'
+        }
+        if (location.href.includes('page10')) {
+            params = {
+                data: {
+                    val1: data.name,
+                    val2: data.address,
+                    val3: data.remark1,
+                    val4: data.remark,
+                    val5: timeFormat(data.starttime),
+                    sendIdVal: data.id,
+                    coordinate: [data.xaxis, data.yaxis],
+                    showType: 'accident'
+                },
+                coordinate: [data.xaxis, data.yaxis],
+                zIndex: 1,
+                stylepng: 'l5'
+            }
+        }
+        Object.assign(data, params);
+        showAccidentPopup({ data }, map);
+        var accidentMessage = $('#accidentMessage')
+        accidentMessage.attr('data', JSON.stringify(params.data))
+        accidentMessage.show();
+        $('#driverMessage').hide()
+        $('#rescueMessage').hide()
+        return
+    }
     $.ajax({
         type: "POST",  //访问WebService使用post方式请求
         cache: false,
@@ -58,7 +104,7 @@ function addacpoint(id) {
         data: { tableName: "traffic_accident A,traffic_accident_type B", whereSql: "A.type=B.id and A.id=" + id },
         success: function (myjson) {
             var jsondatas = eval("(" + myjson + ")");
-            console.log(jsondatas, 'damap')
+            // console.log(jsondatas, 'damap')
             if (jsondatas.CODE > 0) {
                 var mktable = jsondatas.Table;
                 var maker = mktable[0];
@@ -109,6 +155,8 @@ function locationbyMark(maker, isHistory) {
         isHistory: isHistory,
         src: src,
         data: {
+            coordinate: [maker.xaxis, maker.yaxis],
+            showType: 'accident',
             val1: maker.name,
             val2: maker.address,
             val3: maker.code,
@@ -117,6 +165,7 @@ function locationbyMark(maker, isHistory) {
             val6: maker.name1,
             sendIdVal: maker.id
         },
+        zIndex: 1,
         stylepng: stylepng,
         activeSrc: activeSrc
     }
@@ -124,7 +173,7 @@ function locationbyMark(maker, isHistory) {
         var mydata = {
             data: obj
         }
-        showAccidentPopup(mydata, locationMap);
+        showAccidentPopup(mydata, locationMap, true);
         $(".footer").hide();
     }
     else {
@@ -194,7 +243,7 @@ function loadmap(center1, resolutionpara, inilayers) {
     if (getUrlParam("acid")) {
         addacpoint(getUrlParam("acid"));
     }
-    
+
     // 地图初始化，放大缩小图标
     createMarkersStyles()
     map.getView().on('change:resolution', function () {
@@ -210,11 +259,58 @@ function loadmap(center1, resolutionpara, inilayers) {
             markerStyles[key].getImage().setScale(scale)
         }
     })
+    if (location.href.includes('page5.html')){
+        gdLayer = trafficGD()
+        map.addLayer(gdLayer)
+    }
     return map;
 }
 
+/**
+* 加载高德道路车况
+*/
+function trafficGD() {
+    //获取当前时间
+    var nowDate = new Date();
+    var year = nowDate.getFullYear();
+    var month = nowDate.getMonth() + 1;
+    var today = nowDate.getDate();
+    var hours = nowDate.getHours();
+    var minutes = nowDate.getMinutes();
+    var seconds = nowDate.getSeconds();
+
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (today >= 1 && today <= 9) {
+        today = "0" + today;
+    }
+    var currentdate = year + "-" + month + "-" + today + " " + hours + ":" + minutes + ":" + seconds;
+    var longTime = new Date(currentdate.replace(new RegExp("-", "gm"), "/")).getTime();
+    var projection = ol.proj.get("EPSG:4326");
+    function getNavmapLayer() {
+        return new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: 'http://webrd01.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1&style=8'//7,8
+            }),
+            projection: projection
+        });
+    }
+    function getNavmapTraficLayer(longTime) {
+        return new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: 'http://tm.amap.com/trafficengine/mapabc/traffictile?v=1.0&;t=1&x={x}&y={y}&z={z}&&t=longTime'//7,8
+            }),
+            projection: projection
+        });
+    }
+    var nana = getNavmapTraficLayer(longTime);
+    //var navlayer = getNavmapLayer();
+    return nana;
+};
+
 // 显示隐藏图层
-$('#roadGrid').on('click', function() {
+$('#roadGrid').on('click', function () {
     if (fristLoadRoadLayer) {
         fristLoadRoadLayer = false
         for (let i = 0; i < roadLayers.length; i++) {
@@ -232,6 +328,15 @@ $('#roadGrid').on('click', function() {
         }
     }
     roadGridStatus = !roadGridStatus
+})
+// 显示隐藏图层
+$('#gdRoad').on('click', function () {
+    if (gdRoadState) {
+        gdLayer.setVisible(false)
+    } else {
+        gdLayer.setVisible(true)
+    }
+    gdRoadState = !gdRoadState
 })
 
 function loadTileWMS(layer) {
@@ -296,7 +401,7 @@ var container = document.getElementById('popup');
 var content = document.getElementById('latlon');
 var closer = document.getElementById('popup-closer');
 
-function showAccidentPopup(res, map) {
+function showAccidentPopup(res, map, otherPage) {
     var data = res.data;
     // var overlay = getOverlay();
     // overlay.setPosition(data.coordinate);
@@ -320,8 +425,13 @@ function showAccidentPopup(res, map) {
     $('#val9').val(data.data.val9)
     $('#val10').val(data.data.val10)
     document.getElementById("popup").style.display = "block";
-    $('#driverMessage').show()
-    $('#accidentMessage').hide()
+    if (otherPage) {
+        $('#driverMessage').hide()
+        $('#accidentMessage').show()
+    } else {
+        $('#driverMessage').show()
+        $('#accidentMessage').hide()
+    }
     $('#rescueMessage').hide()
     addMarker(data, map)
     map.getView().setCenter(coordinate)
@@ -368,7 +478,7 @@ function popupShow(e, map, params) {
             if (val8) val8.val(feature.O.params.val8)
             let val9 = $('#val9')
             if (val9) val9.val(feature.O.params.val9)
-            
+
             $('#sendid').val(feature.O.params.sendIdVal)
             if (driverMessage) driverMessage.hide()
             if (accidentMessage) {
@@ -422,7 +532,7 @@ function popupShow(e, map, params) {
             map.addOverlay(overlay);
         }
         document.getElementById("popup").style.display = "block";
-        
+
     }
 }
 //生成动态模拟运动轨迹
@@ -561,7 +671,7 @@ function startTraffic(pointsList, params, lineNum) {
 }
 // 开始动画
 function startAnimation(params) {
-    let {pointsList, carMarker, carType, properties, isDrawHistory, endIndex} = params
+    let { pointsList, carMarker, carType, properties, isDrawHistory, endIndex } = params
     let pointIndex = 0, roadLine2;
     var allLayers = map.getLayers().getArray()
     let pointLayer;
@@ -572,7 +682,7 @@ function startAnimation(params) {
         }
     }
     if (isDrawHistory) {
-         // 初始化轨迹路线
+        // 初始化轨迹路线
         roadLine2 = new ol.geom.LineString([pointsList[0]])
         var roadLineSource2 = new ol.source.Vector({
             features: [new ol.Feature(roadLine2)]
@@ -584,16 +694,16 @@ function startAnimation(params) {
         });
         map.addLayer(roadLineLayer2);
     }
-   
+
     if (pointLayer) {
         const position = new ol.geom.Point(pointsList[0]);
         let allPoint = []
         // if (carType === 'subway') {
-            for (let i = 0; i < pointsList.length; i++) {
-                let list = createMinLine(pointsList[i], pointsList[i + 1], 10)
-                allPoint = allPoint.concat(list)
-            }
-            allPoint.push(pointsList[pointsList.length - 1])
+        for (let i = 0; i < pointsList.length; i++) {
+            let list = createMinLine(pointsList[i], pointsList[i + 1], 10)
+            allPoint = allPoint.concat(list)
+        }
+        allPoint.push(pointsList[pointsList.length - 1])
         // }
         if (allPoint.length < 2) return
         let startMove = setInterval(() => {
@@ -628,7 +738,7 @@ function createMinLine(cur, next, v) {
     var newList = new Array(lineLength)
     for (let i = 0; i < newList.length; i++) {
         if (i !== newList - 1) {
-            newList[i] =[cur[0] - (cur[0] - next[0]) * i / lineLength, cur[1] - (cur[1] - next[1]) * i / lineLength]
+            newList[i] = [cur[0] - (cur[0] - next[0]) * i / lineLength, cur[1] - (cur[1] - next[1]) * i / lineLength]
         } else {
             newList[i] = next
         }
@@ -656,7 +766,7 @@ function createGeoMarker(pointsList, properties, carType) {
         geoMarker,
         id,
         refreshTime: 0.5
-    } 
+    }
 }
 function getCarType(carType, rotation) {
     let imgsUrl = '../imgs/carImgs/' + carType + '.png';
@@ -691,13 +801,13 @@ function getCustomStyle(params) {
     });
 }
 // 动画
-function initAnimation (params) {
-    const {pointsList, properties, carType, showStartEnd} = params
+function initAnimation(params) {
+    const { pointsList, properties, carType, showStartEnd } = params
     const carMarker = createGeoMarker(pointsList, properties, carType)
     allCarMarker.push(carMarker)
     setTimeout(() => {
         // 开始动画
-        startAnimation({...params, carMarker})
+        startAnimation({ ...params, carMarker })
         if (showStartEnd) {
             // 起始点
             // addSEMarker({
@@ -707,11 +817,11 @@ function initAnimation (params) {
             //     id: 'startImg'
             // })
             // 终点
-        //     addSEMarker({
-        //         coordinate: pointsList[pointsList.length - 1],
-        //         isStart: false,
-        //         id: 'endImg'
-        //     })
+            //     addSEMarker({
+            //         coordinate: pointsList[pointsList.length - 1],
+            //         isStart: false,
+            //         id: 'endImg'
+            //     })
         }
     }, 1000);
 }
@@ -751,7 +861,7 @@ function trafficRoute(data, mainline, trafficObj) {
     // extensionPoint.push(line[line.length - 1])
     // extensionPoint.shift()
     // extensionPoint = allPoint.concat(extensionPoint)
-    if(data.carType) {
+    if (data.carType) {
         initAnimation({
             pointsList: line, // 线路点
             properties: data, // 参数
@@ -820,7 +930,7 @@ function beginToSimulate(data, map) {
         rescuePoint: data.line[0],
         showType: 'accident'
     }
-    
+
     //事故点
     addMarker({
         data: propsData,
@@ -833,35 +943,35 @@ function beginToSimulate(data, map) {
 }
 
 // 热力图
-function createHeatmap (heatData) {
-    var vectorSource = new ol.source.Vector({ 
-        features: (new ol.format.GeoJSON()).readFeatures(heatData,{
-            dataProjection : 'EPSG:4326',
-            featureProjection : 'EPSG:3857'
+function createHeatmap(heatData) {
+    var vectorSource = new ol.source.Vector({
+        features: (new ol.format.GeoJSON()).readFeatures(heatData, {
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:3857'
         })
     });
     // Heatmap热力图             
     var vector = new ol.layer.Heatmap({
-      source: vectorSource,
-      blur: parseInt(10, 10),
-      radius: parseInt(5, 10),
+        source: vectorSource,
+        blur: parseInt(10, 10),
+        radius: parseInt(5, 10),
     });
     map.addLayer(vector)
 }
 
 function updateData(tabIndex, params) {
     // 1 其他事故 .2赛事推迟3赛事限流4人群拥堵5人群滞留
-    var tableNames = ['traffic_accident','event_delay', 'event_limit', 'traffic_jam', 'traffic_delay'];
+    var tableNames = ['traffic_accident', 'event_delay', 'event_limit', 'traffic_jam', 'traffic_delay'];
     let message = ''
     for (let key in params) {
-        message += ((message ? ',': '') + key + ',|' + params[key] + '|')
+        message += ((message ? ',' : '') + key + ',|' + params[key] + '|')
     }
     $.ajax({
         cache: false,
         async: false,
         contentType: "application/x-www-form-urlencoded; charset=utf-8",
         url: getRootPath() + "/Service/AddAccident.ashx", //调用WebService的地址和方法名称组合
-        data: {tableName: tableNames[tabIndex], message},
+        data: { tableName: tableNames[tabIndex], message },
         dataType: "json",
         success: function (result) {
             var jsondatas = eval("(" + result + ")");
@@ -883,7 +993,7 @@ function createAccident(rescuejson, accidentCarData) {
         6: ['车辆侧翻', '电力故障', '追尾事故', '车辆剐蹭', '电动车侧翻']
     }
     // 1: 公交车，2、地铁，3、高铁，4、大巴、5、私家车，6、赛事推迟，7、赛事限流，8、人群拥堵、9人群滞留
-    var time = setInterval(function() {
+    var time = setInterval(function () {
         i++
         var targetList = accidentCarData.targetList
         var target = targetList[Math.floor(Math.random() * targetList.length)];
@@ -893,14 +1003,14 @@ function createAccident(rescuejson, accidentCarData) {
         var name = CarErrorType[type][Math.floor(Math.random() * CarErrorType[type].length)]
         var accidentPoint = data[i].geometry.coordinates[0][Math.floor(data[i].geometry.coordinates[0].length / 2)]
 
-        var obj = { 
+        var obj = {
             name: name, // 事故名称
             address: data[i].properties.XLMC.slice(0, -3), // 事故地址
             // 1、交通事故，2、交通违法，3、铁路故障，4、城轨故障，5、公交车事故，6、电动车辆起火
             type: type, // 事故类型
             message: data[i].properties.XLMC.slice(0, -3) + name,  // 描述
             code: code,
-            addtime: rTime(120 * 1000 * 60 * 60 * 24 + new Date().getTime()),
+            addtime: rTime(new Date().getTime()),
             // code: '京A' + (10000 + Math.floor(Math.random() * 90000)), 
             xaxis: accidentPoint[0],
             yaxis: accidentPoint[1],
@@ -926,15 +1036,15 @@ function getType(v) {
         return list[Math.floor(Math.random() * list.length)]
     } else if (v == 2) { // 地铁
         // 4、城轨故障
-        return 4 
+        return 4
     } else if (v == 3) { // 高铁
         // 3、铁路故障
         return 3
-    } else if (v== 4) { // 大巴
+    } else if (v == 4) { // 大巴
         // 1、交通事故，2、交通违法
         var list = [1, 2]
         return list[Math.floor(Math.random() * list.length)]
-    } else  if (v == 5) {
+    } else if (v == 5) {
         // 1、交通事故，2、交通违法，5、电动车辆起火
         var list = [2, 6]
         return list[Math.floor(Math.random() * list.length)]
@@ -956,15 +1066,15 @@ function rTime(date) {//中国标准时间 格式转换成 2020-06-27 14:20:27
     let dictTime = new Date(date);
     var Y = dictTime.getFullYear();
     var M = dictTime.getMonth() + 1;
-        M = M < 10 ? '0' + M : M;// 不够两位补充0
+    M = M < 10 ? '0' + M : M;// 不够两位补充0
     var D = dictTime.getDate();
-        D = D < 10 ? '0' + D : D;
+    D = D < 10 ? '0' + D : D;
     var H = dictTime.getHours();
-        H = H < 10 ? '0' + H : H;
+    H = H < 10 ? '0' + H : H;
     var Mi = dictTime.getMinutes();
-        Mi = Mi < 10 ? '0' + Mi : Mi;
+    Mi = Mi < 10 ? '0' + Mi : Mi;
     var S = dictTime.getSeconds();
-        S = S < 10 ? '0' + S : S;
+    S = S < 10 ? '0' + S : S;
     return Y + '-' + M + '-' + D + ' ' + H + ':' + Mi + ':' + S;
 }
 
@@ -1008,7 +1118,7 @@ $('#submit').click(function () {
 
 // 模拟呼叫救援
 var hadRescue = []
-$('#startRescue').on('click', function() {
+$('#startRescue').on('click', function () {
     var rescueMessage = $('#rescueMessage')
     var data = JSON.parse(rescueMessage.attr('data')).propsData;
     if (hadRescue.includes(data.id)) {
