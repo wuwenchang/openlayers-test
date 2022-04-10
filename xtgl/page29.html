@@ -44,7 +44,7 @@
                             var tr = $("<tr></tr>")
                             $("#listtable").append(tr);
                             tr.append("<td>" + n.id + "</td>");
-                            tr.append("<td>【" + n.xaxis + "," + n.yaxis + "】<img onclick=\"pointMap(7," + n.id + ")\"  src=\"../imgs/pt.png\" /></td>");
+                            tr.append("<td>【" + n.xaxis + "," + n.yaxis + "】" + ` <img onclick='pointMap(7,` + n.id + `, ` + JSON.stringify(n) +`)'  src="../imgs/pt.png" /></td>`);
                             tr.append("<td>" + n.event + "</td>");
                             tr.append("<td>" + n.area + "</td>");
                             tr.append("<td>" + timeFormatSmall(n.startdate) + "</td>");
@@ -62,7 +62,8 @@
                     PageNumber = jpn;
                     FindTable();
                 }
-                function pointMap(type, id) {
+                function pointMap(type, id, params) {
+                    window.parent.localStorage.setItem('trafficEvent', JSON.stringify(params))
                     window.parent.accidentPointMap(type, id);
                 }
                 $("#findbtn").click(FindTable);
