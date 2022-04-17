@@ -21,7 +21,7 @@
     });
     $("#sendmessage").click(function () {
         var dv = $("<div></div>");
-        dv.append("<label>发布方式</label><div id=\"sendmod\"></div><label><input id=\"vmsall\" type=\"checkbox\" value=\"all\" />交通诱导屏(VMS)</label><div id=\"vmslist\"></div>");
+        dv.append("<div id=\"sendmod\"></div><div><p>消息内容：</p><textarea id=\"vmslist\"></textarea></div>");
         dv.append("<div class=\"btns\"><a  onclick=\"sendmessage();\"><img src=\"../imgs/l8.png\">确认</a><a onclick=\"closesend();\"><img src=\"../imgs/l9.png\">取消</a></div>");
         layer.open({
             type: 1,
@@ -35,15 +35,6 @@
         $("#sendmod").append("<span><input type=\"checkbox\" value=\"2\" />手机App</span>");
         $("#sendmod").append("<span><input type=\"checkbox\" value=\"3\" />交通诱导屏(VMS)</span>");
         $("#sendmod").append("<span><input type=\"checkbox\" value=\"4\" />交通广播</span>");
-        GetChild("sendmessage_vms", "id|name", "vmslist", "checkbox");
-        $("#vmsall").click(function () {
-            if ($(this).prop("checked")) {
-                $("#vmslist").find("input").prop("checked", true);
-            }
-            else {
-                $("#vmslist").find("input").prop("checked", false);
-            }
-        });
     });
     $("#pointcenter", parent.document).change(function () {
         pointCenter($(this).val());
@@ -93,16 +84,9 @@ function sendmessage() {
         if ($(this).prop("checked"))
             sendstr += $(this).val() + "^";
     });
-    var vmsstr = "";
-    if ($("#sendmod input[value=3]").prop("checked")) {
-        $("#vmslist input").each(function () {
-            if ($(this).prop("checked"))
-                vmsstr += $(this).val() + "^";
-        });
-        
-    }
+    var vmsstr = $("#vmslist").val();
+   
     if (sendstr != "") sendstr = sendstr.substring(0, sendstr.length - 1);
-    if (vmsstr != "") vmsstr = vmsstr.substring(0, vmsstr.length - 1);
     valuestr += "noticeid,|" + sendstr + "|,";
     valuestr += "vmsid,|" + vmsstr + "|,addtime,now()";
     var iiload = layer.load(1, false);

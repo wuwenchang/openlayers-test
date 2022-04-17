@@ -529,7 +529,7 @@ input, select, textarea {
             display: inline-block;
             text-align:right;
         }
-    .ol-popup .ol-popup-closer {
+    .ol-popup .ol-popup-closer,.closer {
         text-decoration: none;
         position: absolute;
         top: 10px;
@@ -542,11 +542,11 @@ input, select, textarea {
         border-radius: 10px;
     }
 
-        .ol-popup .ol-popup-closer:hover {
+        .ol-popup .ol-popup-closer:hover, .closer:hover {
             background-color: #e14c4c;
         }
 
-        .ol-popup .ol-popup-closer:after {
+        .ol-popup .ol-popup-closer:after, .closer:after {
             content: "✖";
         }
 
@@ -768,16 +768,26 @@ input, select, textarea {
         padding: 5px;
     }
         .sendbox .boxbody div span {
-            padding: 2px;
+            padding: 5px;
         }
         .sendbox .boxbody div input {
             margin-right:5px;
         }
-
-    .sendbox .boxbody .btns {
-        text-align: center;
-        padding:5px 0px 10px 0px;
-    }
+        .sendbox .boxbody div textarea {
+            resize:none;
+            width: calc(100% - 15px);
+            margin:5px;
+            height: 85px;
+            border: 0px;
+            border-radius: 5px;
+        }
+        .sendbox .boxbody div p {
+           text-indent:5px;
+        }
+        .sendbox .boxbody .btns {
+            text-align: center;
+            padding: 5px 0px 10px 0px;
+        }
         .sendbox .boxbody .btns a {
             background-color: #143e90;
             height: 30px;
