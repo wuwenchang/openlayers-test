@@ -250,7 +250,7 @@
                 updateData(4, {
                     type_id: data.id,
                     address: data.address,
-                    starttime: rTime(1000 * 60 + new Date().getTime()),
+                    starttime: rTime(1000 * 60 + new Date('2022/02/16 8:00:00').getTime()),
                     type: 2,
                     remark: data.remark + '人群滞留'
                 })
@@ -259,7 +259,7 @@
                 updateData(3, {
                     type_id: data.id,
                     address: data.address,
-                    starttime: rTime(1000 * 60 + new Date().getTime()),
+                    starttime: rTime(1000 * 60 + new Date('2022/02/16 8:00:00').getTime()),
                     type: 2,
                     remark: data.remark + '人群拥堵'
                 })
