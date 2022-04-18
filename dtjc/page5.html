@@ -193,7 +193,6 @@
             //                     createGeoList(num + j)
             //                 )
             //             }
-                        
             //         }
             //          // 救援路线
             //         let line = data.map(item => {
@@ -207,14 +206,30 @@
             //     }
             // }
 
+            // 清除所有路线
+            function clearAllLine() {
+                var allLayers = map.getLayers().getArray()
+                var lineLayers = []
+                for (var i = 0; i < allLayers.length; i++) {
+                    if (allLayers[i].O.id && allLayers[i].O.id.includes('trafficLine')) {
+                        lineLayers.push(allLayers[i].O.id)
+                    }
+                }
+                for (var i = 0; i < lineLayers.length; i++) {
+                    removeLayer(lineLayers[i])
+                }
+            }
+
             function createRoandLine() {
                 let featuresDatas = rescuejson.features
+                clearAllLine()
                 for (let i = 0; i < featuresDatas.length; i++) {
                     let line = featuresDatas[i].geometry.coordinates[0]
                     let params = {
                         data: {
                             trafficIndex: Math.floor(line.length * 2 / 3)
-                        }
+                        },
+                        time: 2000 // 3s
                     }
                     let trafficObj = {
                         line1Radius: 5,
@@ -225,15 +240,14 @@
                 }
             }
             createRoandLine()
-
+            setInterval(() => {
+                createRoandLine()
+            }, 10000)
             // function createGeoList(num) {
             //     return roadstatus.features[num].geometry.coordinates[0]
             // }
             // createMNLine(100, 'yellow')
             // createMNLine(100, 'red')
-
-            
-
             // getData("roadnet", "", 2, 10);
             // function getData(tblname, wstr, pageNum, rowsNum) {
             //     $.ajax({
