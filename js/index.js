@@ -62,7 +62,7 @@ function accidentPointMap(type, id) {
     }
 }
 function menuclick(index) {
-        if (index > 8) {
+        if (index > 9) {
             $("#allpage").removeClass("mappage").addClass("allpage");
         } else {
             $("#allpage").removeClass("allpage").addClass("mappage");
@@ -83,7 +83,7 @@ function menuclick(index) {
     }
     else {
         $("#ifrbox iframe").hide();
-        if (index > 9 && index < 16) {
+        if (index > 10 && index < 17) {
             if ($(".left a").eq(index).attr("id"))
             {
                 var idex = $(".left a").eq(index).attr("id").substring(2);
@@ -93,15 +93,15 @@ function menuclick(index) {
                 $("#ifrbox").append("<iframe src=\"sggl/page11.html?type=" + index + "\" id=\"ifr" + index + "\" frameborder=\"0\"></iframe>");
             }
         }
-        else if (index < 7 ){
+        else if (index < 8 ){
             var idex = $(".left a").eq(index).attr("id").substring(2);
             $("#ifrbox").append("<iframe src=\"dtjc/page" + idex + ".html\" id=\"ifr" + index + "\" frameborder=\"0\"></iframe>");
         }
-        else if (index > 6 && index < 10) {
+        else if (index > 7 && index < 11) {
             var idex = $(".left a").eq(index).attr("id").substring(2);
             $("#ifrbox").append("<iframe src=\"zygl/page" + idex + ".html\" id=\"ifr" + index + "\" frameborder=\"0\"></iframe>");
         }
-        else if (index > 15 ) {
+        else if (index > 16 ) {
             var idex = $(".left a").eq(index).attr("id").substring(2);
             $("#ifrbox").append("<iframe src=\"xtgl/page" + idex + ".html\" id=\"ifr" + index + "\" frameborder=\"0\"></iframe>");
         }
