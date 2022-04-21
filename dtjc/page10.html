@@ -18,6 +18,26 @@
 </head>
 
 <body style="background-color: #00192e;">
+    <div id="loading" class="hide">
+        <img src="../imgs/loading.gif" />
+    </div>
+    <div id="yuan" class="allmsg hide">
+        <p>交通事故1救援方案</p><a href="#" onclick="closeyuan();" class="closer"></a>
+        <div id="idea1" class="msgbox" onclick="rescueFun(0)">
+            <p>方案1：<span></span></p>
+            <label>救援方式：公交</label>
+            <label>车辆数：12辆</label>
+            <label>缓解时长：45分钟</label>
+            <label>救援距离：6公里</label>
+        </div>
+        <div id="idea2" class="msgbox" onclick="rescueFun(1)">
+            <p>方案2：<span></span></p>
+            <label>救援方式：小汽车</label>
+            <label>车辆数：2辆</label>
+            <label>缓解时长：30分钟</label>
+            <label>救援距离：3.6公里</label>
+        </div>
+    </div>
     <a id="bemax" class="max">
         <img src="../imgs/bmax.png" />
     </a>
@@ -71,7 +91,7 @@
                     <span>时 间：</span><input type="text" id="val5">
                 </div>
                 <div class="footer">
-                    <button id="submit">
+                    <button id="submit" onclick="showyuan();">
                         <img src="../imgs/l7.png" />启动预案
                     </button>
                     <button id="sendmessage">
@@ -121,11 +141,12 @@
     </div>
     <script type="text/javascript" src="../js/damap.js"></script>
     <script>
+        var map
         window.onload = function () {
             var center1 = [116.397428, 39.90923];
             // var inilayers = ['dapoi'];
             var inilayers = [];
-            var map = loadmap(center1, '50.74811314055756', inilayers);
+            map = loadmap(center1, '50.74811314055756', inilayers);
             var params;
             //点击事件
             map.addEventListener('click', function (e) {
@@ -266,6 +287,7 @@
             }
         };
     </script>
+    <script src="../js/mutRescueLines.js"></script>
 </body>
 
 </html>

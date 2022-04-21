@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html style="width: 100%;height:100%">
+
 <head>
     <meta charset="utf-8" />
     <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
@@ -7,7 +8,7 @@
     <script type="text/javascript" src="../js/normal.js"></script>
     <script type="text/javascript" src="../js/tables.js"></script>
     <script type="text/javascript" src="../js/map.js"></script>
-    <link src="../json/ol.css"/>
+    <link src="../json/ol.css" />
     <script src="../json/ol.js"></script>
     <link href="../css/index.css" rel="stylesheet" />
     <link href="../css/dastyle.css" rel="stylesheet" />
@@ -16,59 +17,27 @@
     <script src="../json/rescuejson.js"></script>
     <script src="../json/subwayjson.js"></script>
     <title>实时公交</title>
-    <style type="text/css">
-        #yuan
-        {
-            position:absolute;
-            z-index:999;
-            width:400px;
-            margin-left:210px;
-            margin-top:100px;
-        }
-            #yuan div
-            {
-                line-height:30px;
-            }
-            #yuan div label {
-                width: 49%;
-                display: inline-block;
-            }
-        #yuan .closer {
-            border-radius: 20px;
-            padding:0px;
-        }
-        #loading
-        {
-            position:absolute;
-            left:50%;
-            margin-left:-45px;
-            margin-top:25%;
-            z-index:9999;
-        }
-        #loading img
-        {
-        }
-    </style>
 </head>
+
 <body style="background-color: #00192e;">
     <div id="loading" class="hide">
         <img src="../imgs/loading.gif" />
     </div>
     <div id="yuan" class="allmsg hide">
         <p>交通事故1救援方案</p><a href="#" onclick="closeyuan();" class="closer"></a>
-        <div class="msgbox">
-            <p>方案1</p>
+        <div id="idea1" class="msgbox" onclick="rescueFun(0)">
+            <p>方案1：<span></span></p>
             <label>救援方式：公交</label>
-            <label>车辆数：2辆</label>
-            <label>缓解时长：30分钟</label>
-            <label>救援距离：3公里</label>
+            <label>车辆数：12辆</label>
+            <label>缓解时长：45分钟</label>
+            <label>救援距离：6公里</label>
         </div>
-        <div class="msgbox">
-            <p>方案2</p>
-            <label>救援方式：公交</label>
+        <div id="idea2" class="msgbox" onclick="rescueFun(1)">
+            <p>方案2：<span></span></p>
+            <label>救援方式：小汽车</label>
             <label>车辆数：2辆</label>
             <label>缓解时长：30分钟</label>
-            <label>救援距离：3公里</label>
+            <label>救援距离：3.6公里</label>
         </div>
     </div>
     <a id="bemax" class="max">
@@ -76,7 +45,7 @@
     </a>
     <a id="showct" onclick="showChart('6');" class="show"><img src="../imgs/chart.png" /></a>
     <a id="roadGrid" class="show"><img src="../imgs/road.png" /></a>
-    <div class="messagebox"  id="messagebox" >
+    <div class="messagebox" id="messagebox">
         <iframe src="messagebox.html?msg=3&target=1" scrolling="no" frameborder="0"></iframe>
     </div>
     <div id="map">
@@ -148,10 +117,12 @@
     </div>
     <script type="text/javascript" src="../js/damap.js"></script>
     <script>
+        var map
         window.onload = function () {
-            var center1 = [116.011, 40.15];
+            // var center1 = [116.011, 40.15];
+            var center1 = [116.411, 39.96];
             var inilayers = ['road'];
-            var map = loadmap(center1, '150.74811314055756', inilayers);
+            map = loadmap(center1, '150.74811314055756', inilayers);
             activemap = map;
             var params;
             //点击事件
@@ -227,18 +198,10 @@
                 // createHeatmap(railwayjson)
             }
             init()
+            createNewRescued()
         };
-        function showyuan() {
-            $("#loading").show();
-            setTimeout(function () {
-                $("#yuan p").eq(0).text($("#popup input").eq(1).val() + "救援方案");
-                $("#yuan").show();
-                $("#loading").hide();
-            }, 3000);
-        }
-        function closeyuan() {
-            $("#yuan").hide();
-        }
     </script>
+    <script src="../js/mutRescueLines.js"></script>
 </body>
+
 </html>
