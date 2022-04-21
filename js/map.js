@@ -31,10 +31,11 @@
             anim: 2,
             content: "<div class=\"boxbody\">" + dv.html() + "</div>"
         });
-        $("#sendmod").append("<span><input type=\"checkbox\" value=\"1\" />Web网站</span>");
-        $("#sendmod").append("<span><input type=\"checkbox\" value=\"2\" />手机App</span>");
-        $("#sendmod").append("<span><input type=\"checkbox\" value=\"3\" />交通诱导屏(VMS)</span>");
-        $("#sendmod").append("<span><input type=\"checkbox\" value=\"4\" />交通广播</span>");
+        $("#sendmod").append("<span><input type=\"checkbox\" value=\"1\" checked=\"checked\"  />Web网站</span>");
+        $("#sendmod").append("<span><input type=\"checkbox\" value=\"2\" checked=\"checked\"  />手机App</span>");
+        $("#sendmod").append("<span><input type=\"checkbox\" value=\"3\" checked=\"checked\"  />交通诱导屏(VMS)</span>");
+        $("#sendmod").append("<span><input type=\"checkbox\" value=\"4\" checked=\"checked\"  />交通广播</span>");
+        $("#vmslist").val($("#val2").val() + $("#val1").val());
     });
     $("#pointcenter", parent.document).change(function () {
         pointCenter($(this).val());
@@ -78,7 +79,10 @@ function closesend() {
     layer.close($(".sendbox").attr("times"));
 }
 function sendmessage() {
-    var valuestr = "accident_id,"+$("#sendid").val()+",";
+    var sendid = 1;
+    if ($("#sendid").val() != "" && $("#sendid").val() != null)
+        sendid = $("#sendid").val();
+    var valuestr = "accident_id," + sendid+",";
     var sendstr = "";
     $("#sendmod input").each(function () {
         if ($(this).prop("checked"))
@@ -89,6 +93,7 @@ function sendmessage() {
     if (sendstr != "") sendstr = sendstr.substring(0, sendstr.length - 1);
     valuestr += "noticeid,|" + sendstr + "|,";
     valuestr += "vmsid,|" + vmsstr + "|,addtime,now()";
+    console.log(valuestr);
     var iiload = layer.load(1, false);
     $.ajax({
         type: "POST",  //访问WebService使用post方式请求

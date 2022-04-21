@@ -29,7 +29,8 @@ html #layuicss-layer {
     left: 0;
     margin: 0;
     padding: 0;
-    background-color: #fff;
+    background-color: rgba(19,35,66,0.7);
+    color:#fff;
     -webkit-background-clip: content;
     border-radius: 2px;
     box-shadow: 1px 1px 50px rgba(0,0,0,.3)
@@ -357,11 +358,11 @@ html #layuicss-layer {
     padding: 0 80px 0 20px;
     height: 42px;
     line-height: 42px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #000;
     font-size: 14px;
-    color: #333;
+    color: #fff;
     overflow: hidden;
-    background-color: #F8F8F8;
+    background-color: #12419a;
     border-radius: 2px 2px 0 0
 }
 

@@ -471,7 +471,8 @@ function artificialWarning(data) {
     layer.open({
         type: 1,
         title: '异常确认',
-        skin: 'sendbox isChangeCartips', //样式类名
+        icon:0,
+        skin: 'isChangeCartips', //样式类名
         // id: '',
         // area: ['200px', '300px'], //宽高
         anim: 2,
