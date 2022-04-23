@@ -302,7 +302,7 @@
                         val1: data.name,
                         val2: data.address,
                         val3: timeFormat(data.startdate || data.starttime),
-                        val4: data.event || data.remark,
+                        val4: (data.remark || data.event).replace(/\/+\w+/, ''),
                         sendIdVal: data.id,
                         // val5: data.remark1,
                         // showType: 'accident'
