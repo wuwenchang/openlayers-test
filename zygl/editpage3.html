@@ -20,20 +20,15 @@
                 <td>车辆类型</td>
                 <td>
                     <select id="type">
-                        <option value="1">T1</option>
-                        <option value="2">T2</option>
-                        <option value="3">T3</option>
-                        <option value="4">分配车</option>
-                        <option value="5">TC</option>
-                        <option value="6">TG</option>
-                        <option value="7">DDS</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td>团队</td>
-                <td>
-                    <select id="team_id">
+                        <option value="1">TA</option>
+                        <option value="2">TF</option>
+                        <option value="3">TM</option>
+                        <option value="4">T1</option>
+                        <option value="5">T2</option>
+                        <option value="6">T3</option>
+                        <option value="7">TC</option>
+                        <option value="8">TG及跨赛区交通团队</option>
+                        <option value="9">赞助商及收费卡交通团队</option>
                     </select>
                 </td>
             </tr>
@@ -53,7 +48,6 @@
         </table>
         <div class="btns"><a id="OKbtn">确认</a><a onclick="window.history.go(-1)">取消</a></div>
         <script>
-            GetChild("traffic_car_team", "id|name", "team_id", "select");
             GetChild("traffic_car_fleet", "id|name", "fleet_id", "select");
             GetChild("traffic_car_driver", "id|name", "drivers", "checkbox");
             $("#OKbtn").click(function () {

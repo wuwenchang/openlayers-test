@@ -16,7 +16,6 @@
             <div class="btns">
                 <a id="findbtn">查询</a>
                 <a href="editpage3.html" target="_self">新增</a>
-                <a href="page3_1.html" target="_self">团队管理</a>
                 <a href="page3_2.html" target="_self">车队管理</a>
                 <a href="page3_3.html" target="_self">司机管理</a>
             </div>
@@ -27,7 +26,6 @@
                     <th>ID</th>
                     <th>车牌号</th>
                     <th>车辆类型</th>
-                    <th>所属团队</th>
                     <th>所属车队</th>
                     <th>司机</th>
                     <th style="width:200px;">操作</th>
@@ -39,16 +37,16 @@
                     var tblcnt = nowTable[0].cnt;
                     $("#listtable tr:not(:first)").remove();
                     if (nowTable != null) {
+                        console.log(nowTable);
                         $(nowTable).each(function (i, n) {
                             var tr = $("<tr></tr>")
                             $("#listtable").append(tr);
                             tr.append("<td>" + n.id + "</td>");
                             tr.append("<td>" + n.code + "</td>");
-                            tr.append("<td>" + carstype[n.type] + "</td>");
+                            tr.append("<td>" + cartype[n.type] + "</td>");
                             tr.append("<td>" + n.name + "</td>");
-                            tr.append("<td>" + n.name1 + "</td>");
                             tr.append("<td>" + n.drivers + "</td>");
-                            tr.append("<td><a href=\"editpage3.html?eid=" + n.id+"\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('traffic_car'," + n.id + ")\" class=\"btn4\">删除</a></td>");
+                            tr.append("<td><a href=\"editpage3.html?eid=" + n.id + "\" class=\"btn2\">编辑</a><a  onclick=\"DelTable('traffic_car'," + n.id + ")\" class=\"btn4\">删除</a></td>");
                         });
                     }
                     AddTableFoot(tblcnt);
@@ -65,8 +63,8 @@
                             if (jsondatas.CODE > 0) {
                                 var dTable = jsondatas.Table;
                                 $("#listtable tr").each(function () {
-                                    var drives = $(this).find("td").eq(5).text();
-                                    if (drives != "") {
+                                    var drives = $(this).find("td").eq(4).text();
+                                    if (trim(drives) != "") {
                                         drives = drives.split("^");
                                         var driverstr = "";
                                         $(dTable).each(function (i, n) {
@@ -77,7 +75,7 @@
                                             }
                                         });
                                         driverstr = driverstr.substring(0, driverstr.length - 1);
-                                        $(this).find("td").eq(5).html(driverstr);
+                                        $(this).find("td").eq(4).html(driverstr);
                                     }
                                 });
                             }
@@ -102,7 +100,7 @@
                 $("#findbtn").click(FindTable);
                 function FindTable() {
                     var wherestr = FindStr();
-                    GetTable("traffic_car A,traffic_car_team B,traffic_car_fleet C", wherestr+"A.team_id=B.id and A.fleet_id=C.id");
+                    GetTable("traffic_car A,traffic_car_fleet C", wherestr+" A.fleet_id=C.id");
                 }
             </script>
         </div>

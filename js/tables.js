@@ -316,6 +316,7 @@ var transporttype = {
 var carstype = {
     "1": "T1", "2":"T2", "3":"T3", "4":"分配车", "5":"TC", "6":"TG", "7":"DDS"
 }
+var cartype = ["", "TA", "TF", "TM", "T1", "T2", "T3", "TC", "TG及跨赛区交通团队", "赞助商及收费卡交通团队"];
 var userpower = {
     "1": "资源管理",
     "2": "动态监测",

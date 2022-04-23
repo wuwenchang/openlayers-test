@@ -237,6 +237,6 @@ function showyuan() {
 function closeyuan() {
   $("#yuan").hide()
 }
-
-
-
+function closediv(e) {
+    $(e).parent().hide();
+}

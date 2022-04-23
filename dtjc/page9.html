@@ -25,6 +25,11 @@
     <div id="loading" class="hide">
         <img src="../imgs/loading.gif" />
     </div>
+    <div id="sportimage" class="hide">
+        <a href="#" onclick="closediv(this);" class="closer"></a>
+        <div id="image1" class="s s1">
+        </div>
+    </div>
     <div id="yuan" class="allmsg hide">
         <p>交通事故1救援方案</p><a href="#" onclick="closeyuan();" class="closer"></a>
         <div id="idea1" class="msgbox" onclick="rescueFun(0)">
@@ -46,7 +51,7 @@
         <img src="../imgs/bmax.png" />
     </a>
     <a id="showct" onclick="showChart(2);" class="show"><img src="../imgs/chart.png" /></a>
-    <div class="messagebox"  id="messagebox" >
+    <div class="messagebox" id="messagebox">
         <iframe src="messagebox.html?msg=4&target=29" scrolling="no" frameborder="0"></iframe>
     </div>
     <div id="map">
@@ -85,6 +90,9 @@
                 <div class="footer">
                     <button id="getProcessDetail">
                         <img src="../imgs/l7.png" />查看赛事列表
+                    </button>
+                    <button id="showImage">
+                        <img src="../imgs/l10.png" />比赛项目
                     </button>
                 </div>
             </div>
@@ -147,7 +155,7 @@
         <div class="msgbox">
             <ul>
                 <li><img src="../imgs/tl5.png" /><span>体育馆</span></li>
-           </ul>
+            </ul>
         </div>
     </div>
     <script type="text/javascript" src="../js/damap.js"></script>
@@ -168,7 +176,7 @@
                     type: "get",  //访问WebService使用post方式请求
                     contentType: "application/json; charset=utf-8",
                     url: getRootPath() + "/Service/GetProgress.ashx", //调用WebService的地址和方法名称组合
-                    data: {gym_id: v},
+                    data: { gym_id: v },
                     // dataType: "json",
                     success: function (result) {
                         var myjson = result;
@@ -415,7 +423,7 @@
                 });
             }
 
-            $('#getProcessDetail').on('click', function() {
+            $('#getProcessDetail').on('click', function () {
                 var driverMessage = $('#driverMessage')
                 var data = JSON.parse(driverMessage.attr('data'))
                 // console.log(data)
@@ -423,6 +431,62 @@
                 $('#processDetail').removeClass('hide')
                 $('#driverMessage').hide()
                 $('#accidentMessage').hide()
+            })
+            $("#showImage").click(function () {
+                $("#sportimage").slideToggle();
+                $("#sportimage").find("div").remove();
+                if ($("#val11").val() == "国家体育馆" || $("#val11").val() == "五棵松体育馆") {
+                    $("#sportimage").append("<div class=\"s s2\"></div>");
+                    $("#sportimage").css("margin-left", "-90px");
+                }
+                else if ($("#val11").val() == "国家速滑馆") {
+                    $("#sportimage").append("<div class=\"s s3\"></div>");
+                    $("#sportimage").css("margin-left", "-90px");
+                }
+                else if ($("#val11").val() == "首都体育馆") {
+                    $("#sportimage").append("<div class=\"s s1\"></div>");
+                    $("#sportimage").append("<div class=\"s s4\"></div>");
+                    $("#sportimage").css("margin-left", "-180px");
+                }
+                else if ($("#val11").val() == "国家游泳中心") {
+                    $("#sportimage").append("<div class=\"s s5\"></div>");
+                    $("#sportimage").css("margin-left", "-90px");
+                }
+                else if ($("#val11").val() == "首钢滑雪大跳台") {
+                    $("#sportimage").append("<div class=\"s s6\"></div>");
+                    $("#sportimage").append("<div class=\"s s7\"></div>");
+                    $("#sportimage").css("margin-left", "-180px");
+                }
+                else if ($("#val11").val() == "国家高山滑雪中心") {
+                    $("#sportimage").append("<div class=\"s s8\"></div>");
+                    $("#sportimage").css("margin-left", "-90px");
+                }
+                else if ($("#val11").val() == "国家雪车雪橇中心") {
+                    $("#sportimage").append("<div class=\"s s9\"></div>");
+                    $("#sportimage").append("<div class=\"s s10\"></div>");
+                    $("#sportimage").append("<div class=\"s s11\"></div>");
+                    $("#sportimage").css("margin-left", "-270px");
+                }
+                else if ($("#val11").val() == "国家跳台滑雪中心") {
+                    $("#sportimage").append("<div class=\"s s12\"></div>");
+                    $("#sportimage").append("<div class=\"s s13\"></div>");
+                    $("#sportimage").css("margin-left", "-180px");
+                }
+                else if ($("#val11").val() == "国家冬季两项中心") {
+                    $("#sportimage").append("<div class=\"s s14\"></div>");
+                    $("#sportimage").css("margin-left", "-90px");
+                }
+                else if ($("#val11").val() == "国家越野滑雪中心") {
+                    $("#sportimage").append("<div class=\"s s17\"></div>");
+                    $("#sportimage").append("<div class=\"s s13\"></div>");
+                    $("#sportimage").css("margin-left", "-180px");
+                }
+                else if ($("#val11").val() == "云顶滑雪公园") {
+                    $("#sportimage").append("<div class=\"s s15\"></div>");
+                    $("#sportimage").append("<div class=\"s s16\"></div>");
+                    $("#sportimage").append("<div class=\"s s17\"></div>");
+                    $("#sportimage").css("margin-left", "-270px");
+                }
             })
             function randomHeatmap(list) {
                 let start = 0
@@ -458,7 +522,7 @@
                     contentType: "application/x-www-form-urlencoded; charset=utf-8",
                     url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
                     data: { tableName: tblname, whereSql: wstr, pageNum: 1, rowsNum: 1000 },
-                    success: function(myjson) {
+                    success: function (myjson) {
                         var jsondatas = eval("(" + myjson + ")");
                         if (jsondatas.CODE > 0) {
                             var list = jsondatas.Table;
@@ -495,7 +559,7 @@
                     remark: Math.random() >= 0.5 ? '人群滞留' : '人群拥堵'
                 })
             }
-            
+
             function updatePeopleData(data) {
                 // 人群滞留
                 updateData(4, {

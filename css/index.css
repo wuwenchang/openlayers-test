@@ -25,9 +25,9 @@ ul li, ul {
     list-style-type: none;
 }
 
-a label {
+a label ,a span,a img{
+    cursor:pointer;
 }
-
 .hide {
     display: none;
 }
@@ -593,7 +593,10 @@ input, select, textarea {
         text-align: center;
         border-radius: 10px;
     }
-
+        .black
+        {
+            color:#000;
+        }
         .ol-popup .ol-popup-closer:hover, .closer:hover {
             background-color: #e14c4c;
         }
@@ -711,13 +714,16 @@ input, select, textarea {
     top: 100px;
     z-index: 99;
 }
+#onRoadGrid, #roadGrid {
+    display: none;
+}
 #gdRoad {
     background-color: #162d5a;
     width: 25px;
     height: 25px;
     display: block;
     position: absolute;
-    right: 120px;
+    right: 90px;
     top: 100px;
     z-index: 99;
 }
@@ -862,3 +868,97 @@ input, select, textarea {
                 float: left;
                 margin-top: 5px;
             }
+#sportimage {
+    position: absolute;
+    z-index: 999;
+    left: 50%;
+    margin-top: 25%;
+    background-color: rgba(19,35,66,0.7);
+    border-radius: 10px;
+    max-width: 720px;
+    overflow:hidden;
+}
+
+.s {
+    width: 180px;
+    height: 260px;
+    display: inline-block;
+    background-position: -220px -90px;
+    background-image: url(../imgs/sport.png);
+    background-repeat: no-repeat;
+}
+/* 短道速滑 */
+.s1 {
+    background-position: -220px -90px;
+}
+/* 冰球 */
+.s2 {
+    background-position: -1083px -90px;
+}
+/* 速度滑冰 */
+.s3 {
+    background-position: -500px -90px;
+}
+/* 花样滑冰 */
+.s4 {
+    background-position: -790px -90px;
+}
+/* 冰壶 */
+.s5 {
+    background-position: -1365px -90px;
+}
+/* 自由式滑雪大跳台 */
+.s6 {
+    background-position: -790px -600px;
+}
+/* 单板滑雪大跳台 */
+.s7 {
+    background-position: -500px -860px;
+}
+/* 高山滑雪 */
+.s8 {
+    background-position: -1655px -90px;
+}
+/* 雪车 */
+.s9 {
+    background-position: -790px -860px;
+}
+/* 钢架雪车 */
+.s10 {
+    background-position: -1083px -860px;
+}
+/* 雪橇 */
+.s11 {
+    background-position: -1365px -860px;
+}
+/* 跳台滑雪 */
+.s12 {
+    background-position: -220px -345px;
+}
+/* 北欧两项 */
+.s13 {
+    background-position: -790px -345px;
+}
+/* 冬季两项 */
+.s14 {
+    background-position: -1655px -860px;
+}
+/* 单板滑雪平行大回转 */
+.s15 {
+    background-position: -1083px -600px;
+}
+/* 单板滑雪障碍追逐 */
+.s16 {
+    background-position: -1365px -600px;
+}
+/* 自由式滑雪障碍追逐 */
+.s17 {
+    background-position: -1655px -345px;
+}
+/* 越野滑雪 */
+.s17 {
+    background-position: -500px -345px;
+}
+#showImage {
+    margin-left: 10px;
+}
