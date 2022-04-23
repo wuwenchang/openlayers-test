@@ -268,7 +268,7 @@ function loadmap(center1, resolutionpara, inilayers) {
             markerStyles[key].getImage().setScale(scale)
         }
     })
-    if (location.href.includes('page5.html')) {
+    if (location.href.includes('page5.html') || location.href.includes('page11.html')) {
         gdLayer = trafficGD()
         map.addLayer(gdLayer)
     }
@@ -1233,7 +1233,7 @@ $('#startRescue').on('click', function () {
     }
     initAnimation({
         pointsList: line,
-        properties: data,
+        // properties: data,
         isDrawHistory: true,
         carType: 'jy'
     })

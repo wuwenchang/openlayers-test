@@ -57,6 +57,7 @@ var newPoint = []
 function rescueFun(index) {
   var accidentMessage = $('#accidentMessage')
   var data = JSON.parse(accidentMessage.attr('data'));
+  data.showType = 'hide'
   var line = []
   if (data.error) {
     line = data.jyLines[index].line.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'))
