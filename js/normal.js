@@ -22,7 +22,7 @@ function getRootPath() {
     var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
     projectName = projectName.toLowerCase();
     if (curWwwPath.includes('localhost')) {
-        projectName = ''
+        projectName = '/grandmap/bjda'
     } else {
         projectName = projectName.replace("/web", "");
     }

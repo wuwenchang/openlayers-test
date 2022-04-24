@@ -523,6 +523,12 @@ function popupShow(e, map) {
                     accidentMessage.attr('data', JSON.stringify(feature.O.params))
                 }
                 if (rescueMessage) rescueMessage.hide()
+            } else if (feature.O.params.addr) {
+                $("#yuan").show();
+                $("#yuan p").eq(0).text($("#popup input").eq(1).val() + "救援方案");
+                $("#idea1 span").eq(0).text(feature.O.params.addr)
+                $("#idea2").hide()
+                return
             } else {
                 return
             }
@@ -1264,7 +1270,7 @@ function textImageStyle(text) {
         image: new ol.style.Icon({
             anchor: [0.5, 1],
             // scale: 2 / 3,
-            src: '../imgs/carImgs/point.png',
+            src: '../imgs/help.png',
         }),
     })
     return style

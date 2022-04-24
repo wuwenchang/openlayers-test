@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html style="width: 100%;height:100%">
+
 <head>
     <meta charset="utf-8" />
     <script type="text/javascript" src="../js/jquery-3.5.0.min.js"></script>
@@ -7,7 +8,7 @@
     <script type="text/javascript" src="../js/normal.js"></script>
     <script type="text/javascript" src="../js/tables.js"></script>
     <script type="text/javascript" src="../js/map.js"></script>
-    <link src="../json/ol.css"/>
+    <link src="../json/ol.css" />
     <script src="../json/ol.js"></script>
     <link href="../css/index.css" rel="stylesheet" />
     <script src="../json/roadjson.js"></script>
@@ -18,8 +19,11 @@
     <style>
         #onRoadGrid {
             right: 45px;
+            display: block;
         }
+
         #gdRoad {
+            /* display: none; */
             right: 80px;
         }
     </style>
@@ -33,28 +37,28 @@
     <a id="onRoadGrid" class="show"><img src="../imgs/road.png" /></a>
     <div class="mutLayer hide">
         <div>
-            <input type="checkbox" id="road" onclick="onloadLayer('road')"/>
-            <label for="road">奥运车道</label>  
+            <input type="checkbox" id="road" onclick="onloadLayer('road')" />
+            <label for="road">奥运车道</label>
         </div>
         <div>
-            <input type="checkbox" id="roadstatus_gcj" onclick="onloadLayer('roadstatus_gcj')"/>
-            <label for="roadstatus_gcj">道路路况</label>  
+            <input type="checkbox" id="roadstatus_gcj" onclick="onloadLayer('roadstatus_gcj')" />
+            <label for="roadstatus_gcj">道路路况</label>
         </div>
         <div>
-            <input type="checkbox" id="substation" onclick="onloadLayer('substation')"/>
-            <label for="substation">实时地铁</label>  
+            <input type="checkbox" id="substation" onclick="onloadLayer('substation', 'subway')" />
+            <label for="substation">实时地铁</label>
         </div>
         <div>
-            <input type="checkbox" id="railway" onclick="onloadLayer('railway')"/>
-            <label for="railway">高铁线路</label>  
+            <input type="checkbox" id="railway" onclick="onloadLayer('railway')" />
+            <label for="railway">高铁线路</label>
         </div>
         <div>
-            <input type="checkbox" id="gymnasium" onclick="onloadLayer('gymnasium')"/>
-            <label for="gymnasium">体育场馆</label>  
+            <input type="checkbox" id="gymnasium" onclick="onloadLayer('gymnasium')" />
+            <label for="gymnasium">体育场馆</label>
         </div>
         <div>
-            <input type="checkbox" id="dapoi" onclick="onloadLayer('dapoi')"/>
-            <label for="dapoi">交通枢纽</label>  
+            <input type="checkbox" id="dapoi" onclick="onloadLayer('dapoi')" />
+            <label for="dapoi">交通枢纽</label>
         </div>
     </div>
     <a id="gdRoad" class="show"><img src="../imgs/gd.jpg" /></a>
@@ -246,9 +250,110 @@
             //     });
             // }
         };
+
+        function getData(tblname, wstr) {
+            $.ajax({
+                type: "POST",  //访问WebService使用post方式请求
+                cache: false,
+                async: false,
+                contentType: "application/x-www-form-urlencoded; charset=utf-8",
+                url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
+                data: { tableName: tblname, whereSql: wstr, pageNum: 1, rowsNum: 1000 },
+                success: function (myjson) {
+                    var jsondatas = eval("(" + myjson + ")");
+                    if (jsondatas.CODE > 0) {
+                        var list = jsondatas.Table;
+                        let remarks = ['火车站', '机场', '地铁站', '汽车站', '停车场', '换乘枢纽']
+                        let remarkList = ['tl4', 'tl3', 'tl7', 'tl9', 'tl6', 'l5']
+                        list.forEach((item, i) => {
+                            if (tblname === 'event_gym') {
+                                // 动态添加赛事馆图标
+                                addMarker({
+                                    data: {
+                                        val11: item.name,
+                                        val12: item.address,
+                                        // val3: item.name,
+                                        val13: item.seat,
+                                        val14: item.area + '平方米',
+                                        val15: item.toilet,
+                                        val16: item.parking,
+                                        val17: item.busstop,
+                                        val18: item.remark,
+                                        val19: item.id,
+                                        gym_id: item.id,
+                                        id: 'eventPage11' + new Date().getTime() + i,
+                                        showType: 'car'
+                                    },
+                                    coordinate: [item.xaxis, item.yaxis],
+                                    stylepng: remarkList[remarks.indexOf(item.remark) !== -1 ? remarks.indexOf(item.remark) : 5]
+                                    // stylepng: 'tl5'
+                                }, map)
+                            } else {
+                                addMarker({
+                                    data: {
+                                        val11: item.name,
+                                        val12: item.address,
+                                        val13: item.remark,
+                                        // val5: timeFormat(item.addtime),
+                                        // val6: item.name1,
+                                        // target_type: item.target_type,
+                                        // index: data.trafficData.index,
+                                        // id: data.data.id,
+                                        id: 'trafficPage11' + new Date().getTime() + i,
+                                        showType: 'car'
+                                    },
+                                    coordinate: [item.xaxis, item.yaxis],
+                                    stylepng: remarkList[remarks.indexOf(item.remark) !== -1 ? remarks.indexOf(item.remark) : 5]
+                                }, map)
+                            }
+                        })
+                    }
+                },
+                error: function () {
+                    console.log("系统错误", { icon: 2 })
+                }
+            });
+        }
+
         var hadLoadLayers = [];
         var allOnLoadLayers = []
-        function onloadLayer(type) {
+        function onloadLayer(type, type2) {
+            var allLayers = map.getLayers().getArray()
+            var pointLayers = []
+            if (type === 'gymnasium') {
+                if (allOnLoadLayers.includes('gymnasium')) {
+                    for (var i = 0; i < allLayers.length; i++) {
+                        if (allLayers[i].O.id && allLayers[i].O.id.includes('eventPage11')) {
+                            pointLayers.push(allLayers[i].O.id)
+                        }
+                    }
+                    for (var i = 0; i < pointLayers.length; i++) {
+                        removeLayer(pointLayers[i])
+                    }
+                    allOnLoadLayers.splice(allOnLoadLayers.indexOf('gymnasium'), 1)
+                } else {
+                    allOnLoadLayers.push('gymnasium')
+                    getData("event_gym", "1=1");
+                }
+                return
+            }
+            if (type === 'dapoi') {
+                if (allOnLoadLayers.includes('dapoi')) {
+                    for (var i = 0; i < allLayers.length; i++) {
+                        if (allLayers[i].O.id && allLayers[i].O.id.includes('trafficPage11')) {
+                            pointLayers.push(allLayers[i].O.id)
+                        }
+                    }
+                    for (var i = 0; i < pointLayers.length; i++) {
+                        removeLayer(pointLayers[i])
+                    }
+                    allOnLoadLayers.splice(allOnLoadLayers.indexOf('dapoi'), 1)
+                } else {
+                    allOnLoadLayers.push('dapoi')
+                    getData("traffic_hub", "1=1");
+                }
+                return
+            }
             if (hadLoadLayers.includes(type)) {
                 for (let i = 0; i < allOnLoadLayers.length; i++) {
                     if (type === allOnLoadLayers[i].type) {
@@ -267,6 +372,26 @@
                 })
                 map.addLayer(dalayer)
             }
+            if (type2) {
+                if (hadLoadLayers.includes(type2)) {
+                    for (let i = 0; i < allOnLoadLayers.length; i++) {
+                        if (type2 === allOnLoadLayers[i].type) {
+                            allOnLoadLayers[i].dalayer.setVisible(!allOnLoadLayers[i].show)
+                            allOnLoadLayers[i].show = !allOnLoadLayers[i].show
+                        }
+                    }
+                } else {
+                    hadLoadLayers.push(type2)
+                    allOnLoadLayers.push(type2)
+                    var dalayer = loadTileWMS(type2)
+                    allOnLoadLayers.push({
+                        dalayer,
+                        type: type2,
+                        show: true
+                    })
+                    map.addLayer(dalayer)
+                }
+            }
         }
         var mutLayerState = false
         $('#onRoadGrid').on('click', function () {
@@ -280,4 +405,5 @@
     </script>
     <script src="../js/mutRescueLines.js"></script>
 </body>
+
 </html>

@@ -24,18 +24,18 @@
     <div id="yuan" class="allmsg hide">
         <p>交通事故1救援方案</p><a href="#" onclick="closeyuan();" class="closer"></a>
         <div id="idea1" class="msgbox" onclick="rescueFun(0)">
-            <p>方案1：<span></span></p>
-            <label>救援方式：公交</label>
-            <label>车辆数：12辆</label>
-            <label>缓解时长：45分钟</label>
-            <label>救援距离：6公里</label>
-        </div>
-        <div id="idea2" class="msgbox" onclick="rescueFun(1)">
-            <p>方案2：<span></span></p>
+            <p><span></span></p>
             <label>救援方式：小汽车</label>
             <label>车辆数：2辆</label>
             <label>缓解时长：30分钟</label>
             <label>救援距离：3.6公里</label>
+        </div>
+        <div id="idea2" class="msgbox" onclick="rescueFun(1)">
+            <p>方案2：<span></span></p>
+            <label>救援方式：公交</label>
+            <label>车辆数：12辆</label>
+            <label>缓解时长：45分钟</label>
+            <label>救援距离：6公里</label>
         </div>
     </div>
     <a id="bemax" class="max">
@@ -283,46 +283,15 @@
                     trafficRoute(params, line, trafficObj)
                 }
             }
-            createRoandLine()
-            setInterval(() => {
-                createRoandLine()
-            }, 10000)
+            // createRoandLine()
+            // setInterval(() => {
+            //     createRoandLine()
+            // }, 10000)
             // function createGeoList(num) {
             //     return roadstatus.features[num].geometry.coordinates[0]
             // }
             // createMNLine(100, 'yellow')
             // createMNLine(100, 'red')
-            // getData("roadnet", "", 2, 10);
-            // function getData(tblname, wstr, pageNum, rowsNum) {
-            //     $.ajax({
-            //         type: "POST",  //访问WebService使用post方式请求
-            //         cache: false,
-            //         async: false,
-            //         contentType: "application/x-www-form-urlencoded; charset=utf-8",
-            //         url: getRootPath() + "/Service/GetTable.ashx", //调用WebService的地址和方法名称组合
-            //         data: { tableName: tblname, whereSql: wstr, pageNum, rowsNum},
-            //         success: function (myjson) {
-            //             var jsondatas = eval("(" + myjson + ")");
-            //             console.log(jsondatas)
-            //             // if (jsondatas.CODE > 0) {
-            //             //     var list = jsondatas.Table;
-            //             //     let features = list.map(item => {
-            //             //         let coordinate = ol.proj.transform([item.xaxis, item.yaxis], 'EPSG:4326', 'EPSG:3857')
-            //             //         return {
-            //             //             type: 'Feature',
-            //             //             geometry: new ol.geom.Point(coordinate)
-            //             //         }
-            //             //     })
-            //             //     for (let i = 0; i < features.length; i++) {
-            //             //         headVectorSource.addFeature(new ol.Feature(features[i]))
-            //             //     }
-            //             // }
-            //         },
-            //         error: function () {
-            //             console.log("系统错误", { icon: 2 })
-            //         }
-            //     });
-            // }
         };
         var hadLoadLayers = [];
         var allOnLoadLayers = []

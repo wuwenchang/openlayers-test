@@ -169,7 +169,7 @@ function showyuan() {
   var accidentMessage = $('#accidentMessage')
   var data = JSON.parse(accidentMessage.attr('data'));
   let line1 = data.jyLines && data.jyLines[0].line.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'))
-  let line2 = data.jyLines && data.jyLines[1].line.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'))
+  // let line2 = data.jyLines && data.jyLines[1].line.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'))
 
   if (data.error) {
     removeLayer('marker0')
@@ -187,6 +187,8 @@ function showyuan() {
         coordinate: data.jyLines[0].line[0],
         data: {
           id: 'marker0',
+          error: true,
+          addr: data.jyLines[0].addr,
           line: data.jyLines[0].line
         },
         style: textImageStyle(data.jyLines[0].addr)
@@ -195,6 +197,8 @@ function showyuan() {
         coordinate: data.jyLines[1].line[0],
         data: {
           id: 'marker1',
+          error: true,
+          addr: data.jyLines[1].addr,
           line: data.jyLines[1].line
         },
         style: textImageStyle(data.jyLines[1].addr)
@@ -224,6 +228,8 @@ function showyuan() {
         coordinate: data.rescuePoint,
         data: {
           id: 'marker1',
+          addr: data.rescueName || data.val1,
+          error: true,
           line
         },
         style: textImageStyle(data.rescueName || data.val1)
