@@ -51,8 +51,9 @@ const line4 = [
   [116.441503560575, 40.02619162562408],
   [116.4417248393544, 40.028523533333896]
 ]
-// 
 var newPoint = []
+
+let random = Math.random()
 
 function rescueFun(index) {
   var accidentMessage = $('#accidentMessage')
@@ -61,12 +62,13 @@ function rescueFun(index) {
   var line = []
   if (data.error) {
     line = data.jyLines[index].line.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'))
-    drawTrackLine(line, 'gray')
-    if (index) {
-      removeLayer('marker0')
-    } else {
-      removeLayer('marker1')
-    }
+    // console.log(random + 'line' + index, 'sss');
+    drawTrackLine(line, 'gray', data.id + 'grayline');
+    // if (index) {
+    //   removeLayer('marker0')
+    // } else {
+    //   removeLayer('marker1')
+    // }
     initAnimation({
       pointsList: line,
       properties: data,
@@ -95,12 +97,13 @@ function rescueFun(index) {
       isDrawHistory: true,
       carType: 'jy'
     })
-    drawTrackLine(line, 'gray')
+    drawTrackLine(line, 'gray', data.id + 'trackLine')
   }
   closeyuan()
   map && map.getView().setCenter(line[0])
   map && map.getView().setZoom(13)
 }
+let id2 = 'bus' + Math.random()
 
 function createNewRescued() {
   const changeCar1 = line1.slice(line1.length - 2).map(item => {
@@ -113,14 +116,14 @@ function createNewRescued() {
     pointsList: changeCar2,
     error: true,
     properties: {
-      id: 'line1',
+      id: random + 'line1',
       error: true,
       jyLines: [{
-        line: line3,
-        addr: '来广营西路'
-      }, {
         line: line4,
         addr: '北苑路北'
+      }, {
+        line: line3,
+        addr: '来广营西路'
       }],
       val1: '车辆剐蹭',
       val2: '北苑东路',
@@ -139,14 +142,14 @@ function createNewRescued() {
     pointsList: changeCar1,
     error: true,
     properties: {
-      id: 'line2',
+      id: random + 'line2',
       error: true,
       jyLines: [{
-        line: line1,
-        addr: '花园北路'
-      }, {
         line: line2,
         addr: '和平里北街'
+      }, {
+        line: line1,
+        addr: '花园北路'
       }],
       val1: '车辆追尾',
       val2: '安华路',
@@ -161,7 +164,6 @@ function createNewRescued() {
     carType: 'car'
   })
 }
-
 
 function showyuan() {
   $("#loading").show();
@@ -186,7 +188,8 @@ function showyuan() {
       addMarker({
         coordinate: data.jyLines[0].line[0],
         data: {
-          id: 'marker0',
+          id: random + (data.addr === '安华路' ? 'line2marker0': 'line1marker0'),
+          data: data,
           error: true,
           addr: data.jyLines[0].addr,
           line: data.jyLines[0].line
@@ -196,7 +199,8 @@ function showyuan() {
       addMarker({
         coordinate: data.jyLines[1].line[0],
         data: {
-          id: 'marker1',
+          id: random + (data.addr === '安华路' ? 'line2marker0': 'line1marker0'),
+          data: data,
           error: true,
           addr: data.jyLines[1].addr,
           line: data.jyLines[1].line
@@ -227,7 +231,8 @@ function showyuan() {
       addMarker({
         coordinate: data.rescuePoint,
         data: {
-          id: 'marker1',
+          id: data.id + 'marker',
+          data: data,
           addr: data.rescueName || data.val1,
           error: true,
           line

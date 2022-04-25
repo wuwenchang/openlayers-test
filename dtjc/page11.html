@@ -41,8 +41,8 @@
             <label for="road">奥运车道</label>
         </div>
         <div>
-            <input type="checkbox" id="roadstatus_gcj" onclick="onloadLayer('roadstatus_gcj')" />
-            <label for="roadstatus_gcj">道路路况</label>
+            <input type="checkbox" id="roadstatus_gcj" onclick="onloadLayer('gdRoad')" />
+            <label for="roadstatus_gcj">实时路况</label>
         </div>
         <div>
             <input type="checkbox" id="substation" onclick="onloadLayer('substation', 'subway')" />
@@ -61,7 +61,7 @@
             <label for="dapoi">交通枢纽</label>
         </div>
     </div>
-    <a id="gdRoad" class="show"><img src="../imgs/gd.jpg" /></a>
+    <!-- <a id="gdRoad" class="show"><img src="../imgs/gd.jpg" /></a> -->
     <div id="map">
     </div>
     <script type="text/javascript" src="../js/damap.js"></script>
@@ -316,11 +316,26 @@
         }
 
         var hadLoadLayers = [];
-        var allOnLoadLayers = []
+        var allOnLoadLayers = [];
+        var firstOnloadGd = false
         function onloadLayer(type, type2) {
             var allLayers = map.getLayers().getArray()
             var pointLayers = []
-            if (type === 'gymnasium') {
+            if (type === 'gdRoad') {
+                if (firstOnloadGd === false) {
+                    gdLayer = trafficGD()
+                    map.addLayer(gdLayer)
+                    firstOnloadGd = true;
+                } else {
+                    if (gdRoadState) {
+                        gdLayer.setVisible(false)
+                    } else {
+                        gdLayer.setVisible(true)
+                    }
+                    gdRoadState = !gdRoadState
+                }
+                
+            } else if (type === 'gymnasium') {
                 if (allOnLoadLayers.includes('gymnasium')) {
                     for (var i = 0; i < allLayers.length; i++) {
                         if (allLayers[i].O.id && allLayers[i].O.id.includes('eventPage11')) {
@@ -336,8 +351,7 @@
                     getData("event_gym", "1=1");
                 }
                 return
-            }
-            if (type === 'dapoi') {
+            } else if (type === 'dapoi') {
                 if (allOnLoadLayers.includes('dapoi')) {
                     for (var i = 0; i < allLayers.length; i++) {
                         if (allLayers[i].O.id && allLayers[i].O.id.includes('trafficPage11')) {

@@ -9,6 +9,18 @@ var fristLoadRoadLayer = true
 // 动态车辆
 var activeCar = []
 
+let onceline1 = [
+    [116.40244106589556, 39.96470972071441],
+    [116.40235080900398, 39.96562746201184],
+    [116.40241943447143, 39.96722482260171]
+]
+let onceline2 = [
+    [116.4416157419778, 40.02775443200386],
+    [116.4417248393544, 40.028523533333896],
+    [116.4416745017605, 40.02981602114855]
+]
+onceline1 = onceline1.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'));
+onceline2 = onceline2.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'));
 // 高德地图
 var gdRoadState = true;
 var gdLayer;
@@ -268,7 +280,7 @@ function loadmap(center1, resolutionpara, inilayers) {
             markerStyles[key].getImage().setScale(scale)
         }
     })
-    if (location.href.includes('page5.html') || location.href.includes('page11.html')) {
+    if (location.href.includes('page5.html')) {
         gdLayer = trafficGD()
         map.addLayer(gdLayer)
     }
@@ -481,6 +493,7 @@ function artificialWarning(data) {
         yes: function () {
             // console.log('确定')
             layer.closeAll();
+            drawTrackLine(childData.properties.addr === '安华路' ? onceline1 : onceline2, '#ff0', childData.properties.id + 'trafficlines');
             childData.properties.showType = 'redCar'
             childData.pointLayer.setStyle(markerStyles['redCar'])
         },
@@ -622,12 +635,12 @@ function drawMainLine(pointsList, properties) {
     map.addLayer(roadLineLayer);
 }
 // 绘制轨迹路线
-function drawTrackLine(pointsList = [], color) {
+function drawTrackLine(pointsList = [], color, id) {
     var roadLine2 = new ol.geom.LineString(pointsList)
     var roadLineSource2 = new ol.source.Vector({
         features: [new ol.Feature(roadLine2)]
     });
-    var id = 'trackLine';
+    var id = id || 'trackLine';
     var roadLineLayer2 = new ol.layer.Vector({
         id,
         source: roadLineSource2,
@@ -662,19 +675,19 @@ function addSEMarker(params) {
 }
 // 模拟交通事故
 function trafficLines(params, pointsList, lineNum) {
-    removeLayer('trafficLine1' + lineNum)
-    removeLayer('trafficLine2' + lineNum)
+    removeLayer(params.properties.id + 'trafficLine1' + lineNum)
+    removeLayer(params.properties.id + 'trafficLine2' + lineNum)
     // 较堵塞
     var trafficLine1 = new ol.geom.LineString(pointsList.slice(params.start1, params.end1));
     var trafficLineSource2 = new ol.source.Vector({
         features: [new ol.Feature(trafficLine1)]
     });
     var trafficLayer1 = new ol.layer.Vector({
-        id: 'trafficLine1' + lineNum,
+        id: params.properties.id + 'trafficLine1' + lineNum,
         source: trafficLineSource2,
         style: getCustomStyle({ color: '#ff0' })
     });
-    hadMarkerIds.push('trafficLine1' + lineNum)
+    hadMarkerIds.push(params.properties.id + 'trafficLine1' + lineNum)
     map.addLayer(trafficLayer1);
     // 非常堵塞
     var trafficLine2 = new ol.geom.LineString(pointsList.slice(params.start2, params.end2));
@@ -682,11 +695,11 @@ function trafficLines(params, pointsList, lineNum) {
         features: [new ol.Feature(trafficLine2)]
     });
     var trafficLayer2 = new ol.layer.Vector({
-        id: 'trafficLine2' + lineNum,
+        id: params.properties.id + 'trafficLine2' + lineNum,
         source: trafficLineSource2,
         style: getCustomStyle({ color: 'red' })
     });
-    hadMarkerIds.push('trafficLine2' + lineNum)
+    hadMarkerIds.push(params.properties.id + 'trafficLine2' + lineNum)
     map.addLayer(trafficLayer2);
 }
 // 移除layer, 根据id或者features的type
@@ -722,6 +735,7 @@ function removeLayer(type) {
 function startTraffic(pointsList, params, lineNum, time) {
     let { pointIndex, line1Radius, line2Radius, times } = params
     trafficLines({
+        properties: params.properties,
         start1: pointIndex - line1Radius > 0 ? pointIndex - line1Radius : 0,
         end1: pointIndex + line1Radius >= pointsList.length - 1 ? pointsList.length - 1 : pointIndex + line1Radius,
         start2: pointIndex - line2Radius > 0 ? pointIndex - line2Radius : 0,
@@ -731,6 +745,7 @@ function startTraffic(pointsList, params, lineNum, time) {
         if (times > 0) {
             startTraffic(pointsList, {
                 pointIndex,
+                properties: params.properties,
                 line1Radius: line1Radius * 2,
                 line2Radius: line2Radius * 2,
                 times: times - 1
@@ -750,6 +765,7 @@ function startAnimation(params) {
             pointLayer = allLayers[i]
         }
     }
+    let roadLineId = new Date().getTime() + 'trackLine' + Math.random() + properties.id;
     if (isDrawHistory) {
         // 初始化轨迹路线
         roadLine2 = new ol.geom.LineString([pointsList[0]])
@@ -757,7 +773,7 @@ function startAnimation(params) {
             features: [new ol.Feature(roadLine2)]
         });
         var roadLineLayer2 = new ol.layer.Vector({
-            id: 'trackLine',
+            id: roadLineId,
             source: roadLineSource2,
             style: getCustomStyle({ color: params.historyColor || '#4ddc2c' })
         });
@@ -800,9 +816,26 @@ function startAnimation(params) {
                     }
                     obj.timer = setTimeout(() => {
                         properties.showType = 'redCar'
-                        pointLayer.setStyle(markerStyles['redCar'])
+                        pointLayer.setStyle(markerStyles['redCar']);
+                        drawTrackLine(properties.addr === '安华路' ? onceline1 : onceline2, '#ff0', properties.id + 'trafficlines');
                     }, 2000)
                     activeCar.push(obj)
+                } else {
+                    var allLayerss = map.getLayers().getArray()
+                    let arrIds = []
+                    for (let i = allLayerss.length - 1; i > 0; i--) {
+                        if (typeof properties.id == 'string' && allLayerss[i].O.id && allLayerss[i].O.id.includes(properties.id)) {
+                            arrIds.push(allLayerss[i].O.id)
+                        }
+                    }
+                    if (arrIds.length) {
+                        arrIds.push(roadLineId);
+                        arrIds.push(carMarker.id)
+                        arrIds.push(pointLayer.O.id);
+                    }
+                    for (let i = 0; i < arrIds.length; i++) {
+                        removeLayer(arrIds[i])
+                    }
                 }
                 clearInterval(startMove)
             }
@@ -830,6 +863,9 @@ function createMinLine(cur, next, v) {
 // 汽车图标
 function createGeoMarker(pointsList, properties, carType) {
     let id = carType + 'geoMarker' + Math.floor(Math.random() * 10000);
+    if (carType === 'jy' || properties.jyLines) {
+        id += properties.id
+    }
     const geoMarker = new ol.Feature({
         params: properties,
         geometry: new ol.geom.Point(pointsList[0])
@@ -930,19 +966,6 @@ function trafficRoute(data, mainline, trafficObj) {
         }
     }
     allPoint.push(line[line.length - 1])
-    // // 延长线
-    // var line2 = JSON.parse(JSON.stringify(extensionLine))
-    // line2 = line2.map(item => {
-    //     return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
-    // })
-    // let extensionPoint = []
-    // for (let i = 0; i < line2.length; i++) {
-    //     let list = createMinLine(line2[i], line2[i + 1], 10)
-    //     extensionPoint = extensionPoint.concat(list)
-    // }
-    // extensionPoint.push(line[line.length - 1])
-    // extensionPoint.shift()
-    // extensionPoint = allPoint.concat(extensionPoint)
     if (data.carType) {
         initAnimation({
             pointsList: line, // 线路点
@@ -954,6 +977,7 @@ function trafficRoute(data, mainline, trafficObj) {
     }
     // 交通事故
     startTraffic(extensionPoint, {
+        properties: data, // 参数
         pointIndex: allPoint.length - 1,
         line1Radius: trafficObj.line1Radius,
         line2Radius: trafficObj.line2Radius,
@@ -1007,7 +1031,7 @@ function beginToSimulate(data, map) {
         sendIdVal: data.maker.id,
         target_type: data.maker.target_type,
         index: data.trafficData.index,
-        id: data.data.id,
+        id: data.data.id || data.maker.id,
         rescueName: data.data.rescueName,
         rescuePoint: data.line[0],
         showType: 'accident'
@@ -1239,7 +1263,7 @@ $('#startRescue').on('click', function () {
     }
     initAnimation({
         pointsList: line,
-        // properties: data,
+        properties: data,
         isDrawHistory: true,
         carType: 'jy'
     })
