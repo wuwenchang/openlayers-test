@@ -54,6 +54,52 @@
         document.getElementById("popup").style.display = "none";
     });
 });
+function showMsg() {
+    var iiload = layer.load(1, false);
+    $.ajax({
+        type: "POST",  //访问WebService使用post方式请求
+        contentType: "application/json; charset=utf-8",
+        url: getRootPath() + "/Service/MyWebService.asmx/GetTable", //调用WebService的地址和方法名称组合
+        data: "{tableName:'event_delay A,event_sport B',whereSql:'A.sport_id=B.id limit " + (Math.floor(Math.random() * 5)+1)+" offset " + Math.floor(Math.random() * 100) + " '}",
+        dataType: "json",
+        success: function (result) {
+            var myjson = result.d;
+            var jsondatas = eval("(" + myjson + ")");
+            if (jsondatas.CODE > 0) {
+                var mytbl = jsondatas.Table;
+                var dv = $("<div></div>");
+                dv.append("<div><p class=\"title\">赛事延迟：</p></div><div id=\"delaymsg1\"></div>");
+                dv.append("<div><p class=\"title\">赛事取消：</p></div><div id=\"delaymsg2\"></div>");
+                layer.open({
+                    type: 1,
+                    title: '<img src="../imgs/s1.png">赛事信息',
+                    skin: 'sendbox', //样式类名
+                    area: '400px', //宽高
+                    anim: 2,
+                    content: "<div class=\"boxbody\">" + dv.html() + "</div>"
+                });
+                $(mytbl).each(function (i, n) {
+                    if (i < mytbl.length / 2) {
+                        $("#delaymsg1").append("<p>" + (i + 1) + ".  " + n.starttimestr + "-" + n.endtimestr + "  " + n.event + "比赛因" + n.remark + "延迟比赛。</p>");
+                    }
+                    else {
+                        $("#delaymsg2").append("<p>" + (i + 1) + ".  " + n.starttimestr + "-" + n.endtimestr + "  " + n.event + "比赛因" + n.remark + "取消比赛。</p>");
+                    }
+                });
+            }
+            else {
+                console.log(jsondatas.MSG, { icon: 2 });
+            }
+        },
+        error: function () {
+            console.log("系统错误", { icon: 2 })
+        },
+        complete: function () {
+            layer.close(iiload);
+        }
+    });
+    
+}
 function showChart(type) {
     if ($("#showct").hasClass("show")) {
         $("#showct").find("img").attr("src", "../imgs/close.png");

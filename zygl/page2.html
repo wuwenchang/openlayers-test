@@ -26,6 +26,7 @@
         <img src="../imgs/bmax.png" />
     </a>
     <a id="showct" onclick="showChart(2);" class="show"><img src="../imgs/chart.png" /></a>
+    <a id="showmsg" onclick="showMsg();" class="show"><img src="../imgs/delay.png" /></a>
     <div id="map">
         <div id="popup" class="ol-popup">
             <a href="#" id="popup-closer" class="ol-popup-closer"></a>
@@ -237,7 +238,6 @@
                         if (jsondatas.CODE > 0) {
                             var list = jsondatas.Table;
                             let features = list.map(item => {
-                                console.log(item)
                                 // 动态添加赛事馆图标
                                 addMarker({
                                     data: {

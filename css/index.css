@@ -108,6 +108,16 @@ input, select, textarea {
     margin-top: 25%;
     z-index: 9999;
 }
+#showmsg {
+    background-color: #162d5a;
+    width: 25px;
+    height: 25px;
+    display: block;
+    position: absolute;
+    right: 90px;
+    top: 100px;
+    z-index: 99;
+}
 .mutLayer {
     position: absolute;
     right: 29px;
@@ -710,7 +720,7 @@ input, select, textarea {
     height: 25px;
     display: block;
     position: absolute;
-    right: 85px;
+    right: 90px;
     top: 100px;
     z-index: 99;
 }
@@ -802,10 +812,10 @@ input, select, textarea {
     }
     .sendbox .boxbody {
         width: calc(100% - 20px);
-        margin: 0px 10px;
+        margin: 10px;
+        margin-top:0px;
         background-color: #162d5a;
         border-radius: 10px;
-        
     }
 
         .sendbox .boxbody label {
@@ -845,6 +855,7 @@ input, select, textarea {
         }
         .sendbox .boxbody div p {
            text-indent:5px;
+           line-height:25px;
         }
         .sendbox .boxbody .btns {
             text-align: center;
