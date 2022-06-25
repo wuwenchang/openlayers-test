@@ -58,6 +58,7 @@ let random = Math.random()
 function rescueFun(index) {
   var accidentMessage = $('#accidentMessage')
   var data = JSON.parse(accidentMessage.attr('data'));
+  var zoom = 13
   data.showType = 'hide'
   var line = []
   if (data.error) {
@@ -86,10 +87,38 @@ function rescueFun(index) {
         return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
       })
     } else {
-      data.rescuePoint = data.rescuePoint || newPoint
-      line = [data.rescuePoint, data.coordinate].map(item => {
-        return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
-      })
+      zoom = 15.5
+      if (data.val1 === '首都体育馆') {
+        newPoint = [116.32403116975208, 39.93559021098889]
+        line = [
+          [116.32403116975208, 39.93559021098889], 
+          [116.32514379926143, 39.93563404410685],
+          [116.32584377652972, 39.93603503349581],
+          [116.32555647331928, 39.94099413392661],
+          [116.32639084574836, 39.94094451933958],
+          [116.32625768105676, 39.94024380555325],
+          data.coordinate].map(item => {
+            return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+          })
+      } else if (data.val1 === '亚投西交通场站') {
+        newPoint = [116.38452142581434, 40.00602151803716]
+        line = [
+          [116.38452142581434, 40.00602151803716], 
+          [116.3842516618061, 40.00602074287633],
+          [116.38428220812204, 40.00671194406985],
+          [116.38676629798496, 40.00676449266578],
+          [116.38657783282683, 40.00980710981216],
+          [116.38685875654903, 40.009690044337844],
+          [116.38746568356088, 40.009673983722365],
+          data.coordinate].map(item => {
+            return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+          })
+      } else {
+        data.rescuePoint = data.rescuePoint || newPoint
+        line = [data.rescuePoint, data.coordinate].map(item => {
+          return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+        })
+      }
     }
     initAnimation({
       pointsList: line,
@@ -101,7 +130,7 @@ function rescueFun(index) {
   }
   closeyuan()
   map && map.getView().setCenter(line[0])
-  map && map.getView().setZoom(13)
+  map && map.getView().setZoom(zoom)
 }
 let id2 = 'bus' + Math.random()
 
@@ -168,6 +197,7 @@ function createNewRescued() {
 function showyuan() {
   $("#loading").show();
   $('#popup').hide()
+  var zoom = 13
   var accidentMessage = $('#accidentMessage')
   var data = JSON.parse(accidentMessage.attr('data'));
   let line1 = data.jyLines && data.jyLines[0].line.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'))
@@ -222,11 +252,41 @@ function showyuan() {
           return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
         })
       } else {
-        newPoint = [data.coordinate[0] - 0.006 + 0.004 * Math.random(), data.coordinate[1] - 0.006 + 0.004 * Math.random()]
-        data.rescuePoint = data.rescuePoint || newPoint
-        line = [data.rescuePoint, data.coordinate].map(item => {
-          return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
-        })
+        zoom = 15.5
+        if (data.val1 === '首都体育馆') {
+          newPoint = [116.32403116975208, 39.93559021098889]
+          data.rescuePoint = data.rescuePoint || newPoint
+          line = [
+            [116.32403116975208, 39.93559021098889], 
+            [116.32514379926143, 39.93563404410685],
+            [116.32584377652972, 39.93603503349581],
+            [116.32555647331928, 39.94099413392661],
+            [116.32639084574836, 39.94094451933958],
+            [116.32625768105676, 39.94024380555325],
+            data.coordinate].map(item => {
+            return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+          })
+        } else if (data.val1 === '亚投西交通场站') {
+          newPoint = [116.38452142581434, 40.00602151803716]
+          data.rescuePoint = data.rescuePoint || newPoint
+          line = [
+            [116.38452142581434, 40.00602151803716], 
+            [116.3842516618061, 40.00602074287633],
+            [116.38428220812204, 40.00671194406985],
+            [116.38676629798496, 40.00676449266578],
+            [116.38657783282683, 40.00980710981216],
+            [116.38685875654903, 40.009690044337844],
+            [116.38746568356088, 40.009673983722365],
+            data.coordinate].map(item => {
+              return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+            })
+        } else {
+          newPoint = [data.coordinate[0] - 0.006 + 0.004 * Math.random(), data.coordinate[1] - 0.006 + 0.004 * Math.random()]
+          data.rescuePoint = data.rescuePoint || newPoint
+          line = [data.rescuePoint, data.coordinate].map(item => {
+            return ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857')
+          })
+        }
       }
       addMarker({
         coordinate: data.rescuePoint,
@@ -241,7 +301,7 @@ function showyuan() {
       }, map)
       map && map.getView().setCenter(line[line.length - 1])
     }
-    map && map.getView().setZoom(13)
+    map && map.getView().setZoom(zoom)
   }, 3000);
 
 }
