@@ -41,7 +41,7 @@
             <label for="road">奥运车道</label>
         </div>
         <div>
-            <input type="checkbox" id="roadstatus_gcj" onclick="onloadLayer('gdRoad')" />
+            <input type="checkbox" checked id="roadstatus_gcj" onclick="onloadLayer('gdRoad')" />
             <label for="roadstatus_gcj">实时路况</label>
         </div>
         <div>
@@ -317,24 +317,16 @@
 
         var hadLoadLayers = [];
         var allOnLoadLayers = [];
-        var firstOnloadGd = false
         function onloadLayer(type, type2) {
             var allLayers = map.getLayers().getArray()
             var pointLayers = []
             if (type === 'gdRoad') {
-                if (firstOnloadGd === false) {
-                    gdLayer = trafficGD()
-                    map.addLayer(gdLayer)
-                    firstOnloadGd = true;
+                if (gdRoadState) {
+                    gdLayer.setVisible(false)
                 } else {
-                    if (gdRoadState) {
-                        gdLayer.setVisible(false)
-                    } else {
-                        gdLayer.setVisible(true)
-                    }
-                    gdRoadState = !gdRoadState
+                    gdLayer.setVisible(true)
                 }
-                
+                gdRoadState = !gdRoadState
             } else if (type === 'gymnasium') {
                 if (allOnLoadLayers.includes('gymnasium')) {
                     for (var i = 0; i < allLayers.length; i++) {

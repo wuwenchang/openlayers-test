@@ -19,8 +19,6 @@ let onceline2 = [
     [116.4417248393544, 40.028523533333896],
     [116.4416745017605, 40.02981602114855]
 ]
-onceline1 = onceline1.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'));
-onceline2 = onceline2.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'));
 // 高德地图
 var gdRoadState = true;
 var gdLayer;
@@ -42,7 +40,7 @@ function createMarkersStyles() {
         })
     }
     // 其他图标
-    var list2 = ['accident', 'tl1', 'tl2', 'tl3', 'tl4', 'tl5', 'tl6', 'tl7', 'tl8', 'tl9', 'tl10', 'tl11', 'tl12', 'tl13', 'tl14', 'l5', 'start', 'l7']
+    var list2 = ['accident', 'tl1', 'tl2', 'tl3', 'tl4', 'tl5', 'tl6', 'tl7', 'tl8', 'tl9', 'tl10', 'tl11', 'tl12', 'tl13', 'tl14', 'l5', 'start', 'l7', 'maker']
     for (let i = 0; i < list2.length; i++) {
         markerStyles[list2[i]] = new ol.style.Style({
             image: new ol.style.Icon({
@@ -147,24 +145,30 @@ function locationbyMark(maker, isHistory) {
     //判断类型，更改显示图标
     if (maker.type == 1) {
         if (maker.target == 1) {
-            src = stylepng = activeSrc = '../imgs/tl8.png';
+            // src = stylepng = activeSrc = '../imgs/tl8.png';
+            src = stylepng = activeSrc = 'tl8';
         }
         else if (maker.target == 2 || maker.target == 4) {
-            src = stylepng = activeSrc = '../imgs/tl9.png';
-
+            // src = stylepng = activeSrc = '../imgs/tl9.png';
+            src = stylepng = activeSrc = 'tl9';
         }
         else if (maker.target == 3) {
-            src = stylepng = activeSrc = '../imgs/tl10.png';
+            // src = stylepng = activeSrc = '../imgs/tl10.png';
+            src = stylepng = activeSrc = 'tl10';
         }
         else if (maker.target == 5) {
-            src = stylepng = activeSrc = '../imgs/tl7.png';
+            // src = stylepng = activeSrc = '../imgs/tl7.png';
+            src = stylepng = activeSrc = 'tl7';
         }
         else if (maker.target == 6) {
-            src = stylepng = activeSrc = '../imgs/tl2.png';
+            // src = stylepng = activeSrc = '../imgs/tl2.png';
+            src = stylepng = activeSrc = 'tl2';
         }
     }
-    else
-        src = stylepng = activeSrc = '../imgs/' + maker.img + '.png';
+    else {
+        // src = stylepng = activeSrc = '../imgs/' + maker.img + '.png';
+        src = stylepng = activeSrc = maker.img
+    }
     var obj = {
         isActive: true,
         coordinate: [maker.xaxis, maker.yaxis],
@@ -257,6 +261,9 @@ function loadmap(center1, resolutionpara, inilayers) {
         }
     }
     locationMap = map;
+
+    // 地图初始化，放大缩小图标
+    createMarkersStyles()
     if (getUrlParam("acid")) {
         addacpoint(getUrlParam("acid"));
     }
@@ -264,9 +271,6 @@ function loadmap(center1, resolutionpara, inilayers) {
     //     // console.log(e.coordinate)
     //     console.log(ol.proj.transform(e.coordinate, 'EPSG:3857', 'EPSG:4326'))
     // })
-
-    // 地图初始化，放大缩小图标
-    createMarkersStyles()
     map.getView().on('change:resolution', function () {
         // 重新设置图标的缩放率，基于层级20来做缩放
         let zoom = this.getZoom()
@@ -280,10 +284,13 @@ function loadmap(center1, resolutionpara, inilayers) {
             markerStyles[key].getImage().setScale(scale)
         }
     })
-    if (location.href.includes('page5.html')) {
+    if (location.href.includes('page5.html') || location.href.includes('page11.html')) {
         gdLayer = trafficGD()
         map.addLayer(gdLayer)
     }
+    
+    onceline1 = onceline1.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'));
+    onceline2 = onceline2.map(item => ol.proj.transform(item, 'EPSG:4326', 'EPSG:3857'));
     return map;
 }
 

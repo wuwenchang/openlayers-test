@@ -35,23 +35,23 @@ function accidentPointMap(type, id) {
     console.log(type + "," + id);
     if (type == 2 || type == 6) { //2：交通违法 6：电动车辆起火
         $("#a_5").click();
-        $("#ifr1").attr("src", "dtjc/page5.html?acid=" + id);
+        $("#ifr2").attr("src", "dtjc/page5.html?acid=" + id);
     }
     else if (type == 4) { //城轨故障
         $("#a_7").click();
-        $("#ifr3").attr("src", "dtjc/page7.html?acid=" + id);
+        $("#ifr4").attr("src", "dtjc/page7.html?acid=" + id);
     }
     else if (type ==5) { //公交车事故
         $("#a_6").click();
-        $("#ifr2").attr("src", "dtjc/page6.html?acid=" + id);
+        $("#ifr3").attr("src", "dtjc/page6.html?acid=" + id);
     }
     else if (type == 3) { //铁路故障
         $("#a_8").click();
-        $("#ifr4").attr("src", "dtjc/page8.html?acid=" + id);
+        $("#ifr5").attr("src", "dtjc/page8.html?acid=" + id);
     }
     else if (type == 7 || type == 8 || type == 9 || type == 10) {
         $("#a_9").click();
-        $("#ifr5").attr("src", "dtjc/page9.html?acid=" + id);
+        $("#ifr6").attr("src", "dtjc/page9.html?acid=" + id);
     }
     else if (type == 1) {
         $("#a_4").click();
