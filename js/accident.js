@@ -4,7 +4,7 @@ var actable;
 $(document).ready(function () {
     GetChild("traffic_accident_target", "id|name|id<6", "target", "select", true);
     switch (getUrlParam("type")) {
-        case "10": {
+        case "11": {
             typeid = 1;
             $("#thtr th").eq(3).html("事故对象");
             $("#thtr th").eq(4).html("事故名称");
@@ -13,7 +13,7 @@ $(document).ready(function () {
             $("#thtr th").eq(7).html("事故描述");
             $("#thtr th").eq(8).html("事故时间");
         }; break;
-        case "11": {
+        case "12": {
             typeid = 2;
             $("#thtr th").eq(3).html("故障对象");
             $("#thtr th").eq(4).html("故障名称");
@@ -22,7 +22,7 @@ $(document).ready(function () {
             $("#thtr th").eq(7).html("故障描述");
             $("#thtr th").eq(8).html("故障时间");
         }; break;
-        case "12": {
+        case "13": {
             typeid = 3;
             $("#thtr th").eq(3).html("故障对象");
             $("#thtr th").eq(4).html("故障名称");
@@ -31,7 +31,7 @@ $(document).ready(function () {
             $("#thtr th").eq(7).html("故障描述");
             $("#thtr th").eq(8).html("故障时间");
         }; break;
-        case "13": {
+        case "14": {
             typeid = 4;
             $("#thtr th").eq(3).html("违法对象");
             $("#thtr th").eq(4).html("违法名称");
@@ -40,7 +40,7 @@ $(document).ready(function () {
             $("#thtr th").eq(7).html("违法描述");
             $("#thtr th").eq(8).html("违法时间");
         }; break;
-        case "14": {
+        case "15": {
             typeid = 5;
             $("#thtr th").eq(3).html("事故对象");
             $("#thtr th").eq(4).html("事故名称");
@@ -49,7 +49,7 @@ $(document).ready(function () {
             $("#thtr th").eq(7).html("事故描述");
             $("#thtr th").eq(8).html("事故时间");
         }; break;
-        case "15": {
+        case "16": {
             typeid = 6;
             $("#thtr th").eq(3).html("事故对象");
             $("#thtr th").eq(4).html("事故名称");
@@ -58,7 +58,7 @@ $(document).ready(function () {
             $("#thtr th").eq(7).html("起火描述");
             $("#thtr th").eq(8).html("起火时间");
         }; break;
-        case "16": {
+        case "17": {
             typeid = 7;
             $("#thtr th").eq(3).html("比赛区域");
             $("#thtr th").eq(4).html("比赛项目");
@@ -67,7 +67,7 @@ $(document).ready(function () {
             $("#thtr th").eq(7).html("推迟时间");
             $("#thtr th").eq(8).html("发布时间");
         }; break;
-        case "17": {
+        case "18": {
             typeid = 8;
             $("#thtr th").eq(3).html("比赛区域");
             $("#thtr th").eq(4).html("比赛项目");
@@ -76,7 +76,7 @@ $(document).ready(function () {
             $("#thtr th").eq(7).html("限流人数");
             $("#thtr th").eq(8).html("限流时间");
         }; break;
-        case "18": {
+        case "19": {
             typeid = 9;
             $("#thtr th").eq(3).html("比赛区域");
             $("#thtr th").eq(4).html("比赛项目");
@@ -85,7 +85,7 @@ $(document).ready(function () {
             $("#thtr th").eq(7).html("拥堵人数");
             $("#thtr th").eq(8).html("拥堵时间");
         }; break;
-        case "19": {
+        case "20": {
             typeid = 10;
             $("#thtr th").eq(3).html("比赛区域");
             $("#thtr th").eq(4).html("比赛项目");

@@ -47,10 +47,11 @@
             <label>救援距离：6公里</label>
         </div>
     </div>
+    <a id="showmsg" onclick="showMsg();" class="show"><img src="../imgs/delay.png" /></a>
     <a id="bemax" class="max">
         <img src="../imgs/bmax.png" />
     </a>
-    <a id="showct" onclick="showChart(2);" class="show"><img src="../imgs/chart.png" /></a>
+    <a id="showct" onclick="showChart(9);" class="show"><img src="../imgs/chart.png" /></a>
     <div class="messagebox" id="messagebox">
         <iframe src="messagebox.html?msg=4&target=29" scrolling="no" frameborder="0"></iframe>
     </div>
@@ -547,7 +548,7 @@
                     startdate: rTime(Math.ceil(Math.random() * 5) * 1000 + new Date(timeFormat(data.startdate)).getTime()),
                     starttime: rTime(Math.ceil(Math.random() * 5) * 1000 + new Date(timeFormat(data.starttime)).getTime()),
                     endtime: rTime(Math.ceil(Math.random() * 5) * 1000 + new Date(timeFormat(data.endtime)).getTime() + 5000),
-                    remark: Math.random() >= 0.5 ? '恶劣天气' : '新冠疫情'
+                    remark: Math.random() >= 0.5 ? '恶劣天气' : '新冠疫情'
                 })
 
                 // 3赛事限流

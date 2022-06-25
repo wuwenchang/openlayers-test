@@ -12,7 +12,7 @@
 <body>
     <div class="allbody">
         <div class="top" id="findlist">
-            <label>拥堵地址<input type="text" id="address" /></label>
+            <label>拥堵地址<input type="text" id="A.address" /></label>
             <div class="btns">
                 <a id="findbtn">查询</a>
                 <a href="editpage32.html" target="_self">新增</a>
@@ -65,6 +65,7 @@
                 $("#findbtn").click(FindTable);
                 function FindTable() {
                     var wherestr = FindStr();
+                    console.log(wherestr);
                     GetTable("traffic_jam A left join event_gym B on A.type_id=B.id left join traffic_hub C on A.type_id=C.id", wherestr+ "1=1 order by starttime");
                 }
             </script>
